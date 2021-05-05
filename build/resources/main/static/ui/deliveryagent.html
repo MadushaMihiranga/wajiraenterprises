@@ -1,0 +1,642 @@
+<!doctype html>
+<html>
+<head>
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Delivery Agent Management</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnDelete.addEventListener("click",btnDeleteMC);
+            btnSearch.addEventListener("click",btnSearchMC);
+            btnSearchClear.addEventListener("click",btnSearchClearMC);
+
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+
+
+            privilages = httpRequest("../privilages?module=SHIPMENT","GET");
+
+            regexes = httpRequest("../regexes/deliveryagent","GET");
+            //console.log(regexes);
+            txtName.setAttribute("data-pattern",regexes.name.regex);
+            txtAddress.setAttribute("data-pattern",regexes.address.regex);
+            txtContactNo.setAttribute("data-pattern",regexes.contactno.regex);
+            txtEmail.setAttribute("data-pattern",regexes.email.regex);
+            txtFax.setAttribute("data-pattern",regexes.fax.regex);
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+        }
+
+        function loadView() {
+
+            //Search Area
+            txtSearchName.value="";
+            txtSearchName.style.borderColor = "";
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+            var query = "&name=";
+            loadTable(1,cmbPageSize.value,query);
+        }
+
+        function loadTable(page,size,query) {
+            page = page - 1;
+            deliveryagents = new Array();
+            var data = httpRequest("/deliveryagents?page="+page+"&size="+size+query,"GET");
+            if(data.content!= undefined) deliveryagents = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblDeliveryAgent',deliveryagents,fillForm);
+            clearSelection(tblDeliveryAgent);
+            if(activerowno!="")selectRow(tblDeliveryAgent,activerowno,active);
+            window.location.href="#ui";
+        }
+
+        function paginate(page) {
+            var paginate;
+            if(olddeliveryagent==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno=""
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+        function loadForm() {
+            deliveryagent = new Object();
+            olddeliveryagent = null;
+
+            //txtNumber.value = "";
+            //txtNumber.disabled="";
+            txtName.value = "";
+            txtAddress.value = "";
+            txtContactNo.value = "";
+            txtEmail.value = "";
+            txtFax.value = "";
+
+            setStyle(initial);
+
+            disableButtons(false, true, true);
+        }
+
+        function setStyle(style) {
+            txtName.style.borderColor = style;
+            txtAddress.style.borderColor = style;
+            txtContactNo.style.borderColor = style;
+            txtEmail.style.borderColor = style;
+            txtFax.style.borderColor = style;
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+
+        }
+
+
+        // Binding and Validation Functions for Non-Regex-Based
+        // When Regex-Based default validation is used, programmers do not need to define these functions
+        // Default Validation and Binding is coded in "ui.bitproject.earth.lk.js
+
+        //Form Operation Functions
+
+        function getErrors() {
+
+            var errors = "";
+
+            if (deliveryagent.name == null)
+                errors = errors + "\n" + regexes.name.message+"<br>";
+
+            if (deliveryagent.address == null)
+                errors = errors + "\n" + regexes.address.message+"<br>";
+
+            if (deliveryagent.contactno == null)
+                errors = errors + "\n" + regexes.contactno.message+"<br>";
+
+            if (deliveryagent.email == null)
+                errors = errors + "\n" + regexes.email.message+"<br>";
+
+            if (deliveryagent.fax == null)
+                errors = errors + "\n" + regexes.fax.message+"<br>";
+
+            return errors;
+        }
+
+
+        function ModelAddContent() {
+            //console.log(vehicle)
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+                spnName.innerHTML = deliveryagent.name;
+                spnAddress.innerHTML = deliveryagent.address;
+                spnContNo.innerHTML =deliveryagent.contactno;
+                spnEmail.innerHTML = deliveryagent.email;
+                spnFax.innerHTML = deliveryagent.fax;
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/deliveryagent","POST",deliveryagent);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                //alertify.notify('Delivery Agent Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Delivery Agent Saved Successfully',6);
+
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Add as \n\n"+response);
+        }
+
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+
+            var clear;
+            if(olddeliveryagent==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblDeliveryAgent);
+            }
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+        }
+
+        function fillForm(dla,rowno){
+           activerowno = rowno;
+            var filling;
+            if(olddeliveryagent==null){
+                filling=true;
+            }else{
+
+                if(getErrors()==''&&getUpdates()==''){
+                    filling=true;
+                }else{
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+
+            if(filling) {
+
+                clearSelection(tblDeliveryAgent);
+                selectRow(tblDeliveryAgent,activerowno,active);
+
+                deliveryagent = JSON.parse(JSON.stringify(dla));
+                olddeliveryagent = JSON.parse(JSON.stringify(dla));
+
+                txtName.value = deliveryagent.name;    ///////////////////
+                txtAddress.value = deliveryagent.address;
+                txtContactNo.value = deliveryagent.contactno;
+                txtEmail.value = deliveryagent.email;
+                txtFax.value = deliveryagent.fax;
+
+                disableButtons(true, false, false);
+                setStyle(valid);
+            }
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(deliveryagent!=null && olddeliveryagent!=null) {
+
+                if (deliveryagent.name != olddeliveryagent.name)
+                    updates = updates + "\nCompany Name is Changed : <span style='color: #ffc107'>"+olddeliveryagent.name+" <i class=\"fas fa-arrow-right\"></i> "+deliveryagent.name+"</span><br>";
+
+                if (deliveryagent.address != olddeliveryagent.address)
+                    updates = updates + "\nCompany Address is Changed : <span style='color: #ffc107'>"+olddeliveryagent.address+" <i class=\"fas fa-arrow-right\"></i> "+deliveryagent.address+"</span><br>";
+
+                if (deliveryagent.contactno != olddeliveryagent.contactno)
+                    updates = updates + "\nContact Number is Changed : <span style='color: #ffc107'>"+olddeliveryagent.contactno+" <i class=\"fas fa-arrow-right\"></i> "+deliveryagent.contactno+"</span><br>";
+
+                if (deliveryagent.email != olddeliveryagent.email)
+                    updates = updates + "\nE-Mail Address is Changed : <span style='color: #ffc107'>"+olddeliveryagent.email+" <i class=\"fas fa-arrow-right\"></i> "+deliveryagent.email+"</span><br>";
+
+                if (deliveryagent.fax != olddeliveryagent.fax)
+                    updates = updates + "\nFax Number is Changed : <span style='color: #ffc107'>"+olddeliveryagent.fax+" <i class=\"fas fa-arrow-right\"></i> "+deliveryagent.fax+"</span><br>";
+
+            }
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnUpdateMC() {
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/deliveryagent","PUT",deliveryagent);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                //alertify.notify('Delivery Agent Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Delivery Agent Updated Successfully',6);
+                loadView()
+                loadForm();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Update as \n\n"+response);
+        }
+
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnDeliveryComDel.innerHTML =   deliveryagent.name;
+        }
+
+
+        function btnDeleteMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/deliveryagent","DELETE",deliveryagent);
+            if(response=="0"){
+                $('#ModelDelete').modal('hide');
+                //alertify.notify('Delivery Agent Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Delivery Agent Deleted Successfully',6);
+                loadView()
+                loadForm();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Delete as \n\n"+response);
+        }
+
+
+        //Search Functions
+
+        function loadSearchedTable() {
+            console.log("Load Search table")
+
+            var name = txtSearchName.value;
+
+            if(name!=""){  txtSearchName.style.borderColor = active; }
+
+            var query ="&name=";
+
+            if(name!="" )
+                query = "&name=" + name;
+
+            //window.alert(query);
+            loadTable(activepage, cmbPageSize.value, query);
+
+        }
+
+        function btnSearchMC(){
+            console.log("btnSearchMC")
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+            loadView();
+        }
+
+    </script>
+
+
+
+</head>
+
+<body>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px">Delivery Agent Management</h4>
+            <!--<div class="card" style=";border: 1px solid #282c2f;">-->
+                <!--card-header-->
+                <!-- <div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 1px">
+                     <h3><i class="far fa-users"></i> Employee Management</h3>
+                 </div>-->
+
+                <!--card-body-start-->
+                <!--<div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">-->
+                    <div class="row">
+                        <!--Form-Start-->
+                        <div class="col-md-4">
+                            <div class="card" style="border: 1px solid #161616;border-radius: 5px">
+                                <div style="border: 1px solid transparent;border-radius: 5px" class="card-body form-box-overflow"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false" id="deliveryagentform" >
+                                        <script>
+                                            txtField('deliveryagentform','txtName','Company Name','Enter Company Name Here','',"",'deliveryagent','name','olddeliveryagent',true);
+                                            txtArea('deliveryagentform','txtAddress','Company Address','Enter Address Here','',"",'deliveryagent','address','olddeliveryagent',true);
+                                            txtField('deliveryagentform','txtContactNo','Contact Number','Enter Contact Number Here','',"",'deliveryagent','contactno','olddeliveryagent',true);
+                                            txtField('deliveryagentform','txtEmail','E-Mail Address','Enter E-Mail Here','',"",'deliveryagent','email','olddeliveryagent',true);
+                                            txtField('deliveryagentform','txtFax','Fax Number','Enter Fax Number Here','',"",'deliveryagent','fax','olddeliveryagent');
+                                        </script>
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-3" style="margin-right: 5px;margin-left: -10px">
+                                                <button data-toggle="tooltip" data-placement="top"  title="Delete Delivery Agent" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 0px; margin-left: 0px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 10px;margin-left: -5px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Update Selected Delivery Agent" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button  data-toggle="tooltip" data-placement="top" title="Add New Delivery Agent" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Form-End-->
+
+
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeladd">Delivery Agent</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Vehicle</h5>
+                                        <p class="content-model-text-title">Company name    : <span class="content-model-text-value" id="spnName"></span></p>
+                                        <p class="content-model-text-title">Address         : <span class="content-model-text-value" id="spnAddress"></span></p>
+                                        <p class="content-model-text-title">Contact Number  : <span class="content-model-text-value" id="spnContNo"></span></p>
+                                        <p class="content-model-text-title">E-Mail Address  : <span class="content-model-text-value" id="spnEmail"></span></p>
+                                        <p class="content-model-text-title">Fax Number      : <span class="content-model-text-value" id="spnFax"></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Delivery agent</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                        <!--Model Delete Start-------------------------------------------->
+                        <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeldelete">Delivery Agent</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to delete following </h5>
+                                        <p  id="spnDeliveryComDel"></p>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Delete End---------------------------------------------->
+
+                        <!--Model Update Start-------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabelupdete">Delivery Agent</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End---------------------------------------------->
+
+
+                        <!--table-start-->
+                        <div class="col-md-8">
+                            <div class="card" style="border: 1px solid #161616;border-radius: 5px;">
+                                <div class="card-header" style="height: 60px;border: 1px solid transparent">
+                                    <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <input placeholder="Search By Name" class="form-control form-control-sm txtinput" type="text" id="txtSearchName"/>
+                                        </div>
+
+                                        <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                        <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                                    </form>
+                                </div>
+                                <div class="card-body table-box-overflow"  id="employeeview" style="border: 1px solid transparent">
+
+                                    </hr>
+                                    <div class="table-responsive" id="tableParent">
+
+                                        <script>
+
+                                            function getNameColumn(ob) {
+                                                return ob.callingname+"("+ob.number+")";
+                                            }
+
+                                            var metadata = [
+                                                {name:'Company Name',search:false,datatype:'text',property:'name'},
+                                                {name:'Address',search:false,datatype:'text',property:'address'},
+                                                {name:'Contact Number',search:false,datatype:'text',property:'contactno'},
+                                                {name:'Fax Number',search:false,datatype:'text',property:'fax'},
+                                                {name:'E-Mail Address',search:false,datatype:'text',property:'email'},
+                                            ];
+                                            table("tableParent","tblDeliveryAgent",metadata,[3,10,15,30,500,1000],btnSearchMC,true);
+
+                                        </script>
+
+
+                                    </div>
+                                    <ul id="pagination" class="pagination"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!--table-end-->
+
+                    </div>
+
+                <!--</div>-->
+                <!--card-body-end-->
+
+                <!--<div class="card-footer"></div>-->
+                <!--card-end-->
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+    <title> Customer Login</title>
+    <link href="../icon/baseline_supervisor_account_black_36dp.png" rel="icon" >
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/css/uikit.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit-icons.min.js"></script>
+
+    <!--<link href="../plugin/uikit-3.0.3/css/uikit.min.css">
+    <script src="../plugin/uikit-3.0.3/js/uikit.min.js"></script>
+    <script src="../plugin/uikit-3.0.3/js/uikit-icons.min.js"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
+    <link href="../fonts/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../plugin/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../style/customer-login.css" rel="stylesheet">
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../plugin/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../plugin/jquery/jquery.min.js"></script>
+
+    <script>
+        window.addEventListener("load", initialize);
+
+        function initialize() {
+            btnLogin.addEventListener("click", btnLoginMC);
+        }
+
+        function btnLoginMC() {
+
+            var username = txtUsername.value.trim();
+            var password = txtPassword.value.trim();
+
+            if (username != "" && password != ""){
+
+                ajax = new XMLHttpRequest();
+                ajax.open("POST", "/session", false);
+                ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                ajax.send("username="+username+"&password="+password);
+                err.innerHTML=err.innerHTML+ajax.responseText;
+                if(ajax.status==200 && ajax.responseText!="") {
+                    sessionlog = JSON.parse(ajax.responseText);
+                    cookie.setValue("username",  username, 1);
+                    cookie.setValue("password", password, 1);
+                    cookie.setValue("sessionid", sessionlog.id, 1);
+                    session.setObject("user", sessionlog.userId);
+                    err.innerHTML = err.innerHTML + ajax.responseText;
+
+                    window.open("customerhomenew", "_self");
+                }
+                else
+                    window.alert("Incorect User Details");
+            }
+            else
+                window.alert("Enter both Username or Password");
+        }
+    </script>
+</head>
+<body>
+<div class="image">
+    <div class="container-fluid">
+        <div class="row" style="width: border-box">
+           <div class="col-md-12">
+               <!--login area-->
+               <div class="transparent-box" align="center" >
+                   <div class="row">
+                       <!--description-->
+                       <div class="col-md-7" style="margin-top: 5%">
+                           <div class="logo-container" ><img class="logo" src="../image/logo.png" style="margin-top: 3px"></div>
+                           <div class="description-container">
+                                   <p class="description">We provide customs clearing services</p>
+                                   <p class="description">since 1997</p>
+                               <div style="width: 334px" class="uk-divider-icon"></div>
+                           </div>
+                       </div>
+
+                       <!--login-->
+                       <div class="col-md-5" >
+                           <div class="loginbox">
+                               <div class="col-md-12">
+                                   <div  class="row" >
+                                       <h1 class="logintitle" style="margin-bottom: -20px;margin-left: 5px">&nbsp;&nbsp;Customer</h1>
+                                       <h1  class="logintitle">Log&nbsp;In</h1>
+                                   </div>
+                                   <div id="form" >
+                                       <form  class="form-horizontal" id="loginForm" onsubmit="return false">
+                                           <div class="wrapinput">
+                                               <input class="txtinput form-control" id="txtUsername" name="user name" placeholder="username" type="text">
+                                               <span class="icon"><i class="fal fa-user"></i></span>
+                                           </div>
+                                           <div class="wrapinput">
+                                               <input class="txtinput form-control" id="txtPassword" name="password" placeholder="password" type="password">
+                                               <span class="icon"><i class="fal fa-key"></i></span>
+                                           </div>
+                                           <div class="btnlogin-container">
+                                               <button class="btnLogin" id="btnLogin">LOG IN</button>
+                                           </div>
+                                           <div class="text-center container-txt">
+                                              <!-- <span class="liPswForgot" style="color: white">Forgot&nbsp; </span>
+                                               <a class="linkPswForgot" href="#"> Username / Password?</a>-->
+                                           </div>
+                                       </form>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+        </div>
+        <!--contact detail-->
+      <!--  <div class="information-box">
+        </div>-->
+    </div>
+</div>
+<div id="err"></div>
+</body>
+</html>

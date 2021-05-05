@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="../plugin/bootstrap/css/bootstrap.min.css"/>
+    <script src="../plugin/jquery/jquery.min.js"></script>
+    <script src="../plugin/bootstrap/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <script>
+
+        function comboBoxa(parent,id,lblText,labelWidth,ob,prop,oldob,modelid,btntext,btnId){
+
+            var parent = document.getElementById(parent);
+            var formGroup = createElement('div',id+'FormGroup');
+            var label = createElement('label',id+'Label');
+            label.innerHTML = lblText;
+            label.for = id;
+            label.classList.add('control-label');
+            label.classList.add('col-md-'+labelWidth);
+
+            var btn  = createElement('button',btnId);
+            btn.setAttribute('type','button');
+            btn.setAttribute('data-toggle','modal');
+            btn.setAttribute('data-target',modelid);
+            btn.innerHTML = btntext;
+            btn.classList.add('btn');
+            btn.classList.add('btn-sm');
+            btn.classList.add('btn-primary');
+            btn.style.marginLeft = '85%';
+            btn.style.marginTop = "5px";
+
+
+
+            var fieldArea = createElement('div');
+            fieldArea.classList.add('col-md-'+(12-labelWidth));
+            var field = createElement('select',id);
+            field.classList.add('form-control');
+            field.setAttribute('data-object',ob);
+            field.setAttribute('data-oldobject',oldob);
+            fieldArea.appendChild(field);
+            formGroup.classList.add('form-group');
+            formGroup.appendChild(label);
+            formGroup.appendChild(fieldArea);
+            formGroup.appendChild(btn);
+            parent.appendChild(formGroup);
+            field.onchange = function(){
+                var ob = window[this.getAttribute('data-object')];
+                var oldob = window[this.getAttribute('data-oldobject')];
+                var formGroup = this.parentNode.parentNode;
+                ob[prop] = JSON.parse(this.value);
+                if (oldob != null && oldob[prop].id != ob[prop].id){
+                    // formGroup.classList.remove('invalid');
+                    // formGroup.classList.remove('valid');
+                    //formGroup.classList.add('updated');
+                    field.style.borderColor = updated;
+                }else {
+                    // formGroup.classList.remove('updated');
+                    // formGroup.classList.remove('invalid');
+                    // formGroup.classList.add('valid');
+                    field.style.borderColor = valid;
+                }
+            };
+        }
+
+    </script>
+
+
+</head>
+<body>
+
+<div class="row">
+    <div class="col-md-3" id="cmbTest">
+        <script>
+            comboBoxa('cmbTest','text','test',4,'','','','#myModal','Test');
+
+        </script>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            <div class="modal-body">
+                <p>Some text in the modal.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

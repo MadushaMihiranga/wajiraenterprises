@@ -1,0 +1,43 @@
+.report-btn{
+    border: none;
+    color: #4d505e;
+    background-color: white;
+    font-size: 18px;
+}
+
+.report-btn:hover{
+    border: none;
+    color: tomato;
+    background-color: white;
+    cursor: pointer;
+}
+
+/*
+.report-table{
+    border: 1px solid #4d505e;
+
+}
+
+.report-table-row{
+    border-bottom: 1px solid #4d505e;
+    border-right:none;
+    border-left: none;
+    border-top: none;
+}
+
+.report-table-heading{
+    background-color: #4d505e;
+    color: white;
+}
+
+.report-table-body{
+    background-color: white;
+    color: #4d505e;
+}
+
+.report-table-column-left{
+    border-bottom: none;
+    border-right: 1px solid #4d505e;
+    border-left: none;
+    border-top: none;
+}*/

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title> Collect DO</title>
+    <link href="../icon/customer.png" rel="icon" >
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+
+    <script>
+
+
+        window.addEventListener("load",initialize);
+
+        function initialize(){
+
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+            dteAdd.addEventListener("change", dteValidate);
+
+            deliveryagent =httpRequest("../deliveryagents/list","GET");
+            employes = httpRequest("../employees/list", "GET");
+            privilages = httpRequest("../privilages?module=CLEARINGPROCESS", "GET");
+            regexes = httpRequest("../regexes/collectdo","GET");
+            txtIssuedby.setAttribute("data-pattern",regexes.issuedby.regex);
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "khaki";
+
+            loadForm();
+        }
+
+        function dteValidate() {
+            var today = new Date();
+            var birthday = new Date(dteAdd.value);
+            if((today.getTime()-birthday.getTime())>=(3600*1000)) {
+                console.log(true)
+                dteAdd.style.borderColor=valid;
+                return true
+            } else {
+                dteAdd.style.borderColor=invalid;
+                return false;
+            }
+        }
+
+        function loadForm() {
+
+            deliveryorder = new Object();
+            olddeliveryorder = null;
+
+            txtShpNo.value = parent.window.shipmentnumber;
+            txtShpNo.disabled = "disabled";
+            txtShpNo.style.borderColor = valid;
+
+            thisdeliveryagent = httpRequest("../getdeliveryagent?shipmentno="+txtShpNo.value,"GET");
+            fillCombo(cmbDeliveryAgent,'Select Delivery Agent',deliveryagent,'name',thisdeliveryagent.name);
+            deliveryorder.deliveryagentId = JSON.parse(cmbDeliveryAgent.value);
+            cmbDeliveryAgent.disabled = "disabled";
+
+            clearingprocess = httpRequest("../getClearingprocessobject?shipmentno="+txtShpNo.value,"GET");
+            deliveryorder.clearingprocessId = clearingprocess;
+
+            fillCombo(cmbPickEmployee, "Select Employee", employes, "callingname", session.getObject("user").employeeId.callingname);
+            deliveryorder.pickby = JSON.parse(cmbPickEmployee.value);
+
+            txtIssuedby.value = "";
+            dteAdd.value = "";
+
+             disableButtons(false);
+        }
+
+        function setStyle(style) {
+
+            txtShpNo.style.borderColor = style;
+            txtIssuedby.style.borderColor = style;
+            dteAdd.style.borderColor = style;
+            cmbDeliveryAgent.style.borderColor = style;
+            CmbPickEmployee.style.borderColor = style;
+
+        }
+
+
+        function disableButtons(add) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+
+        }
+
+
+        function getErrors() {
+
+            var errors = "";
+
+            if(deliveryorder.pickby == null)
+                errors = errors + "Employee who pickup Delivery order is not selected<br>";
+
+            if(deliveryorder.date == null)
+                errors = errors + "Pick up Date is not selected <br>";
+
+            if (!dteValidate()){
+                errors = errors + "Issued Date Cannot Be Future Date<br>";
+            }
+
+
+            return errors;
+
+        }
+
+        function ModelAddContent() {
+
+            //console.log(deliveryorder);
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+                spnNumber.innerHTML = txtShpNo.value;
+                spnAgent.innerHTML = deliveryorder.deliveryagentId.name;
+                spnEmployee.innerHTML = deliveryorder.pickby.callingname;
+                spnIssuedBy.innerHTML = deliveryorder.issuedby;
+                spnDate.innerHTML = deliveryorder.date;
+
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/collecetdo","POST",deliveryorder);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                showResult('success','Delivery Order Saved Successfully',6);
+                //alertify.notify('Company Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+                //loadView();
+                activerowno = 1;
+                loadSearchedTable();
+            }
+            else {
+                $('#ModelAddContent').modal('hide');
+                showResult('error');
+                window.alert("Failed to Add as \n\n"+response);
+            }
+        }
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+            var clear;
+            if(oldcompany==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblCompany);
+            }
+
+        }
+
+    </script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px"><!--<i class="fal fa-building"></i>--> Delivery Order</h4>
+            <div class="card" style="border: 1px solid #282c2f;">
+                <!--card-header-->
+                <!--<div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 15px">
+
+                </div>-->
+
+                <!--card-body-start-->
+                <div class="card-body" style="background-color: #f9f9f9;border-radius: 15px;height: 480px">
+                    <div class="row">
+                        <!--Form-Start-->
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body form-box-overflow" style="height: 440px"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false"  >
+                                        <div class="row">
+                                            <div class="col-md-12" id="doform">
+                                                <script>
+                                                    txtField('doform','txtShpNo','Shipment Number','Enter Shipment Number Here','',"",'','','');
+                                                    cmbBox('doform','cmbDeliveryAgent','Delivery Agent','deliveryorder','deliveryagentId','olddeliveryorder');
+                                                    cmbBox('doform','cmbPickEmployee','Collected Employee','deliveryorder','pickby','olddeliveryorder');
+                                                    txtField('doform','txtIssuedby','Issued by','Enter issued person Here','',"",'deliveryorder','issuedby','olddeliveryorder',false,"Name is Valid","Invalid Name","Name is Updated");
+                                                    dteField('doform','dteAdd','Issued Date','',"",'deliveryorder','date','olddeliveryorder',true);
+                                                </script>
+                                            </div>
+                                        </div>
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-8"></div>
+
+                                            <div class="col-md-2" style="margin-right: 0px; margin-left: 0px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <button  data-toggle="tooltip" data-placement="top" title="Add New company" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+
+                        <!--Form-End-->
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeladd">Delivery Order</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Detail</h5>
+                                        <p class="content-model-text-title">Shipment Number                  : <span class="content-model-text-value" id="spnNumber"></span></p>
+                                        <p class="content-model-text-title">Company Name          : <span class="content-model-text-value" id="spnAgent"></span></p>
+                                        <p class="content-model-text-title">Collected Employee     : <span class="content-model-text-value" id="spnEmployee"></span></p>
+                                        <p class="content-model-text-title">Issued By     : <span class="content-model-text-value" id="spnIssuedBy"></span></p>
+                                        <p class="content-model-text-title">Issued Date        : <span class="content-model-text-value" id="spnDate"></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Delivery Order</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="err">
+
+
+</div>
+</body>
+</html>

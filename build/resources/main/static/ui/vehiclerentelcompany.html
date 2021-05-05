@@ -1,0 +1,647 @@
+<!doctype html>
+<html>
+<head>
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Vehicle Rental Company</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnDelete.addEventListener("click",btnDeleteMC);
+            btnSearch.addEventListener("click",btnSearchMC);
+            btnSearchClear.addEventListener("click",btnSearchClearMC);
+
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+
+
+            privilages = httpRequest("../privilages?module=SHIPMENT","GET");
+            employes = httpRequest("../employees/list", "GET");
+            //regexes = httpRequest("../regexes/vehrentalcompany","GET");
+            //console.log(regexes);
+           /* txtName.setAttribute("data-pattern",regexes.name.regex);
+            txtAddress.setAttribute("data-pattern",regexes.address.regex);
+            txtContactNo.setAttribute("data-pattern",regexes.contactno.regex);
+            txtEmail.setAttribute("data-pattern",regexes.email.regex);
+            txtFax.setAttribute("data-pattern",regexes.fax.regex);*/
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+        }
+
+        function loadView() {
+
+            //Search Area
+            txtSearchName.value="";
+            txtSearchName.style.borderColor = "";
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+            var query = "&name=";
+            loadTable(1,cmbPageSize.value,query);
+        }
+
+        function loadTable(page,size,query) {
+            page = page - 1;
+            vehrentalcompanys = new Array();
+            var data = httpRequest("/vehiclerentelcompany?page="+page+"&size="+size+query,"GET");
+            if(data.content!= undefined) vehiclerentalcompanys = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblVehRentCo',vehiclerentalcompanys,fillForm);
+            clearSelection(tblVehRentCo);
+            if(activerowno!="")selectRow(tblVehRentCo,activerowno,active);
+            window.location.href="#ui";
+        }
+
+        function paginate(page) {
+            var paginate;
+            if(oldvehrentalcompany==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno=""
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+        function loadForm() {
+            vehrentalcompany = new Object();
+            oldvehrentalcompany = null;
+            setStyle(initial);
+
+
+            var today = new Date();
+            var month = today.getMonth()+1;
+            if(month<10) month = "0"+month;
+            var date = today.getDate()+1;
+            if(date<10) date = "0"+date;
+
+            //txtNumber.value = "";
+            //txtNumber.disabled="";
+            txtName.value = "";
+            txtAddress.value = "";
+            txtContactNo.value = "";
+            txtEmail.value = "";
+            dteAdd.value = "";
+
+            fillCombo(cmbEmployee,"Employee",employes,"callingname",session.getObject("user").employeeId.callingname);
+            vehrentalcompany.employeeId = JSON.parse(cmbEmployee.value);
+            cmbEmployee.disabled="disabled";
+            cmbEmployee.style.borderColor=valid;
+
+            dteAdd.value=today.getFullYear()+"-"+month+"-"+date;
+            vehrentalcompany.adddate=dteAdd.value;
+            dteAdd.disabled="disabled";
+            dteAdd.style.borderColor=valid;
+
+
+
+            disableButtons(false, true, true);
+        }
+
+        function setStyle(style) {
+            txtName.style.borderColor = style;
+            txtAddress.style.borderColor = style;
+            txtContactNo.style.borderColor = style;
+            txtEmail.style.borderColor = style;
+            dteAdd.style.borderColor = style;
+            cmbEmployee.style.borderColor = style;
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+
+        }
+
+
+        // Binding and Validation Functions for Non-Regex-Based
+        // When Regex-Based default validation is used, programmers do not need to define these functions
+        // Default Validation and Binding is coded in "ui.bitproject.earth.lk.js
+
+        //Form Operation Functions
+
+        function getErrors() {
+
+            var errors = "";
+
+            if (vehrentalcompany.name == null)
+                errors = errors + "Invalid Name<br>";
+
+            if (vehrentalcompany.addres == null)
+                errors = errors + "Invalid Address<br>";
+
+            if (vehrentalcompany.contactnumber == null)
+                errors = errors + "Invalid Contact No<br>";
+
+            if (vehrentalcompany.email == null)
+                errors = errors + "Invalid Email<br>";
+
+            if (vehrentalcompany.adddate == null)
+                errors = errors + "Invalid Add Date<br>";
+
+            if (vehrentalcompany.employeeId == null)
+            errors = errors + "Invalid Add Employee<br>";
+
+            return errors;
+        }
+
+
+        function ModelAddContent() {
+            //console.log(vehicle)
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+                spnName.innerHTML = vehrentalcompany.name;
+                spnAddress.innerHTML = vehrentalcompany.addres;
+                spnContNo.innerHTML =vehrentalcompany.contactnumber;
+                spnEmail.innerHTML = vehrentalcompany.email;
+                spnAdddate.innerHTML = vehrentalcompany.adddate;
+                spnEmployee.innerHTML = vehrentalcompany.employeeId.callingname;
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/vehiclerentelcompany","POST",vehrentalcompany);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                alertify.notify('Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Add as \n\n"+response);
+        }
+
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+
+            var clear;
+            if(oldvehrentalcompany==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblVehRentCo);
+            }
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+        }
+
+        function fillForm(vrc,rowno){
+            activerowno = rowno;
+            var filling;
+            if(oldvehrentalcompany==null){
+                filling=true;
+            }else{
+
+                if(getErrors()==''&&getUpdates()==''){
+                    filling=true;
+                }else{
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+
+            if(filling) {
+
+                clearSelection(tblVehRentCo);
+                selectRow(tblVehRentCo,activerowno,active);
+
+                vehrentalcompany = JSON.parse(JSON.stringify(vrc));
+                oldvehrentalcompany = JSON.parse(JSON.stringify(vrc));
+
+                txtName.value = vehrentalcompany.name;    ///////////////////
+                txtAddress.value = vehrentalcompany.addres;
+                txtContactNo.value = vehrentalcompany.contactnumber;
+                txtEmail.value = vehrentalcompany.email;
+                dteAdd.value = vehrentalcompany.adddate;
+                fillCombo(cmbEmployee,"Employee",employes,"callingname",vehrentalcompany.employeeId.callingname);
+
+
+                disableButtons(true, false, false);
+                setStyle(valid);
+            }
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(vehrentalcompany!=null && oldvehrentalcompany!=null) {
+
+                if (vehrentalcompany.name != oldvehrentalcompany.name)
+                    updates = updates + "\nCompany Name is Changed : <span style='color: #ffc107'>"+oldvehrentalcompany.name+" <i class=\"fas fa-arrow-right\"></i> "+vehrentalcompany.name+"</span><br>";
+
+                if (vehrentalcompany.addres != oldvehrentalcompany.addres)
+                    updates = updates + "\nCompany Address is Changed : <span style='color: #ffc107'>"+oldvehrentalcompany.addres+" <i class=\"fas fa-arrow-right\"></i> "+vehrentalcompany.addres+"</span><br>";
+
+                if (vehrentalcompany.contactnumber != oldvehrentalcompany.contactnumber)
+                    updates = updates + "\nContact Number is Changed : <span style='color: #ffc107'>"+oldvehrentalcompany.contactnumber+" <i class=\"fas fa-arrow-right\"></i> "+vehrentalcompany.contactnumber+"</span><br>";
+
+                if (vehrentalcompany.email != oldvehrentalcompany.email)
+                    updates = updates + "\nE-Mail Address is Changed : <span style='color: #ffc107'>"+oldvehrentalcompany.email+" <i class=\"fas fa-arrow-right\"></i> "+vehrentalcompany.email+"</span><br>";
+
+
+            }
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnUpdateMC() {
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/vehiclerentelcompany","PUT",vehrentalcompany);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                alertify.notify('Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadView()
+                loadForm();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Update as \n\n"+response);
+        }
+
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnDeliveryComDel.innerHTML =   vehrentalcompany.name;
+        }
+
+
+        function btnDeleteMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/vehiclerentelcompany","DELETE",vehrentalcompany);
+            if(response=="0"){
+                $('#ModelDelete').modal('hide');
+                alertify.notify('Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadView()
+                loadForm();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Delete as \n\n"+response);
+        }
+
+
+        //Search Functions
+
+        function loadSearchedTable() {
+            console.log("Load Search table")
+
+            var name = txtSearchName.value;
+
+            if(name!=""){  txtSearchName.style.borderColor = active; }
+
+            var query ="&name=";
+
+            if(name!="" )
+                query = "&name=" + name;
+
+            //window.alert(query);
+            loadTable(activepage, cmbPageSize.value, query);
+
+        }
+
+        function btnSearchMC(){
+            console.log("btnSearchMC")
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+            loadView();
+        }
+
+    </script>
+
+
+
+</head>
+
+<body>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h3 style="margin-top: 15px">Vehicle Rental Company</h3>
+            <div class="card" style=";border: 1px solid #282c2f;">
+                <!--card-header-->
+                <!-- <div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 1px">
+                     <h3><i class="far fa-users"></i> Employee Management</h3>
+                 </div>-->
+
+                <!--card-body-start-->
+                <div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">
+                    <div class="row">
+                        <!--Form-Start-->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div style="" class="card-body form-box-overflow"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false" id="vehrentalcompanyform" >
+                                        <script>
+                                            txtField('vehrentalcompanyform','txtName','Company Name','Enter Company Name Here','',"",'vehrentalcompany','name','oldvehrentalcompany',true);
+                                            txtArea('vehrentalcompanyform','txtAddress','Company Address','Enter Address Here','',"",'vehrentalcompany','addres','oldvehrentalcompany',true);
+                                            txtField('vehrentalcompanyform','txtContactNo','Contact Number','Enter Contact Number Here','',"",'vehrentalcompany','contactnumber','oldvehrentalcompany',true);
+                                            txtField('vehrentalcompanyform','txtEmail','E-Mail Address','Enter E-Mail Here','',"",'vehrentalcompany','email','oldvehrentalcompany',true);
+                                            dteField('vehrentalcompanyform','dteAdd','Add Date','',"",'vehrentalcompany','adddate','oldvehrentalcompany')
+                                            cmbBox('vehrentalcompanyform','cmbEmployee','Employee','vehrentalcompany','employeeId','oldvehrentalcompany')
+                                        </script>
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-3" style="margin-right: 5px;margin-left: -10px">
+                                                <button data-toggle="tooltip" data-placement="top"  title="Delete Delivery Agent" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 0px; margin-left: 0px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 10px;margin-left: -5px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Update Selected Delivery Agent" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button  data-toggle="tooltip" data-placement="top" title="Add New Delivery Agent" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Form-End-->
+
+
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeladd">Delivery Agent</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Vehicle</h5>
+                                        <p class="content-model-text-title">Company name    : <span class="content-model-text-value" id="spnName"></span></p>
+                                        <p class="content-model-text-title">Address         : <span class="content-model-text-value" id="spnAddress"></span></p>
+                                        <p class="content-model-text-title">Contact Number  : <span class="content-model-text-value" id="spnContNo"></span></p>
+                                        <p class="content-model-text-title">E-Mail Address  : <span class="content-model-text-value" id="spnEmail"></span></p>
+                                        <p class="content-model-text-title">Add Date      : <span class="content-model-text-value" id="spnAdddate"></span></p>
+                                        <p class="content-model-text-title">Add Employee      : <span class="content-model-text-value" id="spnEmployee"></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Delivery agent</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                        <!--Model Delete Start-------------------------------------------->
+                        <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeldelete">Delivery Agent</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to delete following </h5>
+                                        <p  id="spnDeliveryComDel"></p>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Delete End---------------------------------------------->
+
+                        <!--Model Update Start-------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabelupdete">Delivery Agent</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End---------------------------------------------->
+
+
+                        <!--table-start-->
+                        <div class="col-md-8">
+                            <div class="card" style="border: 1px solid #a6a6a6;border-radius: 1px">
+                                <div class="card-header" style="height: 60px">
+                                    <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <input placeholder="Search By Name" class="form-control form-control-sm txtinput" type="text" id="txtSearchName"/>
+                                        </div>
+
+                                        <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                        <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                                    </form>
+                                </div>
+                                <div class="card-body table-box-overflow"  id="employeeview">
+
+                                    </hr>
+                                    <div class="table-responsive" id="tableParent">
+
+                                        <script>
+
+                                            function getNameColumn(ob) {
+                                                return ob.callingname+"("+ob.number+")";
+                                            }
+
+                                            var metadata = [
+                                                {name:'Company Name',search:false,datatype:'text',property:'name'},
+                                                {name:'Address',search:false,datatype:'text',property:'addres'},
+                                                {name:'Contact Number',search:false,datatype:'text',property:'contactnumber'},
+                                                {name:'E-Mail Address',search:false,datatype:'text',property:'email'},
+                                            ];
+                                            table("tableParent","tblVehRentCo",metadata,[3,10,15,30,500,1000],btnSearchMC,true);
+
+                                        </script>
+
+
+                                    </div>
+                                    <ul id="pagination" class="pagination"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!--table-end-->
+
+                    </div>
+
+                </div>
+                <!--card-body-end-->
+
+                <!--<div class="card-footer"></div>-->
+                <!--card-end-->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

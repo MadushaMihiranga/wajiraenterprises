@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title>User Management</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script rel="script" src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script rel="script" src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script  src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script rel="script" src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnDelete.addEventListener("click",btnDeleteMC);
+
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+
+            txtPassword.addEventListener("keyup",txtPasswordKU);
+            txtRetypePassword.addEventListener("keyup",txtRetypePasswordKU);
+            btnSearch.addEventListener("click",btnSearchMC);
+            btnSearchClear.addEventListener("click",btnSearchClearMC);
+
+            btnSetToDefault.addEventListener("click",btnSetToDefaultMC);
+
+            cmbUsertype.addEventListener("change",cmbUserTypeCH);
+
+            privilages = httpRequest("../privilages?module=USER","GET");
+            changepasswordprivilages = httpRequest("../privilages?module=USERPASSWORDCHANGE","GET");
+
+            regexes = httpRequest("../regexes/user","GET");
+            txtUsername.setAttribute("data-pattern",regexes.username.regex);
+            txtPassword.setAttribute("data-pattern",regexes.password.regex);
+            txtDescription.setAttribute("data-pattern",regexes.description.regex);
+
+            employeeswithoutusers = httpRequest("../employees/list/withoutusers","GET");
+            employees = httpRequest("../employees/list","GET");
+
+            userstatuses = httpRequest("../userstatuses/list","GET");
+            roles = httpRequest("../roles/list","GET");
+            usertypes = httpRequest("../usertypes/list","GET");
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+        }
+
+        function loadView() {
+
+            //Search Area
+            txtSearchUsername.value="";
+            fillCombo(cmbSearchRole,"Role",roles,"name","");
+            fillCombo(cmbSearchUserstatus,"Status",userstatuses,"name","");
+            fillCombo(cmbSearchUserType,"Type",usertypes,"name","");
+            cmbSearchUserstatus.style.borderColor = "";
+            cmbSearchRole.style.borderColor = "";
+            txtSearchUsername.style.borderColor = "";
+            cmbSearchUserType.style.borderColor = "";
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+            loadTable(1,cmbPageSize.value,"&username=&roleid=&userstatusid=&usertypeid=");
+
+        }
+
+        function loadTable(page,size,query) {
+            page = page - 1;
+            users = new Array();
+            var data = httpRequest("/users?page="+page+"&size="+size+query,"GET");
+
+            //console.log(data);
+            if(data.content!= undefined) users = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblUser',users,fillForm);
+            clearSelection(tblUser);
+            if(activerowno!="")selectRow(tblUser,activerowno,active);
+            window.location.href="#ui";
+        }
+
+        function paginate(page) {
+            var paginate;
+            if(olduser==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno="";
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+        function loadForm() {
+
+            user = new Object();
+            olduser = null;
+
+            user.userroleList = new Array();
+            rolesright = new Array();
+            rolesleft = roles;
+
+            cmbEmployee.disabled="disabled";
+            cmbCustomer.disabled="disabled";
+            cmbUsertype.disabled="";
+
+
+            if(employeeswithoutusers != null)
+                fillCombo(cmbEmployee,"Select Employee",employeeswithoutusers,"callingname","");
+            else
+                fillCombo(cmbEmployee,"Select Employee",'',"callingname","");
+
+            companys = httpRequest("../companys/list","GET");
+            //console.log(companys);
+            if(companys!=null)
+                fillCombo(cmbCustomer,"Select Customer",companys,"name","");
+            else
+                fillCombo(cmbCustomer,"Select Customer",'',"name","");
+
+            fillCombo(cmbUserstatus,"Select Userstatus",userstatuses,"name","Operational");
+            fillCombo(cmbUsertype,"Select Usertype",usertypes,"name","");
+            fillCombo(cmbEmployeeCreated,"Loged Employee",employees,"callingname",session.getObject("user").employeeId.callingname);
+
+
+            setListTransferData('userrole',roles);
+            console.log(roles);
+
+            var today = new Date();
+            var month = today.getMonth()+1;
+            if(month<10) month = "0"+month;
+            var date = today.getDate()+1;
+            if(date<10) date = "0"+date;
+
+            dteDOCreated.value=today.getFullYear()+"-"+month+"-"+date;
+
+            user.docreation=dteDOCreated.value;
+            user.employeeCreatedId=JSON.parse(cmbEmployeeCreated.value);
+            user.userstatusId=JSON.parse(cmbUserstatus.value);
+
+            txtUsername.value = "";
+            txtPassword.value = "";
+            txtRetypePassword.value = "";
+            txtDescription.value = "";
+
+            setStyle(initial);
+            cmbUserstatus.style.borderColor=valid;
+            dteDOCreated.style.borderColor=valid;
+            cmbUserstatus.style.borderColor=valid;
+            cmbEmployeeCreated.style.borderColor=valid;
+
+
+            disableButtons(false, true, true);
+            cmbEmployeeCreated.disabled="disabled";
+
+        }
+
+        function setStyle(style) {
+
+            txtUsername.style.borderColor = style;
+            txtPassword.style.borderColor = style;
+            txtRetypePassword.style.borderColor = style;
+            cmbEmployee.style.borderColor = style;
+            cmbCustomer.style.borderColor = style;
+            cmbUserstatus.style.borderColor = style;
+            cmbUsertype.style.borderColor = style;
+            dteDOCreated.style.borderColor = style;
+            txtDescription.style.borderColor = style;
+            cmbEmployeeCreated.style.borderColor = style;
+        }
+
+        function cmbUserTypeCH() {
+            //console.log(JSON.parse(cmbUsertype.value).id);
+
+            if (JSON.parse(cmbUsertype.value).id==1){
+                cmbEmployee.disabled="";
+                cmbCustomer.disabled="disabled";
+            }
+            if (JSON.parse(cmbUsertype.value).id==2){
+                cmbCustomer.disabled="";
+                cmbEmployee.disabled="disabled";
+            }
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+
+            if (upd || !changepasswordprivilages.add) btnSetToDefault.setAttribute("disabled", "disabled");
+            else btnSetToDefault.removeAttribute("disabled");
+
+        }
+
+
+  /*      function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnAdd.setAttribute("disabled", "disabled");
+            else btnAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnUpdate.setAttribute("disabled", "disabled");
+            else btnUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnDelete.setAttribute("disabled", "disabled");
+            else btnDelete.removeAttribute("disabled");
+
+
+
+        }
+*/
+
+
+
+        // Binding and Validation Functions for Non-Regex-Based
+        // When Regex-Based default validation is used, programmers do not need to define these functions
+        // Default Validation and Binding is coded in "ui.bitproject.earth.lk.js"
+
+        function txtPasswordKU() {
+            txtRetypePassword.value="";
+            txtRetypePassword.style.borderColor = invalid;
+
+        }
+
+
+        function txtRetypePasswordKU() {
+            var pattern = new RegExp(txtPassword.getAttribute('data-pattern'));
+            var password = txtPassword.value;
+            var retypepassword = txtRetypePassword.value;
+            if(pattern.test(password) && password==retypepassword) {
+                user.password = password;
+                txtRetypePassword.style.borderColor = valid;
+            }
+            else
+            {
+                user.password = null;
+                txtRetypePassword.style.borderColor = invalid;
+            }
+        }
+
+        function btnSetToDefaultMC(){
+
+            var option = window.confirm("\n\nAre your sure to reset the password ! \n\n");
+            if(option==true) {
+                var defaultpassword = window.prompt("Enter Default Password");
+                user.password=defaultpassword;
+                var response = httpRequest("/resetpassword","PUT",user);
+                if(response=="0"){
+                    alertify.notify('User Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                    loadForm();
+                    loadSearchedTable();
+                }
+                else window.alert("Failed to Update as \n\n"+response);
+            }
+        }
+
+
+
+        //Form Operation Functions
+
+        function getErrors() {
+
+            var errors = "";
+
+            if (user.usertypeId == null)
+                errors = errors + "\n" + "User type not selected<br>";
+
+            if (user.username == null)
+                errors = errors + "\n" + regexes.username.message+"<br>";
+
+            if (user.password == null)
+                errors = errors + "\n" + "Password Not Inserted or Mismatch<br>";
+
+            if (user.description == null && txtDescription.value!="")
+                errors = errors + "\n" + regexes.description.message+"<br>";
+
+            if (user.userroleList.length == 0)
+                errors = errors + "\n" + "Roles Not Selected<br>";
+
+            return errors;
+
+        }
+
+
+        function ModelAddContent() {
+            //console.log(vehicle)
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+                var rolelist="";
+                for(x in user.userroleList)
+                    rolelist = rolelist + (rolelist==""?"":", ") +user.userroleList[x].roleId.name
+
+                spnUserName.innerHTML = user.username;
+                spnRoles.innerHTML = rolelist;
+                spnUserStatus.innerHTML = user.userstatusId.name;
+                spnUserType.innerHTML = user.usertypeId.name;
+                spcCreatedBy.innerHTML = user.employeeCreatedId.callingname;
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+
+        function btnAddMC(){
+
+              /*  var rolelist="";
+                for(x in user.userroleList)
+                    rolelist = rolelist + (rolelist==""?"":", ") +user.userroleList[x].roleId.name*/
+
+            var response = httpRequest("/users","POST",user);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+              //  alertify.notify('User Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','User Saved Successfully',6);
+                employeeswithoutusers = httpRequest("../employees/withoutusers","GET");
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Add as \n\n"+response);
+        }
+
+        function btnClearMC() {
+
+            var clear;
+            if(olduser==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblUser);
+            }
+        }
+
+        function fillForm(usr,rowno){
+            activerowno = rowno;
+            var filling;
+            if(olduser==null){
+                filling=true;
+            }else{
+
+                if(getErrors()==''&&getUpdates()==''){
+                    filling=true;
+                }else{
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+
+            if(filling) {
+                setListTransferData('userrole',roles);
+
+                clearSelection(tblUser);
+                selectRow(tblUser,activerowno,active);
+
+                console.log(user);
+
+                user = JSON.parse(JSON.stringify(usr));
+                olduser = JSON.parse(JSON.stringify(usr));
+
+                setListTransferValues('userrole',user.userroleList);
+
+                txtUsername.value = user.username;
+                dteDOCreated.value = user.docreation;
+                txtDescription.value = user.description;
+                txtUsername.disabled="disabled";
+                txtPassword.disabled="disabled";
+                txtRetypePassword.disabled="disabled";
+                dteDOCreated.disabled="disabled";
+                cmbUsertype.disabled="disabled";
+
+                if(user.employeeId != null)
+                fillCombo(cmbEmployee, "", employees, "callingname", user.employeeId.callingname);
+
+                if(user.companyId != null)
+                    fillCombo(cmbCustomer, "", companys, "name", user.companyId.name);
+
+                fillCombo(cmbUserstatus, "", userstatuses, "name", user.userstatusId.name);
+
+                fillCombo(cmbUsertype, "", usertypes, "name", user.usertypeId.name);
+                fillCombo(cmbEmployeeCreated, "", employees, "callingname", user.employeeCreatedId.callingname);
+                cmbEmployee.disabled="disabled";
+                cmbEmployeeCreated.disabled="disabled";
+
+                disableButtons(true, false, false);
+                setStyle(valid);
+            }
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(user!=null && olduser!=null) {
+
+                var rolelist="";
+                for(x in user.userroleList)
+                    rolelist = rolelist + (rolelist==""?"":", ") +user.userroleList[x].roleId.name;
+
+                var oldrolelist="";
+                for(y in olduser.userroleList)
+                    oldrolelist = oldrolelist + (oldrolelist==""?"":", ") +olduser.userroleList[y].roleId.name;
+
+                if (isEqual(user.userroleList,olduser.userroleList,"roleId"))
+                     updates = updates + "\nRoles are Changed : <span style='color: #ffc107'>"+oldrolelist +" <i class=\"fas fa-arrow-right\"></i> "+rolelist+"</span><br>";
+
+                if (user.description != olduser.description)
+                    updates = updates + "\nDescription is Changed : <span style='color: #ffc107'>"+olduser.description +" <i class=\"fas fa-arrow-right\"></i> "+ user.description+"</span><br>";
+
+                if (user.userstatusId.name != olduser.userstatusId.name)
+                    updates = updates + "\nUserstatus is Changed : <span style='color: #ffc107'>"+olduser.userstatusId.name +" <i class=\"fas fa-arrow-right\"></i> "+ user.userstatusId.name+"</span><br>";
+
+                if (user.usertypeId.name != olduser.usertypeId.name)
+                    updates = updates + "\nUsertype is Changed : <span style='color: #ffc107'>"+olduser.usertypeId.name +" <i class=\"fas fa-arrow-right\"></i> "+ user.usertypeId.name+"</span><br>";
+            }
+            return updates;
+        }
+
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+
+        function btnUpdateMC() {
+            var response = httpRequest("/users","PUT",user);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                //alertify.notify('User Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','User Updated Successfully',6);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Update as \n\n"+response);
+        }
+
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnDeleteUser.innerHTML ="UserName : " +user.username+"<br>Status : " +user.userstatusId.name;
+        }
+
+
+        function btnDeleteMC() {
+
+            var response = httpRequest("/users","DELETE",user);
+            if(response=="0"){
+                $('#ModelDelete').modal('hide');
+                //alertify.notify('User Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','User Deleted Successfully',6);
+                employeeswithoutusers = httpRequest("../datalists/employeeswithoutusers","GET");
+                loadView();
+                loadForm();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Delete as \n\n"+response);
+        }
+
+
+        //Search Functions
+
+        function loadSearchedTable(){
+
+            var username = txtSearchUsername.value.trim();
+            var role = cmbSearchRole.value;
+            var userstatus = cmbSearchUserstatus.value;
+            var usertype = cmbSearchUserType.value;
+
+            var roleid="";
+            if(role!="Role")
+            { roleid = JSON.parse(role).id;
+                cmbSearchRole.style.borderColor = active;}
+
+            var userstatusid="";
+            if(userstatus!="Status")
+            {  userstatusid = JSON.parse(userstatus).id;
+                cmbSearchUserstatus.style.borderColor = active; }
+
+            var usertypeid = "";
+            if (usertype!="Type")
+            { usertypeid = JSON.parse(usertype).id;
+                cmbSearchUserType.style.borderColor = active;
+            }
+
+            if(username!=""){  txtSearchUsername.style.borderColor = active; }
+
+            var query ="&username=&roleid=&userstatusid=&usertypeid=";
+
+            if(username!="" || roleid!="" || userstatusid!="" || usertypeid!="" )
+                query = "&username=" + username + "&roleid=" + roleid + "&userstatusid=" + userstatusid + "&usertypeid=" + usertypeid;
+
+            //window.alert(query);
+            loadTable(activepage, cmbPageSize.value, query);
+
+        }
+
+        function btnSearchMC(){
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+            loadView();
+        }
+
+
+    </script>
+
+
+
+
+</head>
+<body>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <!--Card-Start-->
+            <h4 style="margin-top: 10px">User Management</h4>
+           <!-- <div class="card" style=";border: 1px solid #282c2f;">-->
+                <!--Card-Header-Start-->
+                <!--<div class="card-header" style="background-color: #282c2f;color: tomato;border-radius: 1px"><h3><i class="fal fa-user-lock"></i> User Management</h3></div>-->
+                <!--Card-Header-End-->
+
+                <!--Card-Body-Start-->
+               <!-- <div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">-->
+                    <div class="row">
+
+                        <!--Form-Start-->
+                        <div class="col-md-4">
+                            <div class="card" style="border: 1px solid #161616;border-radius: 5px">
+                                <div class="card-body form-box-overflow" style="border: 1px solid transparent;border-radius: 5px">
+                                    <form class="form-horizontal" onsubmit="return false" id="userform" >
+                                        <script>
+                                            cmbBox('userform','cmbUsertype','User Type','user','usertypeId','olduser',true);
+                                            cmbBox('userform','cmbEmployee','Employee','user','employeeId','olduser');
+                                            cmbBox('userform','cmbCustomer','Customer','user','companyId','olduser');
+                                            txtField('userform','txtUsername','Username','Enter Username Here','',"",'user','username','olduser',true);
+                                            pswField('userform','txtPassword','Password','Enter Password Here','',"",'user','','olduser',true);
+                                            pswField('userform','txtRetypePassword','Retype Password','Retype Password Here','',4,"",'user','','olduser',true);
+                                            txtArea('userform','txtDescription','Description','Enter Description Here','',"",'user','description','olduser');
+                                            cmbBox('userform','cmbUserstatus','Status','user','userstatusId','olduser');
+                                            listTransfer('userform','userrole','Roles',4,'user','olduser','userroleList','roleId');
+                                            dteField('userform','dteDOCreated','Created Date','Select Created Date',"",'user','docreated','olduser');
+                                            cmbBox('userform','cmbEmployeeCreated','Employee Created','user','employeeCreatedId','olduser');
+                                        </script>
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" style="margin-top: 40px">
+                                            <div class="col-md-3" style="margin-right: 5px;">
+                                                <button  data-toggle="tooltip" data-placement="top"  title="Delete Employee" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: -5px; margin-left: -5px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: -6px;margin-left: -4px">
+                                                <button   data-toggle="tooltip" data-placement="top" title="Update Selected Employee" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 10px;margin-left: 3px">
+                                                <button  data-toggle="tooltip" data-placement="top" title="Add New Employee" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                            </div>
+                                        </div>
+                                        <div class="row" >
+                                            <div class="text-right" style="width: 100%">
+                                                <button data-toggle="tooltip" data-placement="top" title="Set Value to Default" class="btn btn-sm btn-block" type="submit" id="btnSetToDefault" style="width: 93%; margin-top: 10px; margin-left: 10px;">Set to Default</button>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Form-End-->
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="fal fa-user-lock"></i> User Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Vehicle</h5>
+                                        <p class="content-model-text-title">User Name    : <span class="content-model-text-value" id="spnUserName"></span></p>
+                                        <p class="content-model-text-title">Roles        : <span class="content-model-text-value" id="spnRoles"></span></p>
+                                        <p class="content-model-text-title">User Status  : <span class="content-model-text-value" id="spnUserStatus"></span></p>
+                                        <p class="content-model-text-title">User Type    : <span class="content-model-text-value" id="spnUserType"></span></p>
+                                        <p class="content-model-text-title">Created by   : <span class="content-model-text-value" id="spcCreatedBy"></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="fal fa-user-lock"></i> User Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                        <!--Model Delete Start-------------------------------------------->
+                        <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="fal fa-user-lock"></i> User Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to delete following </h5>
+                                        <p  id="spnDeleteUser"></p>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Delete End---------------------------------------------->
+
+                        <!--Model Update Start-------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="fal fa-user-lock"></i> User Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End---------------------------------------------->
+
+
+                        <!--Table-Start-->
+                        <div class="col-md-8">
+                            <div class="card"  style="border: 1px solid #161616;border-radius: 5px;">
+                                <div style="height: 60px;border: 1px solid transparent" class="card-header">
+                                    <form class="form-inline" onsubmit="return false">
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <input placeholder="Search By UserName" class="form-control txtinput" type="text" id="txtSearchUsername"/>
+                                        </div>
+
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <select class="form-control txtinput" id="cmbSearchRole"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <select class="form-control txtinput" id="cmbSearchUserstatus"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <select class="form-control txtinput" id="cmbSearchUserType"></select>
+                                        </div>
+                                        <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                        <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                                    </form>
+                                </div>
+                                <div class="card-body table-box-overflow"  id="userview">
+
+                                    <div class="table-responsive" id="tableParent">
+
+                                        <script>
+
+                                            function getRoleColumn(ob) {
+                                                var rolelist="";
+                                                for(x in ob.userroleList)
+                                                    rolelist = rolelist + (rolelist==""?"":", ") +ob.userroleList[x].roleId.name
+                                                return rolelist;
+                                            }
+
+                                            function getUserName(ob) {
+                                                if (ob.employeeId!=null){
+                                                    return ob.employeeId.callingname;
+                                                }else if (ob.companyId!=null){
+                                                    return ob.companyId.name;
+                                                }
+                                            }
+
+                                            var metadata = [
+                                                {name:'Employee / Customer',search:true,datatype:'text',property:getUserName},
+                                                {name:'Username',search:true,datatype:'text',property:'username'},
+                                                {name:'Roles',search:true,datatype:'text',property:getRoleColumn},
+                                                {name:'Created',search:true,datatype:'text',property:'docreation'},
+                                                {name:'User Type',search:true,datatype:'text',property:'usertypeId.name'},
+                                                {name:'Status',search:true,datatype:'text',property:'userstatusId.name'}
+                                            ];
+
+                                            table("tableParent","tblUser",metadata,[4,10,15,30,500,1000],btnSearchMC);
+
+                                        </script>
+
+
+                                    </div>
+                                    <ul id="pagination" class="pagination"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Table-End-->
+
+                    </div>
+                <!--</div>-->
+                <!--Card-Body-End-->
+
+           <!-- </div>-->
+            <!--Card-Start-->
+        </div>
+    </div>
+</div>
+</body>
+</html>

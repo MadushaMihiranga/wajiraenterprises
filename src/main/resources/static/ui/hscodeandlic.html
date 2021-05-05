@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title></title>
+    <link href="../icon/customer.png" rel="icon">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <!--<link rel="stylesheet" href="../plugin/Semantic-UI-CSS-master/components/step.min.css">
+    <script rel="stylesheet" src="../plugin/Semantic-UI-CSS-master/semantic.min.js"></script>-->
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js" rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <link rel="stylesheet" href="../style/shipment-form.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <script>
+        window.addEventListener("load", initialize);
+
+        function initialize() {
+
+            cmbSection.addEventListener("change", cmbSectionCH);
+            cmbChapter.addEventListener("change", cmbChapterCH);
+            cmbHeading.addEventListener("change", cmbHeadingCH);
+            cmbSubheading.addEventListener("change", cmbSubheadingCH);
+            btnAdd.addEventListener("click",btnAddMC);
+            //cmblicence.addEventListener("change",cmbLicenceCH);
+
+            btnModelSection.addEventListener("click", loadSectionForm);
+            btnModelChapter.addEventListener("click", loadChapterForm);
+            btnModelHeading.addEventListener("click", loadHeadingForm);
+            btnModelSubHeading.addEventListener("click", loadSubHeadingForm);
+           // btnDocumentModel.addEventListener("click", loadDocumentForm);
+
+            customers = httpRequest("../customers/list", "GET");
+            sections = httpRequest("../sections/list", "GET");
+            authorisationDocument = httpRequest("../licenceandapproval/list", "GET");
+
+            window.num = 0;
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+
+            //loadModel();
+            loadForm();
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnAdd.setAttribute("disabled", "disabled");
+            else btnAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnUpdate.setAttribute("disabled", "disabled");
+            else btnUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnDelete.setAttribute("disabled", "disabled");
+            else btnDelete.removeAttribute("disabled");
+
+        }
+
+
+        function loadForm() {
+
+            hschaslicdoc = new Object();
+            oldhschaslicdoc = null;
+
+            Section = new Object();
+            oldSection = null;
+
+            Chapter = new Object();
+            oldChapter = null;
+
+            Heading = new Object();
+            oldHeading = null;
+
+            SubHeading = new Object();
+            oldSubHeading = null;
+
+            DocumentMdl = new Object();
+            oldDocumentMdl = null;
+
+            Documents = {}
+            oldDocuments = null;
+
+            Documents.subheadinghaslicenceList = [];
+            Documentsright = [];
+            Documentsleft = authorisationDocument;
+
+            cmbChapter.disabled = "disabled";
+            cmbHeading.disabled = "disabled";
+            cmbSubheading.disabled = "disabled";
+
+            btnModelChapter.disabled = "disabled";
+            btnModelHeading.disabled = "disabled";
+            btnModelSubHeading.disabled = "disabled";
+
+            fillCombo(cmbSection, "Select Section", sections, "name", "");
+            //fillCombo(cmbDocument, "Select Document", authorisationDocument, "name", "");
+            setListTransferData('lisDocument',authorisationDocument);
+
+
+        }
+
+        function cmbSectionCH() {
+
+            //def = (typeof def !== 'undefined') ?  def : "";
+            btnModelChapter.disabled = "";
+            cmbSection.style.borderColor = valid;
+            cmbChapter.disabled = "";
+            var chapters = httpRequest("../chapters/listbysection?sectionId=" + JSON.parse(cmbSection.value).id, "GET");
+            fillCombo(cmbChapter, "Select Chapter", chapters, "description", "");
+
+        }
+
+        function cmbChapterCH() {
+
+            btnModelHeading.disabled = "";
+            cmbChapter.style.borderColor = valid;
+            cmbHeading.disabled = "";
+            var headings = httpRequest("../heading/listbychapter?chapterId=" + JSON.parse(cmbChapter.value).id, "GET");
+            fillCombo(cmbHeading, "Select Heading", headings, "description", "");
+        }
+
+        function cmbHeadingCH() {
+            btnModelSubHeading.disabled = "";
+            cmbHeading.style.borderColor = valid;
+            cmbSubheading.disabled = "";
+            var subheadings = httpRequest("../subheading/listbyheading?headingId=" + JSON.parse(cmbHeading.value).id, "GET");
+            fillCombo(cmbSubheading, "Select Sub Heading", subheadings, "description", "");
+        }
+
+        function cmbSubheadingCH() {
+            //lic = httpRequest("../licenceandapproval/bysubheading?subheadingId=" + JSON.parse(cmbSubheading.value).id, "GET");
+            //console.log(lic);
+            hsCodeDescription.innerHTML = JSON.parse(cmbSubheading.value).description;
+            hsCodeNumber.innerHTML = JSON.parse(cmbSubheading.value).number;
+        }
+
+        function btnAddNewDocMC() {
+            if (DocumentMdl.name != null){
+                DocumentMdl.name = txtDocument.value;
+                var defaultvalue = txtDocument.value;
+                var response = httpRequest("/licenceandapproval", "POST", DocumentMdl);
+                if (response=="0"){
+                    DocAddIcon.innerHTML = "<i class=\"fal fa-exclamation-circle\"></i>";
+                    DocAddIcon.style.color = '#009933';
+                    authorisationDocument = httpRequest("../licenceandapproval/list", "GET");
+                    setListTransferData('lisDocument',authorisationDocument);
+                    txtDocument.style.borderColor = initial;
+                    txtDocument.value = "";
+                    //$('#DocAddIcon').delay(1000).hide(0);
+
+                    /*setTimeout(function() {
+                        $('#DocAddIcon').fadeOut('fast');
+                    }, 50);*/
+
+                } else {
+                    DocAddIcon.style.color = '#ff4000';
+                    DocAddIcon.innerHTML = "<i class=\"fal fa-exclamation-circle\"></i>";
+                    window.alert(response);
+                }
+            }else {
+                DocAddIcon.style.color = '#ffff66';
+                DocAddIcon.innerHTML = "<i class=\"fal fa-exclamation-circle\"></i>";
+                window.alert("Invalid Document Name");
+            }
+        }
+
+        function btnAddMC(){
+            //var errors = getErrors();
+            console.log()
+
+           // if(errors==""){
+                var doclist="";
+                for(x in Documents.subheadinghaslicenceList)
+                    doclist = doclist + (doclist==""?"":", ") +Documents.subheadinghaslicenceList[x].licenceandapprovalId.name;
+                console.log(doclist);
+
+                var option = window.confirm("Are you sure to add following Supplier ?\n" +
+
+                    //"\nHS Code Name : \n" + Documents.subheadingId.description +
+                    "\nHS Code Number : " + Documents.subheadingId.number +
+                    "\nDocument List : " + doclist );
+                if(option==true) {
+                    console.log(Documents);
+                    var response = httpRequest("/hscodehaslicenceandapprovalsave","POST",Documents);
+                    if(response=="0"){
+                        //toast("<strong>Success !</strong> Saved Successfully","success");
+                        alertify.notify('Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+
+                        loadForm();
+                        activerowno = 1;
+                        //loadView();//loadSearchedTable();
+                    }
+                    else window.alert("Failed to Add as \n\n"+response);
+                }
+
+            /*}
+            else
+            { /!*window.alert("You have following Errors\n"+errors); *!/}*/
+        }
+
+    </script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h4 style="margin-top: 15px;">HS code and Authorization Documents Manage</h4>
+            <div class="card" style="border: 1px solid #282c2f;">
+                <div class="card-body">
+                    <!--HS-Code-Start-->
+                    <div class="row">
+                    <div class="col-md-6">
+
+                        <form>
+                            <!--******************************HS Code selecter*******************************-->
+                            <label class="txtinput-label">Select HS Code </i><i class="fas fa-asterisk" style="color: #ff6666;font-size: 10px"></i></label>
+                            <div class="row hs-code-selecter-border">
+                                <div class="col-md-12">
+                                    <div id="hscodeselect" style="margin-left: 5px; margin-right: -30px"></div>
+                                    <label class="txtinput-label" style="margin-top: 5px">HS Code</label>
+                                    <div class="hs-code-selecter-border" style="border: 2px solid #909090;border-radius: 4px;height: 50px">
+                                        <h2 class="text-left" id="hsCodeNumber" style="margin-left: 10px"></h2>
+                                    </div>
+                                    <label class="txtinput-label">Description</label>
+                                    <div class="hs-code-selecter-border" style="border: 2px solid #909090;border-radius: 4px;height: 90px;margin-bottom: 10px">
+                                        <p id="hsCodeDescription" style="margin-right: 5px;margin-left: 5px"></p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!--*************************************************************-->
+
+                            <script>
+                                cmbBoxWithAdd('hscodeselect', 'cmbSection', false, 'Document', 'sectionId', 'oldDocuments', true, 'btnModelSection', 'Add New Section', '#HScodeModal');
+                                cmbBoxWithAdd('hscodeselect', 'cmbChapter', false, 'Document', 'chapterId', 'oldDocuments', true, 'btnModelChapter', 'Add New Chapter', '#ChapterModal');
+                                cmbBoxWithAdd('hscodeselect', 'cmbHeading', false, 'Document', 'headingId', 'oldDocuments', true, 'btnModelHeading', 'Add New Heading', '#HeadingModal');
+                                cmbBoxWithAdd('hscodeselect', 'cmbSubheading', false, 'Documents', 'subheadingId', 'oldDocuments', true, 'btnModelSubHeading', 'Add New Sub Heading', '#SubHeadingModal');
+                            </script>
+                        </form>
+
+                    </div>
+                    <!--HS-Code-End-->
+
+                    <!--Document-Start-->
+                    <div class="col-md-6">
+                      <form onsubmit="return false">
+                          <div class=" hs-code-selecter-border" style="padding-right: 15px;padding-left: 15px">
+                              <div class="row">
+                                  <div class="col-md-10" id="documentform1" style="padding-right: 3px"></div>
+                                  <div class="col-md-2" style="padding-left: 3px">
+                                      <div class="row">
+                                          <div class="col-md-9" style="padding-right: 0px">
+                                              <button id="btnAddNewDoc" onclick="btnAddNewDocMC()" class="btn btn-secondary" style="margin-top: 34px;height: 35px;border-bottom-left-radius: 0px;border-top-left-radius: 0px">Add</button>
+                                          </div>
+                                          <div class="col-md-3" style="padding-left: 0px;padding-right: 0px">
+                                              <p style="margin-top: 35px;margin-left: -5px;font-size: 20px" id="DocAddIcon"></p>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="col-md-1"></div>
+                              </div>
+                              <div class="row" style="height: 378px">
+                                  <div class="col-md-12" id="documentform"></div>
+
+                                  <script>
+                                      txtField('documentform1','txtDocument','Add New Document','Enter Document Name Here','',"",'DocumentMdl','name','oldDocumentMdl',false);
+                                      txtDocument.style.borderTopRightRadius = '0px';
+                                      txtDocument.style.borderBottomRightRadius = '0px';
+                                      listTransferHorizontal('documentform','lisDocument','Documents','','Documents','oldDocuments','subheadinghaslicenceList','licenceandapprovalId')
+                                      //cmbBoxWithAdd('documentform','cmbDocument','Document','Document','oldDocument','name',true,'btnDocumentModel','Add New Document','#DocumentModel');
+                                      //listTrasferWithCombo('documentform','lisDocument','Document','Document','name','oldDocument',true,'btnDocumentModel','Add New Document','#DocumentModel',,'name')
+                                  </script>
+                                  <div class="text-right" style="margin-left: 85%"><button  data-toggle="tooltip" data-placement="top" title="Add New Employee" type="submit" class="btn-primary-action" id="btnAdd">Save</button></div>
+
+
+
+                              </div>
+                          </div>
+
+                      </form>
+                    </div>
+                    <!--Document-End-->
+                </div>
+
+
+                </div><!---->
+            </div>
+        </div>
+
+        <!-----------------------Modal-For-Section-Start--------------------------------------------------------------------------------------->
+        <script>
+            function loadSectionForm() {
+                txtSection.value = "";
+                txtSection.style.borderColor = initial;
+                responsetextSection.innerHTML = "";
+            }
+
+            function btnAddSectionMC() {
+                if (Section.name != null) {
+                    Section.name = txtSection.value;
+                    var defaultvalue = txtSection.value;
+                    var response = httpRequest("/section", "POST", Section);
+                    if (response == "0") {
+                        responsetextSection.style.color = '#009933';
+                        responsetextSection.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                        responsetextSection.style.marginRight = '180px';
+                        sections = httpRequest("../sections/list", "GET");
+                        fillCombo(cmbSection, "Select Section", sections, "name", defaultvalue);
+                        cmbSectionCH();
+                    } else {
+                        responsetextSection.style.color = '#ff4000';
+                        responsetextSection.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                        responsetextSection.style.marginRight = '200px';
+                        window.alert(response);
+                    }
+                } else {
+                    responsetextSection.style.color = '#ff4000';
+                    responsetextSection.innerHTML = "Invalid Section <i class=\"fal fa-exclamation-circle\"></i>";
+                    responsetextSection.style.marginRight = '210px';
+                }
+            }
+        </script>
+        <div class="modal fade" id="HScodeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add New Section</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form onsubmit="return false">
+                        <div class="modal-body" id="FormSection">
+                            <script>
+                                txtArea('FormSection', 'txtSection', 'Section Name', 'Enter Section Name Here', '', "", 'Section', 'name', 'oldSection', true);
+                                txtSection.style.height = '100px';
+                            </script>
+                        </div>
+                        <div class="modal-footer">
+                            <p id="responsetextSection" style="margin-right: 180px"></p>
+                            <button type="reset" class="btn btn-secondary">Clear</button>
+                            <button onclick="btnAddSectionMC()" type="submit" class="btn btn-model">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-----------------------Modal-For-Section-End--------------------------------------------------------------------------------------->
+
+        <!-----------------------Model-For-Chapter-Start------------------------------------------------------------------------------------->
+        <script>
+            function loadChapterForm() {
+                txtSectionDescription.innerHTML = JSON.parse(cmbSection.value).name;
+                txtChapterName.value = "";
+                txtChapterNumber.value = "";
+                txtChapterName.style.borderColor = initial;
+                responsetextChapter.innerHTML = "";
+            }
+
+            function btnAddChapterlMC() {
+                if (Chapter.description != null && Chapter.number != null) {
+                    Chapter.description = txtChapterName.value;
+                    Chapter.number = txtChapterNumber.value;
+                    Chapter.sectionId = JSON.parse(cmbSection.value);
+                    var defaultvalue = txtChapterName.value;
+                    var response = httpRequest("/chapter", "POST", Chapter);
+                    if (response == "0") {
+                        responsetextChapter.style.color = '#009933';
+                        responsetextChapter.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                        responsetextChapter.style.marginRight = '180px';
+                        chapter = httpRequest("../chapters/list", "GET");
+                        fillCombo(cmbChapter, "Select Chapter", chapter, "description", defaultvalue);
+                        cmbChapterCH();
+                    } else {
+                        responsetextChapter.style.color = '#ff4000';
+                        responsetextChapter.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                        responsetextChapter.style.marginRight = '215px';
+                        window.alert(response);
+                    }
+                } else {
+                    responsetextChapter.style.color = '#ff4000';
+                    responsetextChapter.innerHTML = "Invalid Chapter <i class=\"fal fa-exclamation-circle\"></i>";
+                    responsetextChapter.style.marginRight = '200px';
+                }
+            }
+        </script>
+        <div class="modal fade" id="ChapterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel1">Add New Chapter</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form onsubmit="return false">
+                        <div class="modal-body" id="FormChapter">
+                            <label class="txtinput-label">Section</label>
+                            <div class="hs-code-selecter-border"
+                                 style="border: 1px solid #909090;border-radius: 4px;height: 100%;margin-bottom: 10px">
+                                <p id="txtSectionDescription" style="margin : 5px 10px 5px 10px"></p>
+                            </div>
+                            <script>
+                                txtArea('FormChapter', 'txtChapterName', 'Chapter Name', 'Enter Chapter Name Here', '', "", 'Chapter', 'description', 'oldChapter', true);
+                                txtField('FormChapter', 'txtChapterNumber', 'Chapter Number', 'Enter Chapter Number Here', '', "", 'Chapter', 'number', 'oldChapter', true)
+                                txtChapterName.style.height = '80px';
+                            </script>
+                        </div>
+                        <div class="modal-footer">
+                            <p id="responsetextChapter" style="margin-right: 180px"></p>
+                            <button type="reset" class="btn btn-secondary">Clear</button>
+                            <button onclick="btnAddChapterlMC()" type="submit" class="btn btn-model">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-----------------------Model-For-Chapter-End------------------------------------------------------------------------------------->
+
+        <!-----------------------Model-For-Heading-Start----------------------------------------------------------------------------------->
+        <script>
+            function loadHeadingForm() {
+                txtHeadingDescription.innerHTML = JSON.parse(cmbChapter.value).description;
+                txtHeadingName.value = "";
+                txtHeadingNumber.value = JSON.parse(cmbChapter.value).number;
+                txtHeadingName.style.borderColor = initial;
+                responsetextHeading.innerHTML = "";
+            }
+
+            function btnAddHeadinglMC() {
+                if (Heading.description != null && Heading.number != null) {
+                    Heading.description = txtHeadingName.value;
+                    Heading.number = txtHeadingNumber.value;
+                    Heading.chapterId = JSON.parse(cmbChapter.value);
+                    var defaultvalue = txtHeadingName.value;
+                    var response = httpRequest("/heading", "POST", Heading);
+                    if (response == "0") {
+                        responsetextHeading.style.color = '#009933';
+                        responsetextHeading.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                        responsetextHeading.style.marginRight = '180px';
+                        heading = httpRequest("../headings/list", "GET");
+                        fillCombo(cmbHeading, "Select Heading", heading, "description", defaultvalue);
+                        cmbHeadingCH();
+                    } else {
+                        responsetextHeading.style.color = '#ff4000';
+                        responsetextHeading.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                        responsetextHeading.style.marginRight = '215px';
+                        window.alert(response);
+                    }
+                } else {
+                    responsetextHeading.style.color = '#ff4000';
+                    responsetextHeading.innerHTML = "Invalid Chapter <i class=\"fal fa-exclamation-circle\"></i>";
+                    responsetextHeading.style.marginRight = '200px';
+                }
+            }
+        </script>
+        <div class="modal fade" id="HeadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel2">Add New Heading</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form onsubmit="return false">
+                        <div class="modal-body" id="FormHeading">
+                            <label class="txtinput-label">Chapter</label>
+                            <div class="hs-code-selecter-border"
+                                 style="border: 1px solid #909090;border-radius: 4px;height: 100%;margin-bottom: 10px">
+                                <p id="txtHeadingDescription" style="margin : 5px 10px 5px 10px"></p>
+                            </div>
+                            <script>
+                                txtArea('FormHeading', 'txtHeadingName', 'Heading Name', 'Enter Heading Name Here', '', "", 'Heading', 'description', 'oldHeading', true);
+                                txtField('FormHeading', 'txtHeadingNumber', 'Heading Number', 'Enter Heading Number Here','', "", 'Heading', 'number', 'oldHeading', true)
+                                txtHeadingName.style.height = '80px';
+                            </script>
+                        </div>
+                        <div class="modal-footer">
+                            <p id="responsetextHeading" style="margin-right: 180px"></p>
+                            <button type="reset" class="btn btn-secondary">Clear</button>
+                            <button onclick="btnAddHeadinglMC()" type="submit" class="btn btn-model">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-----------------------Model-For-Heading-End------------------------------------------------------------------------------------->
+
+        <!-----------------------Model-For-SubHeading-Start-------------------------------------------------------------------------------->
+        <script>
+            function loadSubHeadingForm() {
+                txtSubHeadingDescription.innerHTML = JSON.parse(cmbHeading.value).description;
+                txtSubHeadingName.value = "";
+                txtSubHeadingNumber.value = JSON.parse(cmbHeading.value).number+".";
+                txtSubHeadingName.style.borderColor = initial;
+                responsetextSubHeading.innerHTML = "";
+            }
+
+            function btnAddSubHeadinglMC() {
+                if (SubHeading.description != null && SubHeading.number != null) {
+                    SubHeading.description = txtSubHeadingName.value;
+                    SubHeading.number = txtSubHeadingNumber.value;
+                    SubHeading.headingId = JSON.parse(cmbHeading.value);
+                    var defaultvalue = txtSubHeadingName.value;
+                    var response = httpRequest("/subheading", "POST", SubHeading);
+                    if (response == "0") {
+                        responsetextSubHeading.style.color = '#009933';
+                        responsetextSubHeading.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                        responsetextSubHeading.style.marginRight = '180px';
+                        subheading = httpRequest("../subheadings/list", "GET");
+                        fillCombo(cmbSubheading, "Select Sub Heading", subheading, "description", defaultvalue);
+                        cmbSubheadingCH();
+                    } else {
+                        responsetextSubHeading.style.color = '#ff4000';
+                        responsetextSubHeading.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                        responsetextSubHeading.style.marginRight = '215px';
+                        window.alert(response);
+                    }
+                } else {
+                    responsetextSubHeading.style.color = '#ff4000';
+                    responsetextSubHeading.innerHTML = "Invalid Chapter <i class=\"fal fa-exclamation-circle\"></i>";
+                    responsetextSubHeading.style.marginRight = '200px';
+                }
+            }
+        </script>
+        <div class="modal fade" id="SubHeadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel3">Add New Sub-Heading</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form onsubmit="return false">
+                        <div class="modal-body" id="FormSubHeading">
+                            <label class="txtinput-label">Chapter</label>
+                            <div class="hs-code-selecter-border"
+                                 style="border: 1px solid #909090;border-radius: 4px;height: 100%;margin-bottom: 10px">
+                                <p id="txtSubHeadingDescription" style="margin : 5px 10px 5px 10px"></p>
+                            </div>
+                            <script>
+                                txtArea('FormSubHeading', 'txtSubHeadingName', 'Sub Heading Name', 'Enter Sub Heading Name Here', '', "", 'SubHeading', 'description', 'oldSubHeading', true);
+                                txtField('FormSubHeading', 'txtSubHeadingNumber', 'Sub Heading Number', 'Enter Sub Heading Number Here','', "", 'SubHeading', 'number', 'oldSubHeading', true)
+                                txtSubHeadingName.style.height = '80px';
+                            </script>
+                        </div>
+                        <div class="modal-footer">
+                            <p id="responsetextSubHeading" style="margin-right: 180px"></p>
+                            <button type="reset" class="btn btn-secondary">Clear</button>
+                            <button onclick="btnAddSubHeadinglMC()" type="submit" class="btn btn-model">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-----------------------Model-For-SubHeading-End---------------------------------------------------------------------------------->
+
+        <!-----------------------Modal-For-Document-Start--------------------------------------------------------------------------------------->
+        <!--<script>
+            function loadDocumentForm() {
+                txtDocument.value = "";
+                txtDocument.style.borderColor = initial;
+                responsetextDocument.innerHTML = "";
+            }
+
+            function btnAddDocumentMC() {
+                if (DocumentMdl.name != null) {
+                    DocumentMdl.name = txtDocument.value;
+                    var defaultvalue = txtDocument.value;
+                    var response = httpRequest("/document", "POST", DocumentMdl);
+                    if (response == "0") {
+                        responsetextDocument.style.color = '#009933';
+                        responsetextDocument.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                        responsetextDocument.style.marginRight = '180px';
+                        //sections = httpRequest("../sections/list", "GET");
+                        //fillCombo(cmbSection, "Select Section", sections, "name", defaultvalue);
+                        //cmbSectionCH();
+                    } else {
+                        responsetextDocument.style.color = '#ff4000';
+                        responsetextDocument.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                        responsetextDocument.style.marginRight = '210px';
+                        window.alert(response);
+                    }
+                } else {
+                    responsetextDocument.style.color = '#ff4000';
+                    responsetextDocument.innerHTML = "Invalid Section <i class=\"fal fa-exclamation-circle\"></i>";
+                    responsetextDocument.style.marginRight = '210px';
+                }
+            }
+        </script>
+        <div class="modal fade" id="DocumentModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabeldoc">Add New Document</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form onsubmit="return false">
+                        <div class="modal-body" id="FormDocumentMdl">
+                            <script>
+                                txtArea('FormDocumentMdl','txtDocument','Document Name','Enter Document Name Here','',"",'DocumentMdl','name','oldDocumentMdl', true);
+                                txtDocument.style.height = '100px';
+                            </script>
+                        </div>
+                        <div class="modal-footer">
+                            <p id="responsetextDocument" style="margin-right: 180px;"></p>
+                            <button type="reset" class="btn btn-secondary">Clear</button>
+                            <button onclick="btnAddDocumentMC()" type="submit" class="btn btn-model">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>-->
+        <!-----------------------Modal-For-Document-End--------------------------------------------------------------------------------------->
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+</html>

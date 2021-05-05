@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title> Pay Taxes</title>
+    <link href="../icon/customer.png" rel="icon" >
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+
+
+    <script>
+
+
+        window.addEventListener("load",initialize);
+
+        function initialize(){
+
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+            txtPayorderNo.addEventListener("change", cmbPaymentTypeMC);
+            cmbBank.addEventListener("change", cmbBankCH);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            dteDate.addEventListener("change", dteValidate);
+            regexes = httpRequest("../regexes/paytaxes","GET");
+            txtPayorderNo.setAttribute("data-pattern",regexes.payordernumber.regex);
+
+
+            employes = httpRequest("../employees/list", "GET");
+            paymenttype = httpRequest("../paymenttype/list", "GET");
+            privilages = httpRequest("../privilages?module=CLEARINGPROCESS", "GET");
+            banks = httpRequest("../banks/list","GET");
+
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "khaki";
+
+            loadForm();
+        }
+
+        function loadForm() {
+
+            paytaxes = new Object();
+            oldpaytaxes = null;
+
+
+
+            txtShpNo.value = parent.window.shipmentnumber;
+            txtShpNo.disabled = "disabled";
+            txtShpNo.style.borderColor = valid;
+
+            clearingprocess = httpRequest("../getClearingprocessobject?shipmentno="+txtShpNo.value,"GET");
+            paytaxes.clearingprocessId = clearingprocess;
+
+            fillCombo(cmbPaidEmployee, "Select Employee", employes, "callingname", session.getObject("user").employeeId.callingname);
+            paytaxes.employeeId = JSON.parse(cmbPaidEmployee.value);
+
+            customsdecleration = httpRequest("../getCusdec?shipmentno="+txtShpNo.value,"GET");
+            paytaxes.cusdecId = customsdecleration;
+
+            console.log(customsdecleration);
+           // paytaxes.clearingprocessId = customsdecleration;
+            txtCusdecNo.value = customsdecleration.customrefno;
+            txtCusdecNo.disabled = "disabled";
+            txtTotal.disabled = "disabled";
+            txtCusdecNo.style.borderColor = valid;
+
+            txtTotal.value = customsdecleration.totaltaxvalue;
+            txtTotal.style.borderColor = valid;
+            paytaxes.payedvalue = txtTotal.value;
+
+            fillCombo(cmbBank,'Select Bank',banks,'name',"");
+
+            cmbBankBranch.disabled = "disabled";
+            txtPayorderNo.disabled = "disabled";
+
+            txtPayorderNo.value = "";
+            dteDate.value = "";
+            cmbPaidEmployee.disabled = "";
+
+            if (txtTotal.value > 25000){
+                fillCombo(cmbPaymentType,'Select Payment type',paymenttype,'name','Pay Order');
+                cmbPaymentType.disabled = "disabled";
+                paytaxes.paymenttypeId = JSON.parse(cmbPaymentType.value);
+                txtPayorderNo.disabled = "";
+
+            }else {
+                fillCombo(cmbPaymentType,'Select Payment type',paymenttype,'name','');
+            }
+
+            disableButtons(false,true);
+
+            hasTaxPayments = httpRequest("../hasTaxPayments?number="+parent.window.shipmentnumber,"GET");
+            if (hasTaxPayments){
+                getTaxPayments = httpRequest("../getTaxPayments?number="+parent.window.shipmentnumber.toString(),"GET");
+                //console.log(getTaxPayments);
+                fillForm(getTaxPayments);
+            }
+        }
+
+
+        function dteValidate() {
+            var today = new Date();
+            var birthday = new Date(dteDate.value);
+            if((today.getTime()-birthday.getTime())>=(3600*1000)) {
+                console.log(true)
+                dteDate.style.borderColor=valid;
+                return true
+            } else {
+                dteDate.style.borderColor=invalid;
+                return false;
+            }
+        }
+
+
+        function fillForm(ptx) {
+
+            paytaxes = JSON.parse(JSON.stringify(ptx));
+            oldpaytaxes = JSON.parse(JSON.stringify(ptx));
+
+            console.log(paytaxes);
+
+            txtTotal.value = customsdecleration.totaltaxvalue;
+            txtTotal.style.borderColor = updated;
+            paytaxes.payedvalue = txtTotal.value;
+
+
+
+            if (paytaxes.payedvalue > 25000){
+                txtPayorderNo.value = paytaxes.payordernumber;
+            }
+
+            dteDate.value = paytaxes.date;
+            cmbPaidEmployee.disabled = "disabled";
+
+
+            fillCombo(cmbPaymentType,'Select Payment type',paymenttype,'name',paytaxes.paymenttypeId.name);
+            fillCombo(cmbBank,'Select Bank',banks,'name',paytaxes.branchId.bankId.name);
+            cmbBankCH();
+            fillCombo(cmbBankBranch,'Select Branch',branches,'name',paytaxes.branchId.name);
+            fillCombo(cmbPaidEmployee, "Select Employee", employes, "callingname", paytaxes.employeeId.callingname);
+
+
+            disableButtons(true, false);
+            setStyle(valid);
+
+        }
+
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(paytaxes!=null && oldpaytaxes!=null) {
+
+                if (paytaxes.payedvalue != oldpaytaxes.payedvalue)
+                    updates = updates + "\nPayed Value is Changed : <span style='color: #ffc107'>"+oldpaytaxes.payedvalue+" <i class=\"fas fa-arrow-right\"></i> "+paytaxes.payedvalue+"</span><br>";
+
+                if (paytaxes.paymenttypeId.name != oldpaytaxes.paymenttypeId.name)
+                    updates = updates + "\nPayment Type is Changed : <span style='color: #ffc107'>"+oldpaytaxes.paymenttypeId.name+" <i class=\"fas fa-arrow-right\"></i> "+paytaxes.paymenttypeId.name+"</span><br>";
+
+                if (paytaxes.branchId.name != oldpaytaxes.branchId.name)
+                    updates = updates + "\nBank Branch is Changed : <span style='color: #ffc107'>"+oldpaytaxes.branchId.name+" <i class=\"fas fa-arrow-right\"></i> "+paytaxes.branchId.name+"</span><br>";
+
+                if (paytaxes.payordernumber != oldpaytaxes.payordernumber)
+                    updates = updates + "\nPay Order Number is Changed : <span style='color: #ffc107'>"+oldpaytaxes.payordernumber+" <i class=\"fas fa-arrow-right\"></i> "+paytaxes.payordernumber+"</span><br>";
+
+                if (paytaxes.date != oldpaytaxes.date)
+                    updates = updates + "\nTotal Value acceptance is Changed : <span style='color: #ffc107'>"+oldpaytaxes.date+" <i class=\"fas fa-arrow-right\"></i> "+paytaxes.date+"</span><br>";
+
+
+
+            }
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+
+                //console.log(examination);
+                // console.log(oldexamination);
+
+
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnUpdateMC() {
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/paytaxes","PUT",paytaxes);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                alertify.notify('Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                //loadView()
+                loadForm();
+                //loadSearchedTable();
+                parent.window.shipmentnumber ="";
+                //parent.loadUI('viewpanelexamination','Wajira Enterprises | Clearing process');
+            }
+            else window.alert("Failed to Update as \n\n"+response);
+        }
+
+
+
+        function cmbBankCH(){
+            cmbBankBranch.disabled = "";
+            btnModelBankBranch.disabled = "";
+            cmbBank.style.borderColor = valid;
+            branches = httpRequest("../branch/listbybank?bankId="+JSON.parse(cmbBank.value).id,"GET");
+            fillCombo(cmbBankBranch,'Select Branch',branches,'name',"");
+        }
+
+        function cmbPaymentTypeMC() {
+           if (txtTotal.value < 25000){
+               if (JSON.parse(cmbPaymentType.value) == "Pay Order"){
+                   txtPayorderNo.disabled = "";
+               }else {
+                   txtPayorderNo.disabled = "disabled";
+               }
+           }
+        }
+
+
+
+
+
+        function setStyle(style) {
+
+            txtShpNo.style.borderColor = style;
+            txtCusdecNo.style.borderColor = style;
+            txtTotal.style.borderColor = style;
+            cmbPaymentType.style.borderColor = style;
+            cmbBank.style.borderColor = style;
+            cmbBankBranch.style.borderColor = style;
+            txtPayorderNo.style.borderColor = style;
+            dteDate.style.borderColor = style;
+            cmbPaidEmployee.style.borderColor = style;
+
+        }
+
+
+        function disableButtons(add,upd) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+        }
+
+
+        function getErrors() {
+
+            var errors = "";
+
+            if(paytaxes.employeeId == null)
+                errors = errors + "Employee is not selected<br>";
+
+            if(paytaxes.branchId == null)
+                errors = errors + "Bank is not selected<br>";
+
+            if(paytaxes.date == null)
+                errors = errors + "date is not selected <br>";
+
+            if (!dteValidate()){
+                errors = errors + "Payed Date Cannot Be Future Date<br>";
+            }
+
+
+
+            return errors;
+
+        }
+
+        function ModelAddContent() {
+
+             console.log(txtCusdecNo.value);
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+                spnNumber.innerHTML = txtShpNo.value;
+                spnRefNo.innerHTML = txtCusdecNo.value;
+                spnValue.innerHTML = paytaxes.payedvalue;
+                spnType.innerHTML = paytaxes.paymenttypeId.name;
+                spnBank.innerHTML = JSON.parse(cmbBank.value).name+" - "+paytaxes.branchId.name;
+                spnRefNo.innerHTML = paytaxes.customrefno;
+                spnPayorderno.innerHTML = paytaxes.payordernumber;
+                spnDate.innerHTML = paytaxes.date;
+                spnEmployee.innerHTML = paytaxes.employeeId.callingname;
+
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/paytaxes","POST",paytaxes);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                showResult('success','Tax Payment Details Saved Successfully',6);
+                //alertify.notify('Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+                //parent.loadUI('paytaxes','Wajira Enterprises | Clearing process');
+
+                activerowno = 1;
+
+            }
+            else {
+                $('#ModelAddContent').modal('hide');
+                showResult('error');
+                window.alert("Failed to Add as \n\n"+response);
+            }
+        }
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+            var clear;
+            if(oldpaytaxes==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblCompany);
+            }
+
+        }
+
+    </script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px"><!--<i class="fal fa-building"></i>--> Tax Payments</h4>
+            <div class="card" style="border: 1px solid #282c2f;">
+                <!--card-header-->
+                <!--<div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 15px">
+
+                </div>-->
+
+                <!--card-body-start-->
+                <div class="card-body" style="background-color: #f9f9f9;border-radius: 15px;height: 480px">
+                    <div class="row">
+                        <!--Form-Start-->
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-body form-box-overflow" style="height: 440px"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false"  >
+                                        <div class="row">
+                                            <div class="col-md-6" id="taxform1"></div>
+                                            <div class="col-md-6" id="taxform2"></div>
+                                        </div>
+
+                                        <div class="row">
+
+                                            <div class="col-md-6">
+                                                <label class="txtinput-label">Select Bank <i class="fas fa-asterisk" style="color: #ff6666;font-size: 10px"></i></label>
+                                                <div class  id="taxform3" style="border: 1px solid #d1d1d1;padding: 0px 0px 0px 30px"></div>
+                                            </div>
+                                            <div class="col-md-6" id="taxform4"></div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6" id="taxform5"></div>
+                                            <div class="col-md-6" id="taxform6"></div>
+                                        </div>
+
+                                        <script>
+                                            txtField('taxform1','txtShpNo','Shipment Number','Enter Shipment Number Here','',"",'','','');
+                                            txtField('taxform2','txtCusdecNo','Customs Declaration Reference No','','',"",'','','');
+                                            txtField('taxform1','txtTotal','Paid value','','',"",'paytaxes','payedvalue','oldpaytaxes',true);
+                                            cmbBox('taxform2','cmbPaymentType','Payment Type','paytaxes','paymenttypeId','oldpaytaxes',true);
+
+                                            cmbBoxWithAdd('taxform3','cmbBank',false,'','','',true,'btnModelBank',"Add New Bank","#ModelBank");
+                                            cmbBoxWithAdd('taxform3','cmbBankBranch',false,'paytaxes','branchId','oldpaytaxes',true, 'btnModelBankBranch',"Add New Bank Branch","#ModelBankBranch");
+
+                                            txtField('taxform4','txtPayorderNo','Pay order Number','Enter Pay order Number','',"",'paytaxes','payordernumber','oldpaytaxes',false,"Pay order Number is Valid","Pay order Number is Invalid","Pay Order Number Updated");
+                                            dteField('taxform4','dteDate','Paid Date','',"",'paytaxes','date','oldpaytaxes',true);
+                                            cmbBox('taxform5','cmbPaidEmployee','Paid by','paytaxes','employeeId','oldpaytaxes',true);
+                                        </script>
+
+
+
+
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-6"></div>
+                                            <div class="col-6">
+                                                <div class="row">
+                                                    <div class="col-md-3"></div>
+                                                    <div class="col-md-3" style="margin-right: -15px">
+                                                        <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                                    </div>
+                                                    <div class="col-md-3" >
+                                                        <button data-toggle="tooltip" data-placement="top" title="Update" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <button  data-toggle="tooltip" data-placement="top" title="Save" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+
+                        <!--Form-End-->
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeladd">Tax Payments</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Detail</h5>
+                                        <p class="content-model-text-title">Shipment Number                  : <span class="content-model-text-value" id="spnNumber"></span></p>
+                                        <p class="content-model-text-title">Customs Declaration Reference No          : <span class="content-model-text-value" id="spnRefNo"></span></p>
+                                        <p class="content-model-text-title">Paid value   : <span class="content-model-text-value" id="spnValue"></span></p>
+                                        <p class="content-model-text-title">Payment Type   : <span class="content-model-text-value" id="spnType"></span></p>
+                                        <p class="content-model-text-title">Bank        : <span class="content-model-text-value" id="spnBank"></span></p>
+                                        <p class="content-model-text-title">Pay order number        : <span class="content-model-text-value" id="spnPayorderno"></span></p>
+                                        <p class="content-model-text-title">Date        : <span class="content-model-text-value" id="spnDate"></span></p>
+                                        <p class="content-model-text-title">Payed By        : <span class="content-model-text-value" id="spnEmployee"></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Tax Payments</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                        <!--Model Update Start-------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabelupdete">Tax Payments</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End---------------------------------------------->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="err">
+
+
+</div>
+</body>
+</html>

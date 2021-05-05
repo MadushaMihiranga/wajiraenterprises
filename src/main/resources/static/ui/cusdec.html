@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title> CusDec</title>
+    <link href="../icon/customer.png" rel="icon" >
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+
+    <script>
+
+
+        window.addEventListener("load",initialize);
+
+        function initialize(){
+
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+            btnAddTax.addEventListener("click", btnAddTaxMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            dteDate.addEventListener("change", dteValidate);
+
+            employes = httpRequest("../employees/list", "GET");
+            office = httpRequest("../customesoffices/list", "GET");
+            taxes = httpRequest("../tax/list", "GET");
+            privilages = httpRequest("../privilages?module=CLEARINGPROCESS", "GET");
+            regexes = httpRequest("../regexes/cusdec","GET");
+            txtCustomsRefNo.setAttribute("data-pattern",regexes.customrefno.regex);
+            txtAssessmentNo.setAttribute("data-pattern",regexes.assessmentnumber.regex);
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "khaki";
+
+            loadForm();
+        }
+
+        function dteValidate() {
+            var today = new Date();
+            var birthday = new Date(dteDate.value);
+            if((today.getTime()-birthday.getTime())>=(3600*1000)) {
+                console.log(true)
+                dteDate.style.borderColor=valid;
+                return true
+            } else {
+                dteDate.style.borderColor=invalid;
+                return false;
+            }
+
+
+        }
+
+        function loadForm() {
+
+            cusdec = new Object();
+            oldcusdec = null;
+
+            cusdec.cusdechastaxList = new Array();
+            fillCombo(cmbTax,"Select Tax",taxes,"description","");
+            refreshInnerFrom();
+
+            txtShpNo.value = parent.window.shipmentnumber;
+            txtShpNo.disabled = "disabled";
+            txtShpNo.style.borderColor = valid;
+
+            clearingprocess = httpRequest("../getClearingprocessobject?shipmentno="+txtShpNo.value,"GET");
+            cusdec.clearingprocessId = clearingprocess;
+
+            shipment = httpRequest("../getshipment?shipmentno="+txtShpNo.value,"GET");
+            cusdec.shipmentId = shipment;
+
+            console.log(shipment);
+
+            fillCombo(cmbEmployeeSubmit, "Select Employee", employes, "callingname", session.getObject("user").employeeId.callingname);
+            fillCombo(cmbCustomsOffice, "Select Office of entry", office, "name", "");
+            cusdec.submitby = JSON.parse(cmbEmployeeSubmit.value);
+
+            dteDate.value = "";
+            txtCustomsRefNo.value = "";
+            txtAssessmentNo.value = "";
+           // txtManifest.value = "";
+            txtValue.disabled = "disabled";
+
+            cmbEmployeeSubmit.disabled = "";
+            cmbCustomsOffice.disabled = "";
+
+
+            disableButtons(false,true);
+
+            hscCusDec = httpRequest("../hasCusDec?shipmentno="+parent.window.shipmentnumber,"GET");
+            if (hscCusDec){
+                getCusDec = httpRequest("../getCusdec?shipmentno="+parent.window.shipmentnumber.toString(),"GET");
+                //console.log(getCusDec);
+                fillForm(getCusDec);
+            }
+
+        }
+
+        function fillForm(cusdc) {
+
+            cusdec = JSON.parse(JSON.stringify(cusdc));
+            oldcusdec = JSON.parse(JSON.stringify(cusdc));
+
+            console.log(cusdc);
+
+            dteDate.value = cusdec.submitetdate;
+            txtCustomsRefNo.value = cusdec.customrefno;
+            txtAssessmentNo.value = cusdec.assessmentnumber;
+           // txtManifest.value = cusdec.manifestnumber;
+            txtValue.value = cusdec.totaltaxvalue;
+
+            cmbEmployeeSubmit.disabled = "disabled";
+            cmbCustomsOffice.disabled = "disabled";
+
+            fillCombo(cmbEmployeeSubmit, "Select Employee", employes, "callingname",cusdec.submitby.callingname );
+            fillCombo(cmbCustomsOffice, "Select Office of entry", office, "name", cusdec.customesofficeId.name);
+
+            refreshInnerFrom();
+
+            disableButtons(true, false);
+            setStyle(valid);
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(cusdec!=null && oldcusdec!=null) {
+
+                if (cusdec.submitetdate != oldcusdec.submitetdate)
+                    updates = updates + "\nDate is Changed : <span style='color: #ffc107'>"+oldcusdec.submitetdate+" <i class=\"fas fa-arrow-right\"></i> "+cusdec.submitetdate+"</span><br>";
+
+                if (cusdec.customrefno != oldcusdec.customrefno)
+                    updates = updates + "\nReference Number is Changed : <span style='color: #ffc107'>"+oldcusdec.customrefno+" <i class=\"fas fa-arrow-right\"></i> "+cusdec.customrefno+"</span><br>";
+
+                if (cusdec.assessmentnumber != oldcusdec.assessmentnumber)
+                    updates = updates + "\nAssessment number is Changed : <span style='color: #ffc107'>"+oldcusdec.assessmentnumber+" <i class=\"fas fa-arrow-right\"></i> "+cusdec.assessmentnumber+"</span><br>";
+
+                /*if (cusdec.manifestnumber != oldcusdec.manifestnumber)
+                    updates = updates + "\nManifest is Changed : <span style='color: #ffc107'>"+oldcusdec.manifestnumber+" <i class=\"fas fa-arrow-right\"></i> "+cusdec.manifestnumber+"</span><br>";
+*/
+                if (cusdec.totaltaxvalue != oldcusdec.totaltaxvalue)
+                    updates = updates + "\nTotal Value is Changed : <span style='color: #ffc107'>"+oldcusdec.totaltaxvalue+" <i class=\"fas fa-arrow-right\"></i> "+cusdec.totaltaxvalue+"</span><br>";
+
+                if (cusdec.submitby.callingname != oldcusdec.submitby.callingname)
+                    updates = updates + "\nEmployee who Submit CusDec is Changed : <span style='color: #ffc107'>"+oldcusdec.submitby.callingname+" <i class=\"fas fa-arrow-right\"></i> "+cusdec.submitby.callingname+"</span><br>";
+
+                if (cusdec.customesofficeId.name != oldcusdec.customesofficeId.name)
+                    updates = updates + "\nCustoms office is Changed : <span style='color: #ffc107'>"+oldcusdec.customesofficeId.name+" <i class=\"fas fa-arrow-right\"></i> "+cusdec.customesofficeId.name+"</span><br>";
+
+
+                if (isEqual(cusdec.cusdechastaxList,oldcusdec.cusdechastaxList,"value")){
+                    newtaxlist="";
+                    oldtaxlist="";
+                    for (newtax = 0;newtax<cusdec.cusdechastaxList.length;newtax++) {
+                        newtaxlist += cusdec.cusdechastaxList[newtax].taxId.description+" [ "+cusdec.cusdechastaxList[newtax].value+".00 ] <br>"
+                    }
+                    for (oldtax = 0;oldtax<oldcusdec.cusdechastaxList.length;oldtax++) {
+                        oldtaxlist += oldcusdec.cusdechastaxList[oldtax].taxId.description+" [ "+oldcusdec.cusdechastaxList[oldtax].value+".00 ] <br>";
+                    }
+                    updates = updates + "\nItems is Changed : <span style='color: #ffc107'>"+oldtaxlist+" <i class=\"fas fa-arrow-right\"></i> "+newtaxlist+"</span><br>";
+                }
+
+
+            }
+            return updates;
+        }
+
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+
+                //console.log(examination);
+                // console.log(oldexamination);
+
+
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnUpdateMC() {
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/cusdec","PUT",cusdec);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                alertify.notify('Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                //loadView()
+                loadForm();
+                //loadSearchedTable();
+                parent.window.shipmentnumber ="";
+                //parent.loadUI('viewpanelexamination','Wajira Enterprises | Clearing process');
+            }
+            else window.alert("Failed to Update as \n\n"+response);
+        }
+
+
+
+
+        function removeTax(cusdechastaxList,index){
+            cusdec.cusdechastaxList.splice(index-1, 1);
+            refreshInnerFrom();
+        }
+
+
+        function btnAddTaxMC() {
+
+            taxlists = new Array();
+            taxlists.push(JSON.parse(cmbTax.value));
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            cusdectax = new Object();
+            cusdectax.taxId = JSON.parse(cmbTax.value);
+            cusdectax.value = parseFloat(txtTaxvalue.value);
+            cusdec.cusdechastaxList.push(cusdectax);
+            refreshInnerFrom();
+
+        }
+
+        function refreshInnerFrom() {
+
+            var total = 0;
+             if(cmbTax.value !="Select Tax" ){
+                 taxes = httpRequest("../tax/list", "GET");
+                taxes = listCompera(taxes,taxlists,"id","description","code");
+                console.log(taxes)
+                 fillCombo(cmbTax,"Select Tax",taxes,"description","");
+            }
+
+
+            fillInnerTable("tblTax",  cusdec.cusdechastaxList ,removeTax);
+            txtTaxvalue.value = "";
+
+
+
+            for (index in cusdec.cusdechastaxList ) {
+                total = total +  cusdec.cusdechastaxList[index].value;
+            }
+
+            txtValue.value=total.toFixed(2);
+            cusdec.totaltaxvalue = txtValue.value;
+
+        }
+
+
+
+        function setStyle(style) {
+
+            txtShpNo.style.borderColor = style;
+            dteDate.style.borderColor = style;
+            cmbEmployeeSubmit.style.borderColor = style;
+            cmbCustomsOffice.style.borderColor = style;
+            txtCustomsRefNo.style.borderColor = style;
+            txtAssessmentNo.style.borderColor = style;
+           // txtManifest.style.borderColor = style;
+
+        }
+
+
+        function disableButtons(add,upd) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+        }
+
+        function getErrors() {
+
+            var errors = "";
+
+            if(cusdec.submitby == null)
+                errors = errors + "Employee who submit customs deceleration is not selected<br>";
+
+            if(cusdec.submitetdate == null)
+                errors = errors + "Submit date is not selected<br>";
+
+            if(cusdec.customesofficeId == null)
+                errors = errors + "Office of entry is not selected <br>";
+
+            if(cusdec.customrefno == null)
+                errors = errors + "Customs refrence number is not selected <br>";
+
+            if(cusdec.assessmentnumber == null)
+                errors = errors + "Assessment number is not selected <br>";
+
+            if (!dteValidate()){
+                errors = errors + "Submitted Date Cannot Be Future Date<br>";
+            }
+
+
+            return errors;
+
+        }
+
+        function ModelAddContent() {
+
+           // console.log(cusdec);
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+                spnNumber.innerHTML = txtShpNo.value;
+                spnSubmitby.innerHTML = cusdec.submitby.callingname;
+                spnDate.innerHTML = cusdec.submitetdate;
+                spnOffice.innerHTML = cusdec.customesofficeId.name;
+                spnRefNo.innerHTML = cusdec.customrefno;
+                spnAssessmentNo.innerHTML = cusdec.assessmentnumber;
+                //spnManifest.innerHTML = cusdec.manifestnumber;
+
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/cusdec","POST",cusdec);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                showResult('success','Customs Declaration Saved Successfully',6);
+                //alertify.notify('Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+
+                activerowno = 1;
+
+            }
+            else {
+                $('#ModelAddContent').modal('hide');
+                showResult('error');
+                window.alert("Failed to Add as \n\n"+response);
+            }
+        }
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+            var clear;
+            if(oldcompany==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblCompany);
+            }
+
+        }
+
+    </script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px"><!--<i class="fal fa-building"></i>--> Customs Declaration</h4>
+            <div class="card" style="border: 1px solid #282c2f;">
+                <!--card-header-->
+                <!--<div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 15px">
+
+                </div>-->
+
+                <!--card-body-start-->
+                <div class="card-body" style="background-color: #f9f9f9;border-radius: 15px;height: 480px">
+                    <div class="row">
+                        <!--Form-Start-->
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-body form-box-overflow" style="height: 440px"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false"  >
+                                        <div class="row">
+                                            <div class="col-md-6" id="cusdecformr1"></div>
+                                            <div class="col-md-6" id="cusdecformr2"></div>
+                                            <script>
+                                                txtField('cusdecformr1','txtShpNo','Shipment Number','Enter Shipment Number Here','',"",'','','');
+                                                dteField('cusdecformr2','dteDate','Submit Date','',"",'cusdec','submitetdate','oldcusdec');
+                                                cmbBox('cusdecformr1','cmbEmployeeSubmit','Submitted by','cusdec','submitby','oldcusdec',true);
+                                                cmbBox('cusdecformr2','cmbCustomsOffice','Customs office','cusdec','customesofficeId','oldcusdec',true);
+                                                txtField('cusdecformr1','txtCustomsRefNo','Customs Reference Number','Enter Customs Reference Number','',"",'cusdec','customrefno','oldcusdec',true,"Customs Reference Number is Valid","Invalid Customs Reference Number","Customs Reference Number is Updated");
+                                                txtField('cusdecformr2','txtAssessmentNo','Assessment Number','Enter Assessment number','',"",'cusdec','assessmentnumber','oldcusdec',true,"Assessment Number is valid","Assessment Number is invalid","Assessment number is updated");
+                                                //txtField('cusdecformr1','txtManifest','Manifest number','Enter Manifest Number','',"",'cusdec','manifestnumber','oldcusdec');
+                                            </script>
+                                        </div>
+                                        <div class="row" style="border: 1px solid #ced4da;border-radius: 5px;background-color: rgba(237,243,249,0.42);margin-top: 15px" >
+                                            <div class="col-md-4" id="innerformtax" >
+                                                <script>
+                                                    cmbBox('innerformtax','cmbTax','Select Tax Name','','','');
+                                                    //txtField('innerformtax','txtValue','Tax Value','Enter Value Here','',"",'','','')
+                                                    txtField('innerformtax','txtTaxvalue','Value','Enter Value here','',"",'','',"",true)
+                                                </script>
+                                                <div class="text-right" style="margin-bottom: 10px;">
+                                                    <button data-toggle="tooltip" data-placement="top" title="Add Tax" class="btn btn-secondary btn-sm " type="button" id="btnAddTax"  style="margin-top: 15px">Add <i class="fal fa-plus-circle"></i></button>
+                                                </div>
+                                            </div>
+                                            <!--   <div class="col-md-6" id="innertabltax"></div>-->
+
+
+                                            <div class="col-md-8 table-responsive" id="innertablefortax" style="padding-top: 10px">
+                                                <script>
+                                                    var metadatainnertabletax = [
+                                                        {name:'Tax Code',search:false,datatype:'text',property:'taxId.code'},
+                                                        {name:'Amount',search:false,datatype:'text',property:'value'}
+                                                    ];
+                                                    tableForInnerForm("innertablefortax","tblTax",metadatainnertabletax,true);
+                                                </script>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8"></div>
+                                            <div class="col-md-4" id="txttotal">
+                                                <script>
+                                                    txtField('txttotal','txtValue','Total Amount','','',"",'cusdec','totaltaxvalue','oldcusdec')
+                                                </script>
+                                            </div>
+                                        </div>
+
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-6"></div>
+                                            <div class="col-6">
+                                                <div class="row">
+                                                    <div class="col-md-3"></div>
+                                                    <div class="col-md-3" style="margin-right: -15px">
+                                                        <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                                    </div>
+                                                    <div class="col-md-3" >
+                                                        <button data-toggle="tooltip" data-placement="top" title="Update" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <button  data-toggle="tooltip" data-placement="top" title="Save" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+
+                        <!--Form-End-->
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeladd">Customs Declaration</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Detail</h5>
+                                        <p class="content-model-text-title">Shipment Number                  : <span class="content-model-text-value" id="spnNumber"></span></p>
+                                        <p class="content-model-text-title">Submit by          : <span class="content-model-text-value" id="spnSubmitby"></span></p>
+                                        <p class="content-model-text-title">Submit Date    : <span class="content-model-text-value" id="spnDate"></span></p>
+                                        <p class="content-model-text-title">Customs Office    : <span class="content-model-text-value" id="spnOffice"></span></p>
+                                        <p class="content-model-text-title">CusDec Reference Number        : <span class="content-model-text-value" id="spnRefNo"></span></p>
+                                        <p class="content-model-text-title">Assessment number        : <span class="content-model-text-value" id="spnAssessmentNo"></span></p>
+                                       <!-- <p class="content-model-text-title">Manifest         : <span class="content-model-text-value" id="spnManifest"></span></p>-->
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Customs Declaration</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                        <!--Model Update Start-------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabelupdete">Customs Declaration</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End---------------------------------------------->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="err">
+
+
+</div>
+</body>
+</html>

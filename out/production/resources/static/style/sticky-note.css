@@ -1,0 +1,30 @@
+.sticky-note-title{
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    color: black;
+    font-size: 13px
+}
+
+.sticky-note-content{
+    margin: 0;
+    padding: 0;
+    color: black;
+    font-size: 13px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.sticky-note-delete-button{
+    padding: 0;
+}
+
+.sticky-note-delete-button:hover{
+    color: tomato;
+}
+
+.sticky-note-date{
+    font-size: 10px;
+    padding: 0;
+    margin: 0;
+}

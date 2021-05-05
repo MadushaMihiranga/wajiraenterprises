@@ -1,0 +1,523 @@
+/**
+ * Created by PhpStorm.
+ * User: madusha mihiranga
+ * Date: 27/12/2018
+ * Time: 12:16 PM
+ */
+
+
+
+.footer-gradient{
+    height:12vh;
+    margin:0;
+
+    background-image:
+
+            radial-gradient( 115% 90% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.8%),
+            radial-gradient( 150% 85.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.8%),
+            radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.8%),
+            linear-gradient(135deg, #fff 0%, #fff 100%);
+}
+
+
+/***popup Style****/
+
+
+.model-success-gradient{
+    height:2vh;
+    margin:0;
+    border: 1px solid rgb(0, 183, 92);
+
+    background-image:
+            radial-gradient( 150% 108% ellipse at  top left,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            radial-gradient( 150% 108% ellipse at  top left,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top left,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top left,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            radial-gradient( 100% 100% ellipse at  top center,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            radial-gradient( 100% 100% ellipse at  top center,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            radial-gradient( 200% 100% ellipse at  top center,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+            linear-gradient(135deg, #fff 0%, #fff 100%);
+}
+
+.model-error-gradient{
+    height:2vh;
+    margin:0;
+    border: 1px solid rgb(224, 32, 32);
+
+    background-image:
+            radial-gradient( 150% 108% ellipse at  top left,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            radial-gradient( 150% 108% ellipse at  top left,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top left,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top left,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            radial-gradient( 100% 100% ellipse at  top center,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            radial-gradient( 100% 100% ellipse at  top center,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            radial-gradient( 200% 100% ellipse at  top center,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+            linear-gradient(135deg, #fff 0%, #fff 100%);
+}
+
+.modal-content-msg{
+    height: 300px;
+    border: 1px solid transparent
+}
+
+.model-icon{
+    font-size: 55px;
+    margin-top: 30px
+}
+
+.success{
+    color: rgb(0,183,92);
+}
+
+.error{
+    color: rgb(224, 32, 32);
+}
+
+.msg-title{
+    font-size: 24px;
+    margin-top: 15px;
+    margin-bottom: 0px
+}
+
+.under-line{
+    width: 60px;
+    margin-top: 5px;
+    border-width: 3px;
+    color: rgba(0,0,0,0.46)
+}
+
+.msg-text{
+    color: rgba(0,0,0,0.46)
+}
+
+.btn-success-mdl{
+    width: 180px;
+    background-color: rgb(0,183,92)
+}
+
+.btn-error-mdl{
+    width: 180px;
+    color: rgb(224, 32, 32);
+}
+
+/***popup Style****/
+
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 0px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    /*box-shadow: inset 0 0 5px grey;*/
+
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: tomato;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+
+    background: #a22e20;
+}
+
+
+.panel-button{
+    color: #818181;
+}
+.panel-button:hover{
+
+}
+
+.panel-button:focus{
+    color: #ffffff;
+}
+.txtinput-label{
+    /*text-decoration: none;*/
+    font-weight: bold;
+    font-size: 15px;
+    color: #404040;
+    margin-bottom: -2px;
+}
+
+.txtinput {
+    /*font-size: 17px;*/
+    line-height: 1.5;
+    color: #666666;
+    display: block;
+    width: 100%;
+    background: #ffffff;
+    height: 35px;
+}
+
+.txtinput:focus{
+    border:1px solid tomato;
+    /*box-shadow: none;*/
+    /*box-shadow: 0 0 0 0.2rem tomato;*/
+    /*#ffbeb3*/
+}
+
+.txtinput:disabled{
+    color: #626262;
+    cursor: not-allowed;
+}
+
+.txtinput-with-button-button{
+   width: 37px;
+    height: 37px;
+    margin-left: -12px;
+    /*margin-right: 60px;*/
+
+}
+
+.txtinput-with-button-field{
+    line-height: 1.5;
+    color: #666666;
+    display: block;
+    width: 100%;
+    background: #ffffff;
+    height: 35px;
+    /*margin-left: 2px;*/
+   /* margin-right: 15px;*/
+}
+
+.wrapinput {
+    position: relative;
+    z-index: 1;
+    margin: 10px 0px 10px 0px;/**/
+}
+
+.form-box-overflow{
+    border: 1px solid #a6a6a6;
+    border-radius: 1px;
+    height:485px;
+    overflow-y:scroll;
+}
+
+.form-box-no-overflow{
+    border: 1px solid #a6a6a6;
+    border-radius: 1px;
+}
+
+.table-box-overflow{
+    height:425px;
+    overflow-y:scroll;
+}
+
+
+
+.btn-search-clear,.btn-search{
+    /*border: 2px solid #ff9380;*/
+    color: black;
+    background-color: white;
+    font-size: 20px;
+}
+
+.btn-search:hover,.btn-search-clear:hover{
+    border-color: #cccccc;
+    background-color: #e6e6e6;
+    color: tomato;
+}
+
+.btn-search:focus,.btn-search-clear:focus{
+    color: white;
+    background-color: tomato;
+}
+
+.btn-model{
+    color: white;
+    border: 1px solid tomato;
+    background-color: tomato;
+
+}
+
+.btn-model:hover{
+    color: white;
+    border: 1px solid #df6145;
+    background-color: #df6145;
+}
+
+.btn-model:focus{
+    color: black;
+    border: 1px solid #df6145;
+    background-color: #df6145;
+}
+
+.btn-table-edit{}
+
+.btn-table-edit:hover{
+    /*border: 1px solid tomato;*/
+    color: tomato;
+    background-color: #3d3d3d;
+}
+
+btn-table-edit:focus{
+    box-shadow: none;
+}
+
+.btn-primary-action{
+   /* font-family: Arial, Helvetica, sans-serif;*/
+    /*font-weight: bold;*/
+    color:  white;
+    background-color: tomato;
+    border: 1px solid tomato;
+    border-radius: 3px;
+    /*width: 80px;*/
+    /*height: 30px;*/
+    margin-left: 3px;
+    alignment: right;
+}
+
+.btn-edit{
+    /*font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;*/
+    color:  tomato;
+    background-color: white;
+    border: 1px solid tomato;
+    border-radius: 3px;
+    /*width: 80px;*/
+    /*height: 30px;*/
+    margin-right: 3px;
+    alignment: center;
+}
+
+.btn-primary-action:hover{
+    /*color: white;*/
+    /*border: 1px solid #161616;*/
+    background-color: #df6145;
+    cursor: pointer;
+}
+
+.btn-edit:hover{
+
+    border: 1px solid #df6145;
+    color: #df6145;
+    background-color: white;
+    cursor: pointer;
+}
+
+.btn-primary-action:disabled{
+    color: white;
+    border: 1px solid #a6a6a6;
+    background-color: #a6a6a6;
+    cursor: not-allowed;
+}
+
+.btn-edit:disabled{
+    color: #a6a6a6;
+    border: 1px solid #a6a6a6;
+    background-color: white;
+    cursor: not-allowed;
+}
+
+.btn-primary-action:focus{
+    color: #1b1e21;
+}
+
+.btn-edit:focus{
+    border: 2px solid #df6145; !important;
+    color: #df6145;
+    background-color: white; !important;
+}
+
+.btn-clear{
+    /*font-family: Arial, Helvetica, sans-serif;*/
+    border: 1px solid #6c767d;
+    /*font-weight: bold;*/
+    color: #6c757d;
+    display: block;
+    /*border: none;*/
+    background: none;
+    cursor: pointer;
+    outline: none;
+    alignment: center;
+}
+
+
+
+.btn-clear:hover{
+    color: #ffc107;
+    border: 1px solid #ffc107;
+    background-color: transparent;
+    /*border-radius: 3px;*/
+}
+
+.btn-delete{
+    /*font-family: Arial, Helvetica, sans-serif;*/
+    border: 1px solid #6c767d;
+    /*font-weight: bold;*/
+    color: #6c757d;
+    display: block;
+    /*border: none;*/
+    background: none;
+    cursor: pointer;
+    outline: none;
+    alignment: center;
+}
+
+.btn-delete:hover{
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    /*border-radius: 3px;*/
+    align-content: center;
+    background-color: transparent;
+}
+
+.btn-delete:disabled{
+    border: 1px solid #a6a6a6;
+    color: #a6a6a6;
+    cursor: not-allowed;
+}
+
+.btn-listTransfer{
+    border: 1px solid #cccccc;
+    color: #a6a6a6;
+}
+
+.btn-listTransfer:hover{
+    color: tomato;
+    border: 1px solid #161616;
+}
+
+/*.btn-delete:focus,.btn-clear:focus{
+    color: #666666;
+    border: 1px solid #404040;
+    border-radius: 3px;
+}*/
+
+.img-container-box{
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    width: 150px;
+    height: 150px;
+    margin-top: 30px;
+    margin-bottom: 2px;
+    /*margin-right: 30px;*/
+}
+
+.update{
+    border: 2px solid #ffc107;
+    box-shadow: none;
+}
+
+.valid{
+    border: 2px solid #28a745;
+    box-shadow: none;
+}
+
+.invalid{
+    border: 2px solid #dc3545;
+    box-shadow: none;
+}
+
+.btn-other{
+    border: 1px solid #161616;
+    color: white;
+    background-color: #3f3f3f;
+}
+
+.btn-other:hover{
+    color: white;
+    background-color: #3f3f3f;
+    border: 1px solid tomato;
+}
+
+.btn-other:focus{
+    background-color: #3f3f3f;
+    border: 1px solid tomato;
+    color: tomato;
+}
+
+.toast{
+    border: 1px solid #161616;
+    border-radius: 4px;
+    width: 360px;
+    height: 103px;
+}
+
+.toast-header{
+    background-color: #161616;
+    border: 1px solid #161616;
+    border-radius: 1px;
+    color: white;
+    font-size: 18px;
+    height: 45px;
+    padding-top: 8px;
+}
+
+.toast-body{
+    background-color: whitesmoke;
+    border-radius: 2px;
+    font-size: 20px;
+   /* height: 58px;*/
+   padding: 5px 5px 5px 20px;
+}
+
+.toast-message-area{
+    color: darkgrey;
+    font-size: 18px;
+}
+
+
+
+/* Validation Colors for Input Controls */
+
+.invalid .form-control{
+    background-color: pink;
+}
+.valid .form-control{
+    background-color: #6bbf6b;
+}
+.updated .form-control{
+    background-color: khaki;
+}
+
+
+.file-box{
+    height: 87px;
+    margin-bottom: 7px;
+    border:1px solid #ccc;
+    padding: 5px;
+    position: relative;
+}
+
+.file-box>img{
+    position: absolute;
+    height: 75px;
+    top: 5px;
+    left: 5px;
+}
+
+.file-box>ul{
+    position: absolute;
+    top: 5px;
+    left: 87px;
+    right: 5px;
+    padding: 0px;
+    list-style: none;
+    color: #555;
+    text-align: right;
+}
+
+.content-model-text-title{
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.content-model-text-value{
+    margin-bottom: 0px;
+    margin-top: 0px;
+    font-weight: bold;
+}

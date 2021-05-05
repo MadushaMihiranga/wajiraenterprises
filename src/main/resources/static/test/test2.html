@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <link rel="stylesheet" href="../style/shipment-form.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+
+        .model-success-gradient{
+            height:2vh;
+            margin:0;
+            border: 1px solid rgb(0, 183, 92);
+
+            background-image:
+                    radial-gradient( 150% 108% ellipse at  top left,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    radial-gradient( 150% 108% ellipse at  top left,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top left,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top left,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    radial-gradient( 100% 100% ellipse at  top center,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    radial-gradient( 100% 100% ellipse at  top center,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    radial-gradient( 200% 100% ellipse at  top center,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(0, 183, 92, 0.05) 90.8%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+
+        .model-error-gradient{
+            height:2vh;
+            margin:0;
+            border: 1px solid rgb(224, 32, 32);
+
+            background-image:
+                    radial-gradient( 150% 108% ellipse at  top left,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    radial-gradient( 150% 108% ellipse at  top left,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top left,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top left,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    radial-gradient( 100% 100% ellipse at  top center,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    radial-gradient( 100% 100% ellipse at  top center,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    radial-gradient( 200% 100% ellipse at  top center,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    radial-gradient( 200% 108% ellipse at  top right,transparent 90%, rgba(224, 32, 32, 0.05) 90.8%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+
+        .modal-content-msg{
+            height: 300px;
+            border: 1px solid transparent
+        }
+
+        .model-icon{
+            font-size: 55px;
+            margin-top: 30px
+        }
+
+        .success{
+            color: rgb(0,183,92);
+        }
+
+        .error{
+            color: rgb(224, 32, 32);
+        }
+
+        .msg-title{
+            font-size: 24px;
+            margin-top: 15px;
+            margin-bottom: 0px
+        }
+
+        .under-line{
+            width: 60px;
+            margin-top: 5px;
+            border-width: 3px;
+            color: rgba(0,0,0,0.46)
+        }
+
+        .msg-text{
+            color: rgba(0,0,0,0.46)
+        }
+
+        .btn-success-mdl{
+            width: 180px;
+            background-color: rgb(0,183,92)
+        }
+
+        .btn-error-mdl{
+            width: 180px;
+            color: rgb(224, 32, 32);
+        }
+
+    </style>
+
+    <script>
+      //  setTimeout(function() {$('#exampleModal').modal('hide');}, 4000);
+        function showModel(type,message,timeout) {
+            var model = createElement('div','msgModel');
+            model.classList.add('modal');
+            model.classList.add('fade');
+            model.setAttribute('tabindex', '-1');
+            model.setAttribute('role', 'dialog');
+            model.setAttribute('aria-labelledby', 'exampleModalLabel');
+            model.setAttribute('aria-hidden', 'true');
+
+            var modeldialog = document.createElement('div');
+            modeldialog.classList.add('modal-dialog');
+            modeldialog.classList.add('modal-dialog-centered');
+            modeldialog.style.width = "300px";
+            model.setAttribute('role', 'document');
+
+            var modelcontent = document.createElement('div');
+            modelcontent.classList.add('modal-content');
+            modelcontent.classList.add('modal-content-msg');
+
+            var modelbody = document.createElement('div');
+            modelbody.classList.add('modal-body');
+            modelbody.classList.add('text-center');
+
+            var icon = document.createElement('i');
+            icon.classList.add('fal');
+            icon.classList.add('fa-check-circle');
+            icon.classList.add('model-icon');
+
+            var title = document.createElement('p');
+            title.classList.add('msg-title');
+
+            var underline  = document.createElement('hr');
+            underline.classList.add('under-line');
+
+            var msgtext = document.createElement('p');
+            msgtext.classList.add('msg-text');
+
+            var button = document.createElement('button');
+            button.setAttribute('type', 'button');
+            button.setAttribute('data-dismiss', 'modal');
+            button.setAttribute('aria-label', 'Close');
+            button.classList.add('btn');
+            button.style.color = "#fff";
+
+            if (type==='success'){
+                modelbody.classList.add('model-success-gradient');
+                icon.classList.add('success');
+                title.innerHTML = "Success!";
+                title.classList.add('success');
+                msgtext.innerHTML = message;
+                button.classList.add('btn-success');
+                button.classList.add('btn-success-mdl');
+                setTimeout(function() {$('#msgModel').modal('hide');}, timeout);
+            }else if (type === 'error'){
+                modelbody.classList.add('model-error-gradient');
+                icon.classList.add('error');
+                title.innerHTML = "Oooops!";
+                title.classList.add('error');
+                msgtext.innerHTML = "Something went wrong try again.";
+                button.classList.add('btn-danger');
+                button.classList.add('btn-error-mdl');
+                button.innerHTML = "Try Again";
+            }else {
+                console.log('showModel.type Invalid ',type);
+            }
+
+            modelbody.appendChild(icon);
+            modelbody.appendChild(title);
+            modelbody.appendChild(underline);
+            modelbody.appendChild(msgtext);
+            modelbody.appendChild(button);
+            modelcontent.appendChild(modelbody);
+            modeldialog.appendChild(modelcontent);
+            model.appendChild(modeldialog);
+            document.documentElement.appendChild(model);
+
+            $('#msgModel').modal('show');
+
+            $( "#msgModel" ).on('hidden.bs.modal', function(){
+                document.getElementById("msgModel").remove();
+            });
+
+
+        }
+
+        function test() {
+
+
+
+        }
+
+
+    </script>
+
+</head>
+<body>
+
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Launch demo modal
+</button>
+
+<button type="button" class="btn btn-outline-danger" onclick="showModel('error','erre',0)">
+    Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"  >
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width: 300px;">
+        <div class="modal-content modal-content-msg" >
+
+            <div class="modal-body model-success-gradient text-center">
+
+                <i class="fal fa-check-circle model-icon success" ></i>
+                <p class="msg-title success">Succeess!</p>
+                <hr  class="under-line">
+                <p  class="msg-text">Something went wrong,</p></p>
+                <button type="button" class="btn btn-success btn-success-mdl" data-dismiss="modal" aria-label="Close">Continue</button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

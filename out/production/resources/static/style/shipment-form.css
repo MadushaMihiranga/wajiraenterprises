@@ -1,0 +1,157 @@
+
+.btn-form-type{
+    color: white;
+}
+
+.btn-form-type:hover{
+    color: tomato;
+}
+
+.btn-form-type:focus{
+    color: tomato;
+}
+
+.btn-mod-border{
+    border: 1px solid #cecece;
+    border-radius: 4px;
+    width: 102%;
+    height: 90px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-left: -6px;
+    margin-right: -6px;
+}
+
+.btn-mod{
+    border: 2px solid black;
+    background-color: white;
+    height: 60px;
+
+}
+.btn-mod:hover{
+    background-color: tomato;
+    color: white;
+}
+
+.btn-mod:focus{
+    background-color: tomato;
+    color: black;
+}
+
+.btn-next{
+    background-color: tomato;
+    border-color: tomato;
+    color: white;
+}
+
+.btn-next:hover{
+    background-color: #df6145;
+    border-color: #df6145;
+}
+
+.btn-next:focus{
+    background-color: #df6145;
+    border-color: #df6145;
+    color: black;
+}
+
+.step-detail-box-start{
+    border: 2px solid #909090;
+   /* background-color: white;*/
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    border-right: 1px solid #909090;
+    width: 220px;
+    height: 50px;
+    padding: 0px 5px 0px 5px;
+    margin-left: 8.5%;
+}
+
+.step-detail-box{
+    border: 2px solid #909090;
+    border-right: 1px solid #909090;
+    border-left: 1px solid #909090;
+    /*background-color: white;*/
+    width: 220px;
+    height: 50px;
+    padding: 0px 5px 0px 5px;
+}
+
+.step-detail-box-end{
+    border: 2px solid #909090;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+    border-left: 1px solid #909090;
+   /* background-color: white;*/
+    width: 220px;
+    height: 50px;
+    padding: 0px 5px 0px 5px;
+}
+
+.step-detail-box-icon-complete{
+    color: green;
+    font-size: 25px;
+    margin-top: 3px;
+}
+
+
+.step-detail-box-icon-active{
+    color: #595959;
+    font-size: 25px;
+    margin-top: 3px;
+}
+
+.step-detail-box-number{
+    color: #595959;
+    font-size: 25px;
+    margin-top: 3px;
+}
+
+.step-detail-box-text{
+    margin-bottom: 1px;
+    font-size: 15px
+}
+
+.step-detail-box-text-bold{
+    margin-bottom: -5px;
+    font-weight: bold;
+}
+
+.hs-code-selecter-border{
+    width: 101%;
+    border: 1px solid #d1d1d1;
+    border-radius: 4px;
+    margin-left: -5px;
+}
+
+.sub-form{
+    width: 100%;
+    border: 2px solid #909090;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    padding-left: 15px;
+}
+
+.nav-link{
+    color: black;
+}
+/*bootstrap override*/
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: tomato;
+    background-color: #fff;
+    border-color: black black transparent black
+}
+
+.nav-tabs .nav-link:focus {
+    border-color: black black transparent black;
+    color: tomato;
+}
+
+.nav-tabs .nav-link:hover{
+    background-color: #eaeaea;
+    border-color: #b4b4b4 #b4b4b4 #b4b4b4 #b4b4b4;
+    color: black;
+}
+
+
+

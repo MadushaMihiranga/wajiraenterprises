@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title>Invoice</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <link rel="stylesheet" href="../style/shipment-form.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+    <script type="text/javascript" src="../plugin/html2canvas.js/html2canvas.js"></script>
+    <script  type="text/javascript" src="../plugin/jsPDF-master/dist/jspdf.min.js"></script>
+
+<!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+-->
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+
+    <script type="text/javascript">
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnDelete.addEventListener("click",btnDeleteMC);
+            btnPrint.addEventListener("click",saveAndPrint);
+
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+
+            txtShipmentNo.addEventListener("keyup", txtShipmentMC);
+
+            btnAddItem.addEventListener("click", btnAddItemMC);
+            cmbService.addEventListener("change", cmbServiceMC);
+            txtDiscount.addEventListener("keyup", txtDiscountMC);
+            txtSubTotal.addEventListener("keyup", txtSubTotalMC);
+
+
+
+            //dteDOBirth.onchange = dteDOBirthCH;
+            btnSearch.addEventListener("click",btnSearchMC);
+            btnSearchClear.addEventListener("click",btnSearchClearMC);
+
+            privilages = httpRequest("../privilages?module=INVOICE","GET");
+            employes = httpRequest("../employees/list", "GET");
+            packagetype= httpRequest("../packagetypes/list", "GET");
+            services = httpRequest("../servises/list","GET");
+            statuses = httpRequest("../invoicestatus/list","GET");
+            companys = httpRequest("../companys/list", "GET");
+
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+
+        }
+
+        function loadView() {
+
+            //Search Area
+
+            txtinvoiceno.value = "";
+            txtShpNo.value = "";
+            fillCombo(cmbSearcClient,"Search by Client",companys,"name","");
+
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+            var query ="&invoice=&shipment=&customerid=";
+            loadTable(1, cmbPageSize.value, query);
+        }
+
+        function loadTable(page,size,query) {
+            page = page - 1;
+            invoices = new Array();
+            var data = httpRequest("/invoice?page="+page+"&size="+size+query,"GET");
+            console.log(data);
+            if(data.content!= undefined) invoices = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblinvoice',invoices,fillForm);
+            clearSelection(tblinvoice);
+            if(activerowno!="")selectRow(tblinvoice,activerowno,active);
+            window.location.href="#ui";
+        }
+
+        function paginate(page) {
+            var paginate;
+            if(oldinvoice==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno=""
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+        function loadForm() {
+            nextnumber = httpRequestwithoutlist("../invoice/nextnumber","GET");
+            setStyle(initial);
+
+            invoice = new Object();
+            oldinvoice = null;
+
+            invoice.invoicehasserviceList = new Array();
+            refreshInnerFrom();
+
+
+            fillCombo(cmbEmployee, "Select Employee", employes, "callingname", session.getObject("user").employeeId.callingname);
+            invoice.createemployee=JSON.parse(cmbEmployee.value);
+            cmbEmployee.disabled = "disabled";
+
+            fillCombo(cmbStatus,'Select Status',statuses,'name',"Not Paid");
+            cmbStatus.disabled = "disabled";
+            invoice.invoicestatusId=JSON.parse(cmbStatus.value);
+
+
+
+
+
+
+            var today = new Date();
+            var month = today.getMonth()+1;
+            if(month<10) month = "0"+month;
+            var date = today.getDate()+1;
+            if(date<10) date = "0"+date;
+
+            dteDate.value=today.getFullYear()+"-"+month+"-"+date;
+            invoice.date=dteDate.value;
+            dteDate.style.borderColor=valid;
+            dteDate.disabled = "disabled";
+
+            txtfinelSubTotal.style.borderColor = valid;
+            txtTotalDiscount.style.borderColor = valid;
+            txtGrandTotal.style.borderColor = valid;
+            cmbStatus.style.borderColor = valid;
+
+            txtfinelSubTotal.disabled = "disabled";
+            txtTotalDiscount.disabled = "disabled";
+            txtGrandTotal.disabled = "disabled";
+            cmbStatus.disabled = "disabled";
+
+            txtNumber.value = nextnumber;
+            invoice.number = txtNumber.value;
+            txtNumber.disabled = "disabled";
+            txtNumber.style.borderColor=valid;
+
+            var parent1 = document.getElementById("shptext");
+            if (parent1.hasChildNodes()){
+                parent1.firstChild.remove();
+            }
+
+            txtShipmentNo.value = "";
+
+
+            cmbService.disabled = "disabled";
+            //cmbItemStatus.disabled = "disabled";
+
+
+            disableButtons(false, true, true);
+        }
+
+
+        //DeliveryRequestController
+        function txtShipmentMC() {
+            var string = txtShipmentNo.value;
+            var patern = new RegExp(/^SHP-\d{8}$/);
+            var result = patern.test(string);
+
+            var parent = document.getElementById("shptext");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+
+            cmbService.disabled = "disabled";
+            //cmbItemStatus.disabled = "disabled";
+            txtSubTotal.disabled = "disabled";
+            txtDiscount.disabled = "disabled";
+            txtTotel.disabled = "disabled";
+            txtDiscription.disabled = "disabled";
+
+            if (result){
+                txtShipmentNo.style.borderColor = valid;
+                //DeliveryRequestController
+                var shpresult = httpRequestwithoutlist("../findshipment/clearingprocessid?number="+string,"GET"); //clearingprocesscontroller
+                var element = createElement('p','ptagshpres');
+                element.style.marginBottom = "-10px";
+                element.style.marginTop = "-10px";
+                element.style.fontSize = "13px";
+                if (parseInt(shpresult)<= 6 ){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML = "Clearing Process for this shipment is not complete yet";
+                    invoice.shipmentId = null;
+                }else if (parseInt(shpresult) == 10){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML ="This Shipment is Terminated. ";
+                    invoice.shipmentId = null;
+                }else if (parseInt(shpresult) == 7 || parseInt(shpresult) == 8 || parseInt(shpresult) == 9){
+                    txtShipmentNo.style.borderColor = valid;
+                    element.style.color = valid;
+                    element.innerHTML ="Shipment number is correct";
+                    invoice.shipmentId = httpRequest("../getshipment?shipmentno="+string,"GET");
+                    //document.getElementById("txtDeliveryNo").placeholder = "Enter Delivery Number";
+                    cmbService.disabled = "";
+                   /* txtSubTotal.disabled = "";
+                    txtDiscount.disabled = "";
+                    txtTotel.disabled = "";
+                    txtDiscription.disabled = "";*/
+
+                    /**Shipment Item List**/
+
+
+                    //getLocations(string);
+                }else if (shpresult == 0){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML ="Shipment number doesn't exist ";
+                    invoice.shipmentId = null;
+                }else {
+                    txtShipmentNo.style.borderColor = invalid;
+                    window.alert(shpresult);
+                    invoice.shipmentId = null;
+
+                }
+                parent.appendChild(element);
+            }else {
+                txtShipmentNo.style.borderColor = invalid;
+                invoice.shipmentId = null;
+            }
+        }
+
+        function txtDeliveryMC() {
+            var string = txtDeliveryNo.value;
+            var patern = new RegExp(/^DLV-\d{8}$/);
+            var result = patern.test(string);
+
+            var parent = document.getElementById("deltext");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+            if (result){
+                txtDeliveryNo.style.borderColor = valid;
+
+
+                //DeliveryRequestController
+                var delresult = httpRequestwithoutlist("../finddelivery?number="+string,"GET");
+                var element = createElement('p','ptagshpres');
+                element.style.marginBottom = "-10px";
+                element.style.marginTop = "-10px";
+                element.style.fontSize = "13px";
+                if (delresult == 1){
+                    txtDeliveryNo.style.borderColor = valid;
+                    element.style.color = valid;
+                    element.innerHTML ="Delivery number is correct";
+                    invoice.deliveryId = httpRequest("../getdelivery?number="+string,"GET");
+                    //console.log(invoice);
+                    //getLocations(string);
+                }else if (delresult == 0){
+                    txtDeliveryNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML ="Invalid Delivery number";
+                    invoice.deliveryId = null;
+                }else {
+                    txtDeliveryNo.style.borderColor = invalid;
+                    window.alert(delresult);
+                    invoice.deliveryId = null;
+                }
+                parent.appendChild(element);
+            }else {
+
+                txtDeliveryNo.style.borderColor = invalid;
+                invoice.deliveryId = null;
+            }
+        }
+
+        function cmbServiceMC() {
+
+            var serviceid = JSON.parse(cmbService.value).id;
+            var shipment = txtShipmentNo.value;
+             serresult = httpRequest("../getprice?shipmentno="+shipment+"&service="+serviceid,"GET");
+
+            console.log(serresult)
+
+            txtSubTotal.value = serresult.price;
+            txtDiscount.value = serresult.discount;
+            txtTotel.value = serresult.totalprice;
+            txtDiscription.value = serresult.description;
+            txtDiscountMC();
+
+            txtSubTotal.disabled = "";
+            txtDiscount.disabled = "";
+            txtTotel.disabled = "disabled";
+            txtDiscription.disabled = "";
+
+
+
+        }
+
+        function txtDiscountMC (){
+
+            txtTotel.value = txtSubTotal.value*((100-txtDiscount.value)/100)
+
+        }
+
+        function txtSubTotalMC() {
+            txtDiscountMC();
+        }
+
+
+
+
+
+        function refreshInnerFrom() {
+
+            fillInnerTable("tblinvoiceItem",  invoice.invoicehasserviceList ,removeItem);
+            fillCombo(cmbService,"Select Item",services,"name","");
+
+            txtSubTotal.disabled = "disabled";
+            txtDiscount.disabled = "disabled";
+            txtTotel.disabled = "disabled";
+            txtDiscription.disabled = "disabled";
+
+            txtSubTotal.value = "";
+            txtDiscount.value = "";
+            txtTotel.value = "";
+            txtDiscription.value = "";
+
+             window.subtotal=0;
+             window.grandtotal=0;
+             window.totaldiscount=0;
+
+            for (index in invoice.invoicehasserviceList ) {
+                window.subtotal = parseInt(window.subtotal) +  parseInt(invoice.invoicehasserviceList[index].price);
+                window.grandtotal = parseInt(window.grandtotal) +  parseInt(invoice.invoicehasserviceList[index].totalprice);
+                window.totaldiscount = window.totaldiscount +  invoice.invoicehasserviceList[index].price*((invoice.invoicehasserviceList[index].discount)/100);
+            }
+
+            txtfinelSubTotal.value=window.subtotal+".00";
+            invoice.subtotal = txtfinelSubTotal.value;
+            txtTotalDiscount.value=window.totaldiscount+".00";
+            invoice.totaldiscount = txtTotalDiscount.value;
+            txtGrandTotal.value=window.grandtotal+".00";
+            invoice.grandtotal = txtGrandTotal.value;
+
+        }
+
+        function removeItem(invoicehasserviceList,index){
+            invoice.invoicehasserviceList.splice(index-1, 1);
+            refreshInnerFrom();
+        }
+
+        function btnAddItemMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            invoiceitems = new Object();
+
+            var itmerrors = getItemErrors();
+            if (itmerrors == ""){
+                invoiceitems.servicesquotationId = serresult.servicesquotationId;
+                invoiceitems.totalprice = txtTotel.value;
+                invoiceitems.discount = txtDiscount.value;
+                invoiceitems.price = txtSubTotal.value;
+                invoiceitems.description = txtDiscription.value;
+                invoice.invoicehasserviceList.push(invoiceitems);
+                refreshInnerFrom();
+                //items = httpRequest("../inventoryitem/listByShipmentNumber?number="+string,"GET");
+
+            }else {
+                window.alert("invoice Item has following Errors\n\n"+itmerrors);
+            }
+        }
+
+
+        function getItemErrors() {
+            itemerrors = "";
+
+            if (isNaN(txtSubTotal.value) || txtSubTotal.value == "")
+                itemerrors = itemerrors + "invalid Sub Total\n";
+
+            if (isNaN(txtDiscount.value) || txtDiscount.value == "")
+                itemerrors = itemerrors + "invalid Discount\n";
+
+            if (isNaN(txtTotel.value) || txtTotel.value == "")
+                itemerrors = itemerrors + "invalid Totel\n";
+
+            return itemerrors;
+        }
+
+
+
+        function setStyle(style) {
+
+            cmbEmployee.style.borderColor = style;
+            txtNumber.style.borderColor = style;
+            dteDate.style.borderColor = style;
+            txtShipmentNo.style.borderColor = style;
+            txtfinelSubTotal.style.borderColor = style;
+            txtTotalDiscount.style.borderColor = style;
+            txtGrandTotal.style.borderColor = style;
+            cmbStatus.style.borderColor = style;
+
+
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+
+        }
+
+
+
+
+
+        //Form Operation Functions
+
+        function getErrors() {
+
+            var errors = "";
+
+            if (invoice.shipmentId == null)
+                errors = errors + "Invalid Shipment Number<br>";
+
+            if (invoice.invoicehasserviceList === undefined || invoice.invoicehasserviceList.length == 0)
+                errors = errors + "Invoice dosn't have any Items<br>";
+
+
+            return errors;
+        }
+
+        function genPDF() {
+            console.log("pdf");
+
+            html2canvas($('#invoiceDoc').get(0)).then(
+
+                function (canvas) {
+                //console.log(canvas);
+
+                var img = canvas.toDataURL();
+                var doc = new jsPDF();
+                doc.addImage(img,'JPEG',1,20);
+                doc.save(invoice.number+'.pdf');
+
+            });
+
+            /*            html2canvas($("#invoiceDoc"),{
+                            onrendered: function (canvas) {
+                                var img = canvas.toDataURL();
+                                var doc = new jsPDF();
+                                doc.addImage(img,'JPEG',20,20);
+                                doc.save('invoice.pdf');
+                            }
+                        })
+                        console.log("pdf2");*/
+        }
+
+
+
+        function ModelAddContent() {
+
+            console.log(invoice);
+
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show')
+                 allNumbers ="";
+                 allDescriptions="";
+                 allPrices="";
+                 allDiscount="";
+                 allTotalPrices="";
+
+                billingAddress.innerHTML = invoice.shipmentId.companyId.name+"<br style=\"margin-bottom: 0px\">"+invoice.shipmentId.companyId.number+"<br style=\"margin-bottom: 0px\">"+invoice.shipmentId.companyId.address;
+                InvoiceNumber.innerHTML = invoice.number;
+                Invoicedate.innerHTML = invoice.date;
+                ShipmentNumber.innerHTML = invoice.shipmentId.number;
+                ShipmentMode.innerHTML = invoice.shipmentId.modsId.name;
+                ShipmentType.innerHTML  = invoice.shipmentId.containertypeId.name;
+                AllSubTotal.innerHTML = "Rs."+invoice.subtotal;
+                AllTotalDiscount.innerHTML = "Rs."+invoice.totaldiscount;
+                AllGrandTotal.innerHTML = "Rs."+invoice.grandtotal;
+                for (ser = 0; ser<invoice.invoicehasserviceList.length; ser++){
+                    allNumbers = allNumbers+(ser+1).toString()+"<br>";
+                    allDescriptions = allDescriptions+invoice.invoicehasserviceList[ser].servicesquotationId.servicesId.name+"<br>";
+                    allPrices = allPrices+invoice.invoicehasserviceList[ser].price+".00<br>";
+                    allDiscount = allDiscount+invoice.invoicehasserviceList[ser].price*((invoice.invoicehasserviceList[ser].discount)/100)+".00<br>"; //ob.price*((ob.discount)/100)+".00";
+                    allTotalPrices = allTotalPrices+invoice.invoicehasserviceList[ser].totalprice+".00<br>";
+                }
+                Itemnumber.innerHTML = allNumbers;
+                ItemDescription.innerHTML = allDescriptions;
+                ItemPrice.innerHTML = allPrices;
+                ItemDiscount.innerHTML = allDiscount;
+                ItemTotalPrice.innerHTML = allTotalPrices;
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+
+        function showItemList(invoiceitm) {
+            var parent = document.getElementById("itmParent");
+            var itemelement = document.createElement('p');
+            var content = "";
+            content =content+invoiceitm.inventryId.grnhasitemId.itemId.description+"<br>";
+            content =content+invoiceitm.qty+" "+invoiceitm.packagetypeId.name+"<br>";
+            content =content+invoiceitm.note+"<br>";
+
+            var brake = document.createElement('br');
+            itemelement.innerHTML = content;
+            parent.appendChild(itemelement);
+            parent.appendChild(brake);
+        }
+
+        function ChangeTabToForm(){ $('[href="#Form"]').tab('show'); }
+
+        function ChangeTabToTable(){ $('[href="#Table"]').tab('show'); }
+
+        function saveAndPrint() {
+            genPDF();
+            btnAddMC();
+        }
+
+
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/invoice","POST",invoice);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                alertify.notify('invoice Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                ChangeTabToTable();
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Add as \n\n"+response);
+        }
+
+
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+
+            var clear;
+            if(oldinvoice==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblinvoice);
+            }
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+        }
+
+        function fillForm(gn,rowno){
+            ChangeTabToForm();
+
+            activerowno = rowno;
+            var filling;
+            if(oldinvoice==null){
+                filling=true;
+            }else{
+
+                if(getErrors()==''&&getUpdates()==''){
+                    filling=true;
+                }else{
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+
+            if(filling) {
+
+                clearSelection(tblinvoice);
+                selectRow(tblinvoice,activerowno,active);
+
+                invoice = JSON.parse(JSON.stringify(gn));
+                oldinvoice = JSON.parse(JSON.stringify(gn));
+
+                txtNumber.value = invoice.number;    ///////////////////
+                dteDate.value = invoice.date;
+                txtShipmentNo.value = invoice.shipmentId.number;
+                txtfinelSubTotal.value = invoice.subtotal;
+                txtTotalDiscount.value = invoice.totaldiscount;
+                txtGrandTotal.value = invoice.shipmentIdgrandtotal;
+
+                //txtDeliveryNo.value = invoice.deliveryId.number;
+
+                txtNumber.disabled="disabled";
+                dteDate.disabled="disabled";
+                txtShipmentNo.disabled="disabled";
+                cmbService.disabled = "";
+                //txtDeliveryNo.disabled="disabled";
+
+
+                fillCombo(cmbEmployee, "Select Employee", employes, "callingname",invoice.createemployee.callingname );
+                fillCombo(cmbStatus,'Select Status',statuses,'name',invoice.invoicestatusId.name);
+
+                refreshInnerFrom();
+
+                disableButtons(true, false, false);
+                setStyle(valid);
+            }
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(invoice!=null && oldinvoice!=null) {
+
+                //if (invoice.number != oldinvoice.number)
+                //updates = updates + "\nNumber is Changed";
+                if (isEqual(invoice.invoicehasserviceList,oldinvoice.invoicehasserviceList,"servicesquotationId.servicesId.name")){
+                    newitems="";
+                    olditems="";
+               /*     for (itm = 0;itm<invoice.invoicehasserviceList.length;itm++) {
+                        newitems += invoice.invoicehasserviceList[itm].itemId.description+" [ "+invoice.invoicehasitemList[itm].recivedqty+" ] <br>"
+                    }
+                    for (olditm = 0;olditm<oldinvoice.invoicehasitemList.length;olditm++) {
+                        olditems += oldinvoice.invoicehasitemList[olditm].itemId.description+" [ "+oldinvoice.invoicehasitemList[olditm].recivedqty+" ] <br>"
+                    }*/
+                    updates = updates + "\nInvoice Items is Changed <br>";
+                }
+
+            }
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+
+        }
+
+        function btnUpdateMC() {
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/invoice","PUT",invoice);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                alertify.notify('Invoice Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Update as \n\n"+response);
+        }
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnEmployeeNnme.innerHTML =   "invoice Number : "+invoice.number;
+        }
+
+        function btnDeleteMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/invoice","DELETE",invoice);
+            if(response=="0"){
+                $('#ModelDelete').modal('hide');
+                alertify.notify('Invoice Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Delete as \n\n"+response);
+        }
+
+
+        //Search Functions
+
+        function loadSearchedTable() {
+
+            var invoice = txtinvoiceno.value;
+            var shipment = txtShpNo.value;
+            var customer = cmbSearcClient.value;
+            // var item = txtItem.value;
+
+            var customerid="";
+            if(customer!="Search by Client") {
+                customerid = JSON.parse(customer).id;
+                cmbSearcClient.style.borderColor = active;
+            }
+
+            if(invoice!=""){  txtinvoiceno.style.borderColor = active; }
+            if(shipment!=""){  txtShpNo.style.borderColor = active; }
+            //if(item!=""){  txtItem.style.borderColor = active; }
+
+            var query ="&invoice=&shipment=&customerid=";
+
+            if(invoice!="" || shipment!="" )
+                query = "&invoice=" + invoice  + "&shipment=" + shipment+ "&customerid=" + customerid ;
+            //window.alert(query);
+            loadTable(activepage, cmbPageSize.value, query);
+
+        }
+
+        function btnSearchMC(){
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+            loadView();
+        }
+
+    </script>
+
+
+
+
+</head>
+<body>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist" style="margin-top: 5px ;border-color: black;background-color: #f9f9f9;">
+    <li class="nav-item" style="border-color: black;margin-left: 15px">
+        <a class="nav-link active" id="Form-tab" data-toggle="tab" href="#Form" role="tab" aria-controls="Form" aria-selected="true">Create Invoice</a>
+    </li>
+    <li class="nav-item" style="border-color: black">
+        <a class="nav-link" id="Table-tab" data-toggle="tab" href="#Table" role="tab" aria-controls="Table" aria-selected="false">View Invoice</a>
+    </li>
+
+</ul>
+<div class="tab-content" id="myTabContent">
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!--Form Area Start-->
+    <div class="tab-pane fade show active" id="Form" role="tabpanel" aria-labelledby="Form-tab">
+        <div class="container-fluid">
+            <div class="row" id="ui">
+                <div class="col-md-12">
+                    <!--card-start-->
+
+                    <!--<div class="card" style="border: 1px solid #282c2f;margin-top: 15px">-->
+                        <!--card-header-->
+                        <!--<div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 15px">
+
+                        </div>-->
+
+                        <!--card-body-start-->
+                        <!--<div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">-->
+                            <div class="row">
+                                <!--Form-Start-->
+                                <!-- <div class="col-md-2"></div>-->
+                                <div class="col-md-12">
+                                    <div class="card" class="card" style="border: 1px solid #161616;border-radius: 5px;margin-top: 15px">
+                                        <div class="card-body form-box-overflow" style="border: 1px solid transparent;border-radius: 5px;height:460px "><!--height:480px;overflow-y:scroll;-->
+                                            <form class="form-horizontal" onsubmit="return false"  >
+                                                <div class="row">
+
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-md-4" id="invoiceform1"></div>
+                                                            <div class="col-md-4" id="invoiceform2"></div>
+                                                            <div class="col-md-4" id="invoiceform3"></div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-4" >
+                                                                <div id="invoiceform4"></div>
+                                                                <div id="shptext"></div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div id="invoiceform5"></div>
+                                                                <div id="deltext"></div>
+                                                            </div>
+                                                            <div class="col-md-4" id="invoiceform6"></div>
+                                                        </div>
+
+                                                        <script>
+                                                            txtField('invoiceform1','txtNumber','Invoice Number','invoice Number Here','',"",'invoice','number','oldinvoice');
+                                                            dteField('invoiceform2','dteDate','Date','',"",'invoice','date','oldinvoice');
+                                                            cmbBox('invoiceform3','cmbEmployee','Issued by','invoice','createemployee','oldinvoice',true);
+                                                            txtField('invoiceform4','txtShipmentNo','Shipment Number','Enter Shipment Number Here','',"",'','','',true);
+                                                        </script>
+                                                    </div>
+
+                                                </div>
+
+
+                                                <!--Innerform strat-->
+                                                <div class="row" style="border: 1px solid #ced4da;border-radius: 5px;background-color: rgba(237,243,249,0.42);margin-top: 15px">
+                                                    <div class="col-md-12">
+
+                                                        <!--Inner Form-->
+                                                        <div class="row">
+                                                            <div class="col-md-5" id="innerformcmb"></div>
+                                                        </div>
+                                                                <div class="row" style="padding-right: 15px">
+                                                                    <div class="col-md-5" id="innerForminvoiceR1C1"></div>
+                                                                    <div class="col-md-7">
+                                                                        <div class="row">
+                                                                            <div class="col-md-4" id="innerForminvoiceR2C1"></div>
+                                                                            <div class="col-md-4" id="innerForminvoiceR2C2"></div>
+                                                                            <div class="col-md-4" id="innerForminvoiceR1C3"></div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div style="margin-bottom: 10px;margin-left: 94%">
+                                                                            <button data-toggle="tooltip" data-placement="top" title="Add Item" class="btn btn-secondary btn-sm" type="button" id="btnAddItem"  style="">Add <i class="fal fa-plus-circle"></i></button>
+                                                                    </div>
+
+                                                                    <!--shipment Item Description-->
+
+                                                                </div>
+
+                                                                <script>
+
+                                                                    cmbBox('innerformcmb','cmbService','Select Service','','','',true);
+                                                                    // cmbBox('innerForminvoiceR1C2','cmbItemStatus','Item Status','','','',true);
+                                                                    txtField('innerForminvoiceR2C1','txtSubTotal','Sub Total','Sub Total','',"",'','','',true)
+                                                                    txtField('innerForminvoiceR2C2','txtDiscount','Discount','Enter Discount Percentage Here ','',"",'','','',true)
+                                                                    txtField('innerForminvoiceR1C3','txtTotel','Total Price','','',"",'',"",'');
+                                                                    txtField('innerForminvoiceR1C1','txtDiscription','Description','','',"",'',"",'');
+
+                                                                    // txtField('innerForminvoice','txtTaxvalue','Value','Enter Value here','',"",'','',"",true)
+                                                                </script>
+
+
+                                                        <!--Inner Table-->
+                                                        <div class="row">
+                                                            <div class="col-md-12 table-responsive" id="innerTableinvoice">
+
+                                                                <script>
+
+                                                                    function getDescription(ob){
+                                                                        return ob.servicesquotationId.servicesId.name+" "+ob.description;
+                                                                    }
+
+                                                                    function getDiscountPrice(ob) {
+                                                                        return ob.price*((ob.discount)/100)+".00";
+                                                                    }
+
+                                                                    function getSubTotel(ob) {
+                                                                        return ob.price+".00";
+                                                                    }
+
+                                                                    function getTotal(ob) {
+                                                                        return ob.totalprice+".00"
+                                                                    }
+
+
+                                                                    var metadatainnertabletax = [
+                                                                        {name:'Description',search:false,datatype:'text',property:getDescription},
+                                                                        //{name:'Status',search:false,datatype:'text',property:'invoiceitemstatusId.name'},
+                                                                        {name:'Sub Total',search:false,datatype:'text',property:getSubTotel},
+                                                                        {name:'Discount',search:false,datatype:'text',property:getDiscountPrice},
+                                                                        {name:'Total',search:false,datatype:'text',property:getTotal},
+                                                                    ];
+                                                                    tableForInnerForm("innerTableinvoice","tblinvoiceItem",metadatainnertabletax,true);
+                                                                </script>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <!--Inner Form end-->
+
+                                                <!--totel-->
+                                                <div class="row">
+                                                    <div class="col-md-4" id="formStatus"></div>
+                                                    <div class="col-md-4"></div>
+                                                    <!--<div class="col-md-2">
+
+
+
+                                                    </div>-->
+                                                    <div class="col-md-4" id="">
+                                                        <div class="row">
+                                                            <div class="col-md-2"></div>
+                                                            <div class="col-md-4 text-right "><label style="margin-top: 20px; font-weight: bold" >Sub Total</label></div>
+                                                            <div class="col-md-6" id="formTotel1"></div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-2"></div>
+                                                            <div class="col-md-4 text-right"  ><label style="margin-top: 15px;font-weight: bold">Total Discount</label></div>
+                                                            <div class="col-md-6" id="formTotel2"></div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-2"></div>
+                                                            <div class="col-md-4 text-right"><label style="margin-top: 20px;font-weight: bold">Grand Total</label></div>
+                                                            <div class="col-md-6" id="formTotel3"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <script>
+                                                        txtField('formTotel1','txtfinelSubTotal',false,'','',"",'invoice','subtotal','oldinvoice');//Sub Total
+                                                        txtField('formTotel2','txtTotalDiscount',false,'','',"",'invoice','totaldiscount','oldinvoice');//Total Discount
+                                                        txtField('formTotel3','txtGrandTotal',false,'','',"",'invoice','grandtotal','oldinvoice',true);//Grand Total
+                                                        cmbBox('formStatus','cmbStatus','Invoice Status','invoice','invoicestatusId','oldinvoice',true);
+                                                    </script>
+
+                                                </div>
+
+
+                                                <!--Form-Button Start-->
+                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                                <div class="row" >
+                                                    <div class="col-md-8"></div>
+                                                    <div class="col-4">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <button  data-toggle="tooltip" data-placement="top"  title="Delete" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                                            </div>
+                                                            <div class="col-md-3" style="margin-right: -15px">
+                                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                                            </div>
+                                                            <div class="col-md-3" >
+                                                                <button data-toggle="tooltip" data-placement="top" title="Update" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <button  data-toggle="tooltip" data-placement="top" title="Save" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--Form button End-->
+                                            </form>
+
+
+                                            <!--Add Content Model Start------------------------------------------------------------------------------------>
+                                            <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+                                                <div class="modal-dialog modal-lg" role="document" >
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabeladd">Are you sure to add following Invoice?</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <!--Invoice PDF Document Start-->
+                                                        <div class="modal-body" id="invoiceDoc">
+
+                                                            <div class="row" style="margin-right: 5px;margin-left: 5px">
+                                                                <div class="col-md-12">
+                                                                    <!--Header Start-->
+                                                                    <div class="row" style="border-bottom: 1px solid black;margin-bottom: 15px">
+                                                                        <!--Company detail-->
+                                                                        <div class="col-md-8">
+                                                                            <h6 style="margin-bottom: 0px">Wajira Enterprises (Pvt) Ltd</h6> <!--  style="font-size: 21px"  -->
+                                                                            <p style="font-size: 13px;margin-bottom: 0px">No 107/G Ihalayagoda Gampaha</p>
+                                                                            <p style="font-size: 13px;margin-bottom: 0px">Tel   : 0112 543 185, 0777 395 195 </p>
+                                                                            <p style="font-size: 13px;margin-bottom: 15px">Email : wajiraenteprises@gmail.com</p>
+                                                                        </div>
+                                                                        <!--Company logo-->
+                                                                        <div class="col-md-4">
+                                                                            <img style="margin-top: 15px" src="../image/logo-small.png"> <!--style="width: 230px;height: 70px" -->
+                                                                        </div>
+                                                                    </div>
+                                                                    <!--Header End-->
+                                                                    <!--Invoice Detail Start-->
+                                                                    <div class="row" style="margin-bottom: 15px">
+                                                                        <!--Billing Address-->
+                                                                        <div class="col-md-6">
+                                                                            <div style="border: 1px solid black;border-radius: 5px;padding: 5px 15px 5px 15px;background-color: #f2f2f2">
+                                                                                <!--<h7>Billing to :</h7>-->
+                                                                                <!-- SMM Halcyon (Pvt) Ltd, <br style="margin-bottom: 0px">
+                                                                                    No 102/22 Nawala Road<br style="margin-bottom: 0px">
+                                                                                    Narahenpita <br style="margin-bottom: 0px">
+                                                                                    Colombo - 05-->
+                                                                                <p id="billingAddress" style="margin-bottom: 0px;font-size: 13px;"></p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <!--Invoice detail-->
+                                                                        <div class="col-md-6">
+                                                                            <div class="text-center" style="border: 1px solid black;border-radius: 5px; margin-left: 20%;padding-top:  5px;padding-bottom: 5px;background-color: #f2f2f2">
+                                                                                <h5 style="margin-bottom: 0px">INVOICE</h5>
+                                                                            </div>
+                                                                            <p style="margin-bottom: 0px;margin-top: 5px;margin-left: 20%">Number : <span id="InvoiceNumber" style="font-weight: bold"></span></p>
+                                                                            <p style="margin-bottom: 0px;margin-left: 20%">Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span id="Invoicedate" style="font-weight: bold"></span></p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!--Invoice Detail End-->
+                                                                    <!--Content Row  1 Start-->
+                                                                    <div class="row">
+                                                                        <div class="col-md-3" style="border: 1px solid black;background-color: #f2f2f2;border-top-left-radius: 5px;border-bottom-left-radius: 5px;height: 30px;padding-top: 2px;border-right: none">Shipment Number</div>
+                                                                        <div class="col-md-2" style="border: 1px solid black;background-color: #f2f2f2;padding-top: 2px;border-right: none">Mode</div>
+                                                                        <div class="col-md-2" style="border: 1px solid black;background-color: #f2f2f2;padding-top: 2px;border-right: none">Type</div>
+                                                                        <div class="col-md-5" style="border: 1px solid black;background-color: #f2f2f2;border-top-right-radius: 5px;border-bottom-right-radius: 5px;padding-top: 2px">Payment Term</div>
+                                                                    </div>
+                                                                    <div class="row" style="margin-top: 2px">
+                                                                        <div id="ShipmentNumber" class="col-md-3" style="border: 1px solid black;border-top-left-radius: 5px;border-bottom-left-radius: 5px;height: 45px;padding-top: 10px;border-right: none"></div>
+                                                                        <div id="ShipmentMode" class="col-md-2" style="border: 1px solid black;padding-top: 10px;border-right: none"></div>
+                                                                        <div id="ShipmentType" class="col-md-2" style="border: 1px solid black;padding-top: 10px;border-right: none"></div>
+                                                                        <div class="col-md-5" style="border: 1px solid black;border-top-right-radius: 5px;border-bottom-right-radius: 5px;padding-top: 10px">Within 30 days after delivery</div>
+                                                                    </div>
+                                                                    <!--Content Row  1 End-->
+                                                                    <!--Content Row 2 Start-->
+                                                                    <div class="row" style="margin-top: 15px">
+                                                                        <div class="col-md-1" style="border: 1px solid black;background-color: #f2f2f2;border-top-left-radius: 5px;border-bottom-left-radius: 5px;height: 30px;padding-top: 2px;border-right: none">Item</div>
+                                                                        <div class="col-md-5" style="border: 1px solid black;background-color: #f2f2f2;padding-top: 2px;border-right: none">Description</div>
+                                                                        <div class="col-md-2" style="border: 1px solid black;background-color: #f2f2f2;padding-top: 2px;border-right: none">Price</div>
+                                                                        <div class="col-md-2" style="border: 1px solid black;background-color: #f2f2f2;padding-top: 2px;border-right: none">Discount</div>
+                                                                        <div class="col-md-2" style="border: 1px solid black;background-color: #f2f2f2;border-top-right-radius: 5px;border-bottom-right-radius: 5px;padding-top: 2px">Total Price</div>
+                                                                    </div>
+                                                                    <div class="row " style="margin-top: 2px">
+                                                                        <div  class="col-md-1 text-center" style="border: 1px solid black;border-top-left-radius: 5px;border-bottom-left-radius: 5px;padding-top: 10px;border-right: none"><p id="Itemnumber"></p></div>
+                                                                        <div  class="col-md-5 text-left" style="border: 1px solid black;padding-top: 10px;border-right: none"><p id="ItemDescription"></p></div>
+                                                                        <div  class="col-md-2 text-right" style="border: 1px solid black;padding-top: 10px;border-right: none"><p id="ItemPrice"></p></div>
+                                                                        <div  class="col-md-2 text-right" style="border: 1px solid black;padding-top: 10px;border-right: none"><p id="ItemDiscount"></p></div>
+                                                                        <div  class="col-md-2 text-right" style="border: 1px solid black;border-top-right-radius: 5px;border-bottom-right-radius: 0px;padding-top: 10px"><p id="ItemTotalPrice"></p></div>
+                                                                    </div>
+                                                                    <!--Content Row 2 End-->
+                                                                    <!--Content Row 3 Start-->
+                                                                    <div class="row">
+                                                                        <div class="col-md-7">
+                                                                            <p style="margin-top: 15px;font-size: 13px;margin-bottom: 5px">All Cheques should be payable to <span style="font-weight: bold">'Wajira Enterprises'</span>.</p>
+                                                                            <p style="font-weight: bold;margin-top: 0px">Thank You For Your Business!</p>
+                                                                            <p style="margin-bottom: 0px;margin-top: 45px">...........................................&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...........................................</p>
+                                                                            <p style="margin-top: 0px;font-size: 13px">&nbsp;&nbsp;Authorized Signature 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Authorized Signature 2</p>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div style="margin-top: 5px;margin-left: 50px">Sub Total</div>
+                                                                            <div style="margin-top: 5px;margin-left: 50px">Total Discount</div>
+                                                                            <div style="margin-top: 5px;margin-left: 50px">Grand Total</div>
+                                                                        </div>
+                                                                        <div class="col-md-2" style="padding: 0px 0px 0px">
+                                                                            <div id="AllSubTotal" class="text-right" style="border: 1px solid black;height: 30px;border-top: none;padding-right: 15px"></div>
+                                                                            <div id="AllTotalDiscount" class="text-right" style="border: 1px solid black;height: 30px;border-top: none;padding-right: 15px"></div>
+                                                                            <div id="AllGrandTotal" class="text-right" style="border: 1px solid black;height: 30px;border-top: none;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;padding-right: 15px"></div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                    <!--Content Row 3 End-->
+
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        <!--Invoice PDF Document Start-->
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                                            <button  type="button" class="btn btn-primary-action" id="btnPrint">Save & Print <i class="fal fa-print"></i></button>
+                                                            <button  type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                                            <!--<a href="javascript:genPDF()">pdf</a>-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Add Content Model End-------------------------------------------------------------------------------------->
+                                            <!--Model Error Start------------------------------------------------------------------------------------------>
+                                            <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Invoice Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>You Have Following Errors</h5>
+                                                            <p id="spnErrors" style="color: #dc3545"></p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Error End------------------------------------------------------------------------------------------>
+                                            <!--Model Delete Start--------------------------------------------------------------------------------------->
+                                            <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabeldelete">Invoice Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>Are your sure to delete following </h5>
+                                                            <p  id="spnEmployeeNnme"></p>
+                                                        </div>
+                                                        <div class="modal-footer ">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                                            <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Delete End----------------------------------------------------------------------------------------->
+                                            <!--Model Update Start--------------------------------------------------------------------------------------->
+                                            <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabelupdete">Invoice Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>Are your sure to update followings</h5>
+                                                            <p id="spnUpdate"></p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                                            <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Update End----------------------------------------------------------------------------------------->
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--  <div class="col-md-2"></div>-->
+
+                                <!--Form-End-->
+
+                            </div>
+                        <!--</div>-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Form Area End-->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!--Table Area Start-->
+    <div class="tab-pane fade" id="Table" role="tabpanel" aria-labelledby="Table-tab">
+
+        <div class="card" style=";border: 1px solid #282c2f;border-radius: 5px;margin-left: 15px;margin-right: 15px;margin-top: 15px">
+            <!--<div class="card" style="border: 1px solid #a6a6a6;border-radius: 1px;margin-top: 15px">-->
+            <div class="card-header" style="height: 60px">
+                <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <input placeholder="Search By Invoice Number" class="form-control form-control-sm txtinput" type="text" id="txtinvoiceno"/>
+                    </div>
+
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <input placeholder="Search By Shipment Number" class="form-control form-control-sm txtinput" type="text" id="txtShpNo"/>
+                    </div>
+
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <select class="form-control form-control-sm txtinput" id="cmbSearcClient"></select>
+                    </div>
+
+
+                    <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                    <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="card-body table-box-overflow"  id="shipmentview">
+                <div class="table-responsive" id="tableParent" >
+
+                    <script>
+                        txtinvoiceno.style.width = "200px";
+                        txtShpNo.style.width = "200px";
+
+
+
+                        function getGrandTotal(ob) {
+                            var stGrandTotal = "Rs. "+ob.grandtotal+".00";
+                            return  stGrandTotal;
+                        }
+
+
+                        var metadata = [
+                            {name:'Invoice Number',search:false,datatype:'text',property:'number'},
+                            {name:'Shipment Number',search:false,datatype:'text',property:'shipmentId.number'},
+                            {name:'Create Date',search:false,datatype:'text',property:'date'},
+                            {name:'Create By',search:false,datatype:'text',property:'createemployee.callingname'},
+                            {name:'Customer',search:false,datatype:'text',property:'shipmentId.companyId.name'},
+                            {name:'Grand Total',search:false,datatype:'text',property:getGrandTotal},
+                        ];
+                        table("tableParent","tblinvoice",metadata,[3,10,15,30,500,1000],btnSearchMC,true);
+
+                    </script>
+                </div>
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+    </div>
+    <!--Table Area End-->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.2.0-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.2.0-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.2.0-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.2.0-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.2.0-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.2.0-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.2.0-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.2.0-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+
+
+    <script>
+
+        function createElement(name,id=null){
+            var ele = document.createElement(name);
+            if(id!=null){
+                ele.id = id;
+            }
+            return ele;
+        }
+
+
+        function txtField(parent,id,lblText,placeholder,def,pattern,ob,prop,oldob,required) {
+
+            var parent = document.getElementById(parent);
+
+            var formGroup = createElement('div',id+'FormGroup');
+            formGroup.classList.add('wrapinput');
+
+
+
+            var field =createElement('input',id);
+            field.type = 'text';
+            field.value=def;
+            field.setAttribute('data-pattern',pattern);
+            field.setAttribute('data-object',ob);
+            field.setAttribute('data-oldobject',oldob);
+
+
+            if (lblText!=false){
+                var label =createElement('label',id+'Label');
+                label.for=id;
+                label.classList.add('txtinput-label');
+                if (required==true){
+                    field.setAttribute('required',true);
+                    label.innerHTML = lblText+"   <i class=\"fas fa-asterisk\" style='color: #ff6666;font-size: 10px'></i>";
+                }else {
+                    label.innerHTML = lblText;
+                }
+            }
+
+
+
+            field.placeholder = placeholder;
+            field.classList.add('txtinput');
+            field.classList.add('form-control');
+
+            if (lblText!=false){
+                formGroup.appendChild(label);
+            }
+            formGroup.appendChild(field);
+            parent.appendChild(formGroup);
+
+            field.onkeyup = function(){
+                var ob = window[this.getAttribute('data-object')];
+                var oldob = window[this.getAttribute('data-oldobject')];
+                var pattern = new RegExp(this.getAttribute('data-pattern'));
+                var formGroup = this.parentNode.parentNode;
+                var val = this.value.trim();
+                if (pattern.test(val)) {
+                    ob[prop] = val;
+                    if (oldob != null && oldob[prop] != ob[prop]){
+                        field.style.border='2px solid #ffc107';  //update
+
+                        field.style.boxShadow='none';
+                    }else{
+                        field.style.border='2px solid #28a745';  //valid
+                        field.style.color = '#282c2f';
+                        field.style.boxShadow='none';
+                    }
+                }
+                else {
+                    field.style.border='2px solid #dc3545';  //invalid
+                    field.style.color = '#dc3545';
+                    field.style.boxShadow='none';
+                    ob[prop] = null;
+                }
+            };
+
+        }
+    </script>
+
+
+</head>
+<body>
+<form class="form-horizontal"  id="vehicleform">
+</form>
+<script>
+
+    txtField('vehicleform', 'txtRegno', 'Vehicle Registration Number', 'Enter Registration Number', '', "", 'vehicle', 'rgno', 'oldvehicle', true);
+
+</script>
+
+</body>
+</html>

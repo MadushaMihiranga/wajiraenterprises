@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Title</title>
+
+            <link rel="stylesheet" href="../../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+            <script src="../../plugin/pace/pace.min.js"></script>
+
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+            <script src="../../plugin/Chart.js/Chart.min.js"></script>
+
+            <link href="../../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+            <link href="../../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+            <link href="../../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+            <link href="../../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+            <link href="../../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+            <link href="../../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+            <link href="../../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+            <link href="../../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+            <script src="../../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+            <script src="../../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+            <link rel="stylesheet" href="../../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+            <script src="../../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+            <script src="../../plugin/popper/popper.min.js"  rel="script"></script>
+
+            <link rel="stylesheet" href="../../plugin/alertifyjs/css/alertify.css">
+            <link rel="stylesheet" href="../../style/common.css"/>
+            <script src="../../plugin/alertifyjs/alertify.js"></script>
+
+            <link rel="stylesheet" href="../../style/common.css"/>
+            <link rel="stylesheet" href="../../style/dashboard.css">
+            <script src="../../script/my.ui.javascript.js"></script>
+
+            <script src="../../script/common.bitproject.earth.lk.v1.js"></script>
+            <script src="../../script/ui.bitproject.earth.lk.v1.js"></script>
+
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+            <script type="text/javascript" src="../../plugin/html2canvas.js/html2canvas.js"></script>
+            <script  type="text/javascript" src="../../plugin/jsPDF-master/dist/jspdf.min.js"></script>
+
+            <script>
+                window.addEventListener("load", initialize);
+
+                function initialize() {
+
+                    btnPrint.addEventListener("click",printReport);
+                    btnGenReport.addEventListener("click",dterange);
+                    /* btnRefreshShpByStatus.addEventListener("click",shipmentByStatus);
+                     btnPrintShpByMod.addEventListener("click",printShipmentByMod);
+                     btnPrintShpByStatus.addEventListener("click",printShipmentByStatus);
+                     shipmentByStatus();
+                     shipmentByMode();
+                     ShipmentByCountry();
+                     shipmentByCustomer();*/
+                    today = new Date().toISOString().slice(0, 10)
+                    loadReport()
+
+                }
+
+                function dterange() {
+                    ///serverdata = httpRequest("../../reports/systemaccessanalysis?startdate=" + startdate + "&enddate=" + enddate, "GET");
+                    startdate = dteStart.value;
+                    enddate = dteEnd.value;
+                    shipmentbycustomer2=httpRequest("../../reports/shipmenttimerange?startdate=" + startdate + "&enddate=" + enddate, "GET");
+                    console.log(shipmentbycustomer2);
+                    var metadata1 = [{name:'Shipment Number',property: 'number'}, {name:'Registerd Date',property: 'dateofregisterd'}];
+                    tableForReport('tblArea','tblShipmentByStatus',['table', 'table-sm', 'table-bordered'],metadata1,shipmentbycustomer2,true)
+                }
+
+                function loadReport() {
+
+                    shipmentbycustomer=httpRequest("../../reports/shipmenttimerange","GET");
+                    ///console.log(deliveryByVehicle);
+                    var metadata1 = [{name:'Shipment Number',property: 'number'}, {name:'Registerd Date',property: 'dateofregisterd'}];
+                    tableForReport('tblArea','tblShipmentByStatus',['table', 'table-sm', 'table-bordered'],metadata1,shipmentbycustomer,true)
+                    //drawChart('pieChart','doughnut',shipmentbycustomer);
+                    /*var htag = document.createElement("h4");
+                    var count = 0;
+                    for (let delivery of deliveryByVehicle){
+                        count= count+delivery.value;
+                    }
+                    htag.innerHTML = "Total Deliveries count : "+count;
+                    var parent = document.getElementById("tblArea");
+                    parent.appendChild(htag);
+        */
+                }
+
+                function printReport() {
+                    //'shpByMod','Report: Shipments by Mod [' +today+' ]','Shipment By Mod Report',today
+                    genPDFofTag("tagid","Report : Shipment between Time Range "+today,"Shipment between Time Range ",today);
+                }
+
+            </script>
+
+        </head>
+<body style="background-color: #F9F9FC">
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <div class="card" style="border: 1px solid #cbcbcd;border-radius: 15px;margin-top: 30px" >
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4" id="form1"></div>
+                    <div class="col-md-4" id="form2"></div>
+                    <div class="col-md-4" id="form">
+                        <div class="row " style="margin-top: 30px">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6">
+                                <button id="btnGenReport" type="button" class="btn btn-primary btn-primary-action btn-sm">Generate Report</i></button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <script>
+                        dteField("form1","dteStart","Start Date","","","","","",false);
+                        dteField("form2","dteEnd","End Date","","","","","",false);
+                    </script>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Shipment between Time Range</h4>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <button id="btnPrint" type="button" class="btn btn-primary btn-primary-action btn-sm">Print <i class="fas fa-print"></i></button>
+                    </div>
+
+                </div>
+                <div id="tagid" style="margin-top: 15px">
+                    <div class="" id="tblArea" style="margin-bottom: 15px"></div>
+                    <div ><canvas id="pieChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+
+
+
+</body>
+</html></title>
+</head>
+<body>
+
+</body>
+</html>

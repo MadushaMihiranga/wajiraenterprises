@@ -1,0 +1,446 @@
+<!doctype html>
+<html>
+<head>
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Confirm Delivery</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnSearch.addEventListener("click",btnSearchMC);
+            btnSearchClear.addEventListener("click",btnSearchClearMC);
+
+            privilages = httpRequest("../privilages?module=DELIVERYCONFIRMATION","GET");
+            vehownership = httpRequest("../vehownership/list", "GET");
+            employes = httpRequest("../employees/list", "GET");
+            deliverytype = httpRequest("../deliverytype/list", "GET");
+            deliverystatus = httpRequest("../delrequeststatus/list", "GET");
+            banks = httpRequest("../banks/list","GET");
+            chequestatus = httpRequest("../chequestatus/list","GET");
+            companys = httpRequest("../companys/list", "GET");
+
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+
+            loadView();
+        }
+
+
+
+        function loadView() {
+
+            cheque = new Object();
+            oldcheque = null;
+
+            //Search Area
+            txtSearchNumber.value="";
+            txtSearchNumber.style.borderColor = "";
+
+            fillCombo(cmbSearchStatus,"Search By Status",chequestatus,"name","");
+            fillCombo(cmbSearchClient,"Search By Customer",companys,"name","");
+
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+
+            var query = "&chequenumber=&clientid=&statusid=";
+            loadTable(1,cmbPageSize.value,query);
+        }
+
+        function loadTable(page,size,query) {
+            page = page - 1;
+            cheques = new Array();
+            var data = httpRequest("/cheque?page="+page+"&size="+size+query,"GET");
+            //console.log(data)
+            if(data.content!= undefined) cheques = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblChequeDetail',cheques,fillForm);
+            clearSelection(tblChequeDetail);
+            if(activerowno!="")selectRow(tblChequeDetail,activerowno,active);
+            window.location.href="#ui";
+        }
+
+
+
+
+        function paginate(page) {
+            var paginate;
+            if(oldcheque==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno=""
+                loadSearchedTable();
+            }
+        }
+
+
+
+
+        function fillForm(chq, rowno) {
+            activerowno = rowno;
+            //clearSelection(tblChequeDetail);
+            selectRow(tblChequeDetail, activerowno, active);
+            cheque = JSON.parse(JSON.stringify(chq));
+            oldcheque = JSON.parse(JSON.stringify(chq));
+
+
+            txtChequeNumber.value = cheque.chequenumber;
+            fillCombo(cmbBank,"",banks,"name",cheque.branchId.bankId.name);
+            branches = httpRequest("../branch/listbybank?bankId="+JSON.parse(cmbBank.value).id,"GET");
+            fillCombo(cmbBranch,"",branches,"name",cheque.branchId.name);
+            dteDate.value = cheque.issueddate;
+            txtValue.value = cheque.value;
+            txtDescription.value = cheque.description;
+            fillCombo(cmbStatus,"",chequestatus,"name",cheque.chequestatusId.name);
+
+            $('#ModelViewDetail').modal('show');
+
+            setStyle(valid);
+
+            txtChequeNumber.disabled = "disabled";
+            cmbBank.disabled = "disabled";
+            cmbBranch.disabled = "disabled";
+            dteDate.disabled = "disabled";
+            txtValue.disabled = "disabled";
+            txtDescription.disabled = "disabled";
+            cmbStatus.disabled = "";
+
+        }
+
+
+
+
+        function setStyle(style) {
+            txtChequeNumber.style.borderColor = style;
+            cmbBank.style.borderColor = style;
+            cmbBranch.style.borderColor = style;
+            dteDate.style.borderColor = style;
+            txtValue.style.borderColor = style;
+            txtDescription.style.borderColor = style;
+            cmbStatus.style.borderColor = style;
+        }
+
+        function disableButtons(add, upd) {
+
+            /*if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");*/
+
+            if (upd || !privilages.update) btnUpdate.setAttribute("disabled", "disabled");
+            else btnUpdate.removeAttribute("disabled");
+
+            /*  if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+              else btnModelDelete.removeAttribute("disabled");*/
+
+        }
+
+
+
+
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(cheque!=null && oldcheque!=null) {
+
+                if (cheque.chequestatusId.name != oldcheque.chequestatusId.name)
+                    updates = updates + "\nVehicle Status is Changed : <span style='color: #ffc107'>"+oldcheque.chequestatusId.name+" <i class=\"fas fa-arrow-right\"></i> "+cheque.chequestatusId.name+"</span><br>";
+
+            }
+            return updates;
+        }
+
+
+
+        function btnUpdateMC() {
+
+            var updates = getUpdates();
+
+
+            if (updates != ""){
+                $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+                var response = httpRequest("/cheque","PUT",cheque);
+                if(response=="0"){
+                    $('#ModelUpdate').modal('hide');
+                    alertify.notify('Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                    loadView();
+                    loadSearchedTable();
+                }
+                else window.alert("Failed to Update as \n\n"+response);
+            }else {
+                window.alert("Nothing to Update !")
+            }
+
+        }
+
+
+        function loadSearchedTable() {
+
+            var chequenumber = txtSearchNumber.value;
+            var client = cmbSearchClient.value;
+            var status = cmbSearchStatus.value;
+
+
+            var clientid="";
+            if(client!="Search By Customer") {
+                clientid = JSON.parse(client).id;
+                cmbSearchClient.style.borderColor = active;
+            }
+
+            var statusid="";
+            if(status!="Search By Status") {
+                statusid = JSON.parse(status).id;
+                cmbSearchStatus.style.borderColor = active;
+            }
+
+            if(chequenumber!=""){  txtSearchNumber.style.borderColor = active; }
+
+
+            var query = "&chequenumber=&clientid=&statusid=";
+
+            if(chequenumber!="" || clientid!="" || statusid!="" )
+                query = "&chequenumber=" + chequenumber + "&clientid=" + clientid + "&statusid=" + statusid;
+            //console.log(query);
+            loadTable(activepage, cmbPageSize.value, query);
+        }
+
+        function btnSearchMC(){
+            //console.log("btnSearchMC")
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+            loadView();
+        }
+
+    </script>
+
+
+
+</head>
+
+<body>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px">Cheque Management</h4>
+           <!-- <div class="card" style=";border: 1px solid #282c2f;">-->
+                <!--card-header-->
+                <!-- <div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 1px">
+                     <h3><i class="far fa-users"></i> Employee Management</h3>
+                 </div>-->
+
+                <!--card-body-start-->
+                <!--<div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">-->
+                    <div class="row">
+
+                        <div class="modal fade" id="ModelViewDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog " role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel1">Cheque Detail</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body" style="height: 400px; overflow-y: scroll">
+                                        <form>
+                                            <div class="row">
+
+
+                                                <div class="col-md-12" id="requstConfrmation" >
+
+                                                        <form>
+                                                            <div class="row">
+                                                                <div class="col-md-12" id="formConfirmation" style=" ">
+                                                                    <script>
+                                                                        txtField('formConfirmation','txtChequeNumber','Cheque Number','Enter Driver Name Here','',"",'cheque','chequenumber','oldcheque');
+                                                                        cmbBox('formConfirmation','cmbBank','Bank','','','',true);
+                                                                        cmbBox('formConfirmation','cmbBranch','Branch','cheque','branchId','oldcheque');
+                                                                        dteField('formConfirmation','dteDate','Issued Date','',"",'cheque','issueddate','oldcheque');
+                                                                        txtField('formConfirmation','txtValue','Value','','',"",'cheque','value','oldcheque');
+                                                                        txtArea('formConfirmation','txtDescription','Note','','',"",'cheque','description','oldcheque');
+                                                                        cmbBox('formConfirmation','cmbStatus','Cheque Status','cheque','chequestatusId','oldcheque');
+                                                                    </script>
+                                                                </div>
+                                                            </div>
+                                                            <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+
+                                                        </form>
+
+                                                        <div class="row" >
+
+                                                            <div class="col-md-9"></div>
+                                                            <div class="col-md-3" style="margin-right: 10px;margin-left: -5px">
+                                                                <button data-toggle="tooltip" data-placement="top" title="Update" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                                            </div>
+
+                                                        </div>
+
+
+
+
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <p id="errortag" style="color: #dc3545"></p>
+                                        <!--   <button onclick="test()" type="button" class="btn btn-primary-action" id="btnViewModelUpdate">Update Details</button>
+                                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <!--table-start-->
+                        <div class="col-md-12">
+                            <div class="card" style="border: 1px solid #282c2f;">
+                                <div class="card-header" style="height: 60px">
+                                    <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <input placeholder="Cheque Number" class="form-control form-control-sm txtinput" type="text" id="txtSearchNumber"/>
+                                        </div>
+
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <select  class="form-control form-control-sm txtinput" id="cmbSearchClient"></select>
+                                        </div>
+
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <select  class="form-control form-control-sm txtinput" id="cmbSearchStatus"></select>
+                                        </div>
+
+
+                                        <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                        <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                                    </form>
+                                </div>
+                                <div class="card-body table-box-overflow"  id="employeeview">
+
+                                    </hr>
+                                    <div class="table-responsive" id="tableParent">
+
+                                        <script>
+
+                                            function getBankColumn(ob) {
+                                                return ob.branchId.bankId.name+" - "+ob.branchId.name;
+                                            }
+
+                                            function getValueColumn(ob) {
+                                                return"Rs. "+ob.value+".00";
+                                            }
+
+                                            var metadata = [
+                                                {name:'Cheque Number',search:false,datatype:'text',property:'chequenumber'},
+                                                {name:'Issued Date',search:false,datatype:'text',property:'issueddate'},
+                                                {name:'Bank',search:false,datatype:'text',property:getBankColumn},
+                                                {name:'Status',search:false,datatype:'text',property:'chequestatusId.name'},
+                                                {name:'Value',search:false,datatype:'text',property:getValueColumn},
+                                            ];
+                                            table("tableParent","tblChequeDetail",metadata,[6,10,15,30,500,1000],btnSearchMC,true);
+
+                                        </script>
+
+
+                                    </div>
+                                    <ul id="pagination" class="pagination"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!--table-end-->
+
+                    </div>
+
+                <!--</div>-->
+                <!--card-body-end-->
+
+                <!--<div class="card-footer"></div>-->
+                <!--card-end-->
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+</body>
+</html>

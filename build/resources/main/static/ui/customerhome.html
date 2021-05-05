@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+
+    <title> Home</title>
+    <link href="../icon/customer.png" rel="icon" >
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../plugin/Semantic-UI-CSS-master/components/step.min.css">
+    <script rel="stylesheet" src="../plugin/Semantic-UI-CSS-master/semantic.min.js"></script>
+    <!--<script src="../plugin/Semantic-UI-CSS-master/semantic.min.js"></script>-->
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+
+    <link rel="stylesheet" href="../style/shipment-status-box.css">
+    <link rel="stylesheet" href="../style/common.css"/>
+    <link rel="stylesheet" href="../style/customer-home.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        function initialize() {
+            txtUserName.innerHTML = " "+session.getObject("user").companyId.name;
+            console.log(session.getObject("user").comapnyId);
+            console.log(session.getObject("user"));
+            txtName.innerHTML = session.getObject("user").companyId.name;
+            txtNumber.innerHTML = session.getObject("user").companyId.number;
+          /*  txtTel.innerHTML = session.getObject("user").customerId.telephoneno;
+            txtAddress.innerHTML = session.getObject("user").customerId.address;*/
+            txtIlno.innerHTML = session.getObject("user").companyId.importlicenseno;
+            txtTIN.innerHTML = session.getObject("user").companyId.tin;
+        }
+
+     /*   function laodUi(ui) {
+            frmMainWindow.src = 'http://localhost:8080/ui/' + ui;
+        }*/
+
+        function changePassword() {
+            if (window.confirm("Do you need to change the Password ?")) {
+                cookie.setValue("username", "", 1);
+                cookie.setValue("password", "", 1);
+                session.setObject("user", new Object());
+                window.open("changepassword", "_self");
+            }
+        }
+
+        function logout() {
+            if(window.confirm("Do you need to logout ?")) {
+
+                ajax = new XMLHttpRequest();
+                ajax.open("PUT", "/session", false);
+                // ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                ajax.send();
+                err.innerHTML=err.innerHTML+ajax.responseText;
+                if(ajax.status==200 && ajax.responseText!="") {
+                    responce = ajax.responseText;
+                    cookie.setValue("username", "", 1);
+                    cookie.setValue("password", "", 1);
+                    session.setObject("user", new Object());
+                    window.alert(responce);
+                    window.open("customerlogin","_self");
+
+                    // window.open("login", "_self");
+                }
+                else
+                    window.alert("Failed to logout");
+            }
+        }
+
+        /*$(document).ready(function () {
+            $('ul.nav li.dropdown').hover(function () {
+                $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(10);
+            }, function () {
+                $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(10);
+            });
+        }
+        );*/
+    </script>
+
+
+
+</head>
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+
+            <!--header-Start-->
+            <div class="row header">
+                <div class="col-md-2" ><img style="margin-left: 11px;margin-top: 2px" src="../image/logo-small-small.png"/></div>
+                <div class="col-md-7"></div>
+                <div class="col-md-3" align="right">
+                    <span id="txtUserName"></span>
+                    <button onclick="logout()" class="header-btn" data-toggle="tooltip" data-placement="bottom" title="Log Out"><i class="fal fa-sign-out-alt"></i></button>
+                    <button onclick="" class="header-btn" data-toggle="tooltip" data-placement="bottom" title="Account Settings" ><i class="fal fa-cog"></i></button>
+                </div>
+            </div>
+            <!--header-end-->
+
+            <!--Content-start-->
+            <div class="row" style="margin-top: 15px;">
+                <!--description-start-->
+                <div class="col-md-3">
+                    <!--customer-information-start-->
+                        <div class="card" style="border: 1px solid #161616">
+                            <div class="card-header" style="background-color: #161616">
+                                <div align="center">
+                                    <img  id="customerlogo"/>
+                                    <script>
+                                        customerlogo.src = atob(session.getObject("user").companyId.logo);
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-wrapper"><span class="detail-title">Name : </span><span class="text-value" id="txtName"></span></div>
+                                <div class="text-wrapper"><span class="detail-title">Number : </span><span class="text-value" id="txtNumber"></span></div>
+                                <!--<div class="text-wrapper"><span class="detail-title">Contact No : </span><span class="text-value" id="txtTel"></span></div>
+                                <div class="text-wrapper"><span class="detail-title">Address : </span><span class="text-value" id="txtAddress"></span></div>-->
+                                <div class="text-wrapper"><span class="detail-title">import License No : </span><span class="text-value" id="txtIlno"></span></div>
+                                <div class="text-wrapper"><span class="detail-title">TIN : </span><span class="text-value" id="txtTIN"></span></div>
+                            </div>
+                        </div>
+                    <!--customer-information-end-->
+
+                    <!--shipment-counter-start-->
+                    <div class="card" style="margin-top: 3px;border: 1px solid #161616">
+                        <div class="card-header" style="background-color: #161616;height: 40px"><p style="color: white;margin-top: -5px">
+                            <i class="fal fa-clipboard-list"></i>&nbsp;&nbsp;&nbsp;Your Shipments</p>
+                        </div>
+
+
+                    <!--shipment-counter-end-->
+
+                    <div class="card-body">
+                        <div class="row">
+
+                            <!--sea-cargo-start-->
+                            <div class="col-md-6">
+                                <div class="card" style="border: 1px solid #161616; border-radius: 2px">
+                                    <div class="card-header" style="background-color: #161616;height: 40px;border-radius: 0px"><p style="color: white;margin-top: -5px">Sea Cargo</p></div>
+                                    <div id="panelSea" class="card-body" style="padding: 5px 5px 5px 5px;background-color: #f0f0f0">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card" style="border-color: #909090">
+                                                    <div class="card-body" style="padding: 2px 2px 2px 2px">
+                                                        <p style="font-size: 30px;margin-bottom: 0px" class="text-center">00</p>
+                                                        <p style="font-weight: bold;margin-bottom: 2px" class="text-center">In Progress</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card" style="margin-top: 5px;border-color: #909090">
+                                                    <div class="card-body" style="padding: 2px 2px 2px 2px">
+                                                        <p style="font-size: 30px;margin-bottom: 0px" class="text-center">00</p>
+                                                        <p style="font-weight: bold;margin-bottom: 2px" class="text-center">Complete</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--sea-cargo-end-->
+
+
+                            <!--air-cargo-start-->
+                            <div class="col-md-6">
+                                <div class="card" style="border: 1px solid #161616; border-radius: 0px">
+                                    <div class="card-header" style="background-color: #161616;height: 40px;border-radius: 0px"><p style="color: white;margin-top: -5px">Air Cargo</p></div>
+                                    <div id="panelAir" class="card-body" style="padding: 5px 5px 5px 5px;background-color: #f0f0f0">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card" style="border-color: #909090">
+                                                    <div class="card-body" style="padding: 2px 2px 2px 2px">
+                                                        <p style="font-size: 30px;margin-bottom: 0px" class="text-center">00</p>
+                                                        <p style="font-weight: bold;margin-bottom: 2px" class="text-center">In Progress</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card" style="margin-top: 5px;border-color: #909090">
+                                                    <div class="card-body" style="padding: 2px 2px 2px 2px">
+                                                        <p style="font-size: 30px;margin-bottom: 0px" class="text-center">00</p>
+                                                        <p style="font-weight: bold;margin-bottom: 2px" class="text-center">Complete</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--air-cargo-end-->
+
+                        </div>
+
+                    </div>
+                    </div>
+                    <div class="card" style="margin-top: 3px;border: 1px solid #161616">
+                        <div class="card-body">
+                            <button id="btnContact" type="button" class="btn btn-primary  "  data-toggle="modal" data-target="#MesageModel" style="width: 49%" data-toggle="modal" data-target="#ContactModal"><i class="far fa-comment-alt-lines"></i> Contact Us</button>
+                            <button id="btnHelp" type="button" class="btn btn-primary " style="width: 49%"><i class="far fa-question"></i> Help</button>
+                        </div>
+                    </div>
+
+                </div>
+                <!--description-end-->
+
+                <!--timeline-start-->
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header" style="height: 60px;background-color: white">
+                            <!--timeline-search-start-->
+                            <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <input placeholder="Search By Shipment No" class="form-control form-control-sm txtinput" type="text" id="txtSearchByNo"/>
+                                </div>
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <select class="form-control form-control-sm txtinput" id="cmbSearchByType"></select>
+                                </div>
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <select class="form-control form-control-sm txtinput" id="cmbSearchByStatus"></select>
+                                </div>
+                                <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                            </form>
+                        </div>
+                            <!--timeline-search-end-->
+
+                        <div id="timeline" class="card-body">
+                            <!--timeline-content-start-->
+
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+                            <div class="card" style="margin-top: 15px;border: 1px solid #161616">
+                                <!--header-start-->
+                                <div class="card-header">
+
+                                    <div class="row">
+                                        <div class="col-md-2" style="margin-right: -30px;">
+                                            <p class="text-title-sm">Shipment ID</p>
+                                            <h6 id="id" style="font-weight: bold">000000000</h6>
+                                        </div>
+
+                                        <div class="col-md-2" style="border-left: 1px solid black;margin-right: -30px">
+                                            <p class="text-title-sm">Placed Date</p>
+                                            <h6 id="placeddate" style="font-weight: bold">01-01-2019</h6>
+                                        </div>
+
+                                        <div class="col-md-7" style="border-left: 1px solid rgb(204,204,204);margin-right: -30px">
+                                            <p class="text-title-sm">Client Name</p>
+                                            <h6 id="client" style="font-weight: bold">SMM Halcyon (PVT) Ltd</h6>
+                                        </div>
+
+                                        <div class="col-md text-right">
+                                            <button id="btnView" type="button" class="btn btn-sm btn-view-detail">View Detail</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!--Header-End-->
+
+                              <!--  <div class="col-md" align="center">
+                                    <span class="fa fa-tasks" style="font-size: 25px;color: #6d6d6d;margin-left: -15px;margin-bottom: 10px"></span>
+                                </div>
+-->
+                                <!--Body-Start-->
+                                <div class="card-body" style="padding-top: 10px;padding-bottom: 10px">
+                                    <div class="row">
+                                        <div class="col-md-11">
+                                            <h5 id="itemname">Prednitab 5 Tablets(Prednisolone Tablets 5mg BP)</h5>
+                                            <div class="progress" style="height: 15px;border: 1px solid #5a5a5a;border-radius: 8px">
+                                                <div class="progress-bar bg-success progress-bar-animated" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md" align="center">
+                                            <i class="fa fa-tasks" style="font-size: 25px;color: #6d6d6d;margin-left: -15px;margin-top: 25px"></i>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="text-left">
+                                                <p class="text-title-sm">Current Status</p>
+                                                <h6 id="currentstatus" style="font-weight: bold">current status</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-right">
+                                                <button type="button" class="btn btn-sm btn-view-detail" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">view process detail</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Body-End-->
+
+                                <!--Footer-Start-->
+                                <div class="card-footer collapse step-detail-area" id="collapseExample">
+                                    <div class="step-detail-box" >
+                                        <div class="row">
+                                            <div class="col-md-2 step-detail-box-icon-complete">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p class="step-detail-box-text">Documents Recived</p>
+                                                <p class="step-detail-box-text-bold">2019-03-03</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Footer-End-->
+
+                            </div>
+                            <!--timeline-content-end-->
+                        </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <!--timeline-end-->
+            </div>
+            <!--Content-end-->
+
+        </div>
+    </div>
+
+
+
+<!----------------------------------->
+<!-- Modal Message -->
+<div class="modal fade" id="MesageModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Contact Us</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="frmmessage">
+                    <script>
+                        txtArea('frmmessage','txtMessage','Message','Type Your Message Here','',"",'Message','text','oldtext');
+                    </script>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close&nbsp;<i class="far fa-times"></i></button>
+                <button type="button" class="btn btn-primary">Send&nbsp;<i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+<div id="err"></div>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Examination</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+    <script>
+
+
+        window.addEventListener("load",initialize);
+
+        function initialize(){
+
+            if (parent.window.shipmentnumber !=""){
+                btnAdd.addEventListener("click",btnAddMC);
+                btnClear.addEventListener("click",btnClearMC);
+                btnModelAdd.addEventListener("click", ModelAddContent);
+                btnUpdate.addEventListener("click",btnUpdateMC);
+                btnModelUpdate.addEventListener("click", ModelUpdate);
+                dteDate.addEventListener("change", dteValidate);
+
+                clearingclerks = httpRequest("../employee/listbydesgnation?designationId=2","GET");
+                locations = httpRequest("../location/list", "GET");
+                pestatus = httpRequest("../pestatus/list", "GET");
+                privilages = httpRequest("../privilages?module=CLEARINGPROCESS", "GET");
+                regexes = httpRequest("../regexes/panelexamination","GET");
+                txtOfficer.setAttribute("data-pattern",regexes.customsofficer.regex);
+
+                pass = true;
+                fail = false;
+
+                valid = "#28a745";
+                invalid = "#dc3545";
+                initial = "#ced4da";
+                updated = "#ffc107";
+                active = "khaki";
+
+                loadForm();
+            }else {
+                document.getElementById("formCard").style.visibility = "hidden";
+                parent.GetModel();
+            }
+
+
+
+        }
+
+        function loadForm() {
+
+            examination = new Object();
+            oldexamination = null;
+
+            examination.examinationhascheckpointsList = [
+                {checkpointsId: {id: 1, name: "Declared Value Accepted"},},
+                {checkpointsId: {id: 2, name: "HS Code Correct"},  },
+                {checkpointsId: {id: 3, name: "Cargo Content is Correct"}, },
+                {checkpointsId: {id: 4, name: "Quantity is correct"}, },
+                {checkpointsId: {id: 5, name: "Duty rates correct"}, }
+                ];
+
+            txtShpNo.value = parent.window.shipmentnumber;
+            txtShpNo.disabled = "disabled";
+            txtShpNo.style.borderColor = valid;
+
+
+
+            clearingprocess = httpRequest("../getClearingprocessobject?shipmentno="+txtShpNo.value,"GET");
+            examination.clearingprocessId = clearingprocess;
+
+            shipment = httpRequest("../getshipment?shipmentno="+txtShpNo.value,"GET");
+            examination.shipmentId = shipment;
+
+            customsdecleration = httpRequest("../getCusdec?shipmentno="+txtShpNo.value,"GET");
+            examination.cusdecId = customsdecleration;
+
+            fillCombo(cmbEmployee,'Select Clearing Clerk',clearingclerks,'callingname',examination.clearingprocessId.shipmentId.clearingclerk.callingname);
+            examination.employeeId = JSON.parse(cmbEmployee.value);
+
+            fillCombo(cmbLocation,'Select Location',locations,'name',"");
+
+            fillCombo(cmbStatus,'Select Status',pestatus,'name','Pending');
+            examination.pestatusId = JSON.parse(cmbStatus.value);
+
+
+            //console.log(customsdecleration);
+            txtCusdecNo.value = customsdecleration.customrefno;
+            txtCusdecNo.disabled = "disabled";
+            txtCusdecNo.style.borderColor = valid;
+
+
+            disableButtons(false,true);
+
+
+            hasPanelExamination = httpRequest("../hasPanelExamination?number="+parent.window.shipmentnumber,"GET");
+            if (hasPanelExamination){
+                getPanelExamination = httpRequest("../getPanelExamination?number="+parent.window.shipmentnumber.toString(),"GET");
+                //console.log(getPanelExamination);
+                fillForm(getPanelExamination);
+            }
+        }
+
+        function dteValidate() {
+            var today = new Date();
+            var birthday = new Date(dteDate.value);
+            if((today.getTime()-birthday.getTime())>=(3600*1000)) {
+                console.log(true)
+                dteDate.style.borderColor=valid;
+                return true
+            } else {
+                dteDate.style.borderColor=invalid;
+                return false;
+            }
+        }
+
+
+        function fillForm(exm){
+
+            examination = JSON.parse(JSON.stringify(exm));
+            oldexamination = JSON.parse(JSON.stringify(exm));
+
+            /*examination = exm;
+            oldexamination = exm;
+*/
+            //console.log(examination);
+            //console.log(oldexamination);
+
+
+            dteDate.value = examination.date;    ///////////////////
+            txtOfficer.value = examination.customsofficer;
+            fillCombo(cmbLocation,'Select Location',locations,'name',examination.locationId.name);
+            fillCombo(cmbEmployee,'Select Clearing Clerk',clearingclerks,'callingname',examination.employeeId.callingname);
+            fillCombo(cmbStatus,'Select Status',pestatus,'name',examination.pestatusId.name);
+            cmbEmployee.disabled = "disabled";
+
+            if (examination.examinationhascheckpointsList[0].cpstatus === true){
+                document.getElementById("RadioValueAccepted").checked = true;
+                document.getElementById("RadioValueDeclined").checked = false;
+            }else {
+                document.getElementById("RadioValueDeclined").checked = true;
+                document.getElementById("RadioValueAccepted").checked = false;
+            }
+
+            if (examination.examinationhascheckpointsList[1].cpstatus === true){
+                document.getElementById("RadioHSCodeAccepted").checked = true;
+                document.getElementById("RadioHSCodeDeclined").checked = false;
+            }else {
+                document.getElementById("RadioHSCodeDeclined").checked = true;
+                document.getElementById("RadioHSCodeAccepted").checked = false;
+            }
+
+            if (examination.examinationhascheckpointsList[2].cpstatus === true){
+                document.getElementById("RadioContainAccepted").checked = true;
+                document.getElementById("RadioContainDeclined").checked = false;
+            }else {
+                document.getElementById("RadioContainDeclined").checked = true;
+                document.getElementById("RadioContainAccepted").checked = false;
+            }
+
+            if (examination.examinationhascheckpointsList[3].cpstatus === true){
+                document.getElementById("RadioAmountAccepted").checked = true;
+                document.getElementById("RadioAmountDeclined").checked = false;
+            }else {
+                document.getElementById("RadioAmountDeclined").checked = true;
+                document.getElementById("RadioAmountAccepted").checked = false;
+            }
+
+            if (examination.examinationhascheckpointsList[4].cpstatus === true){
+                document.getElementById("RadioDutyAccepted").checked = true;
+                document.getElementById("RadioDutyDeclined").checked = false;
+            }else {
+                document.getElementById("RadioDutyDeclined").checked = true;
+                document.getElementById("RadioDutyAccepted").checked = false;
+            }
+
+            disableButtons(true, false);
+            setStyle(valid);
+
+        }
+
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(examination!=null && oldexamination!=null) {
+
+                if (examination.date != oldexamination.date)
+                    updates = updates + "\nDate is Changed : <span style='color: #ffc107'>"+oldexamination.date+" <i class=\"fas fa-arrow-right\"></i> "+examination.date+"</span><br>";
+
+                if (examination.customsofficer != oldexamination.customsofficer)
+                    updates = updates + "\nAppraiser is Changed : <span style='color: #ffc107'>"+oldexamination.customsofficer+" <i class=\"fas fa-arrow-right\"></i> "+examination.customsofficer+"</span><br>";
+
+                if (examination.locationId.name != oldexamination.locationId.name)
+                    updates = updates + "\nLocation is Changed : <span style='color: #ffc107'>"+oldexamination.locationId.name+" <i class=\"fas fa-arrow-right\"></i> "+examination.locationId.name+"</span><br>";
+
+                if (examination.pestatusId.name != oldexamination.pestatusId.name)
+                    updates = updates + "\nStatus is Changed : <span style='color: #ffc107'>"+oldexamination.pestatusId.name+" <i class=\"fas fa-arrow-right\"></i> "+examination.pestatusId.name+"</span><br>";
+
+                if (examination.examinationhascheckpointsList[0].cpstatus  != oldexamination.examinationhascheckpointsList[0].cpstatus )
+                    updates = updates + "\nDeclared Value acceptance is Changed : <span style='color: #ffc107'>"+oldexamination.examinationhascheckpointsList[0].cpstatus +" <i class=\"fas fa-arrow-right\"></i> "+examination.examinationhascheckpointsList[0].cpstatus +"</span><br>";
+
+                if (examination.examinationhascheckpointsList[1].cpstatus  != oldexamination.examinationhascheckpointsList[1].cpstatus )
+                    updates = updates + "\nHS Code acceptance is Changed : <span style='color: #ffc107'>"+oldexamination.examinationhascheckpointsList[1].cpstatus +" <i class=\"fas fa-arrow-right\"></i> "+examination.examinationhascheckpointsList[1].cpstatus +"</span><br>";
+
+                if (examination.examinationhascheckpointsList[2].cpstatus  != oldexamination.examinationhascheckpointsList[2].cpstatus )
+                    updates = updates + "\nCargo Content acceptance is Changed : <span style='color: #ffc107'>"+oldexamination.examinationhascheckpointsList[2].cpstatus +" <i class=\"fas fa-arrow-right\"></i> "+examination.examinationhascheckpointsList[2].cpstatus +"</span><br>";
+
+                if (examination.examinationhascheckpointsList[3].cpstatus  != oldexamination.examinationhascheckpointsList[3].cpstatus )
+                    updates = updates + "\nQuantity acceptance is Changed : <span style='color: #ffc107'>"+oldexamination.examinationhascheckpointsList[3].cpstatus +" <i class=\"fas fa-arrow-right\"></i> "+examination.examinationhascheckpointsList[3].cpstatus +"</span><br>";
+
+                if (examination.examinationhascheckpointsList[4].cpstatus  != oldexamination.examinationhascheckpointsList[4].cpstatus )
+                    updates = updates + "\nDuty rate acceptance is Changed : <span style='color: #ffc107'>"+oldexamination.examinationhascheckpointsList[4].cpstatus +" <i class=\"fas fa-arrow-right\"></i> "+examination.examinationhascheckpointsList[4].cpstatus +"</span><br>";
+
+            }
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+
+
+
+            var errors = getErrors();
+
+            if (errors == "") {
+
+                setStatus();
+                examination.pestatusId = JSON.parse(cmbStatus.value);
+
+                //console.log(examination);
+               // console.log(oldexamination);
+
+
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnUpdateMC() {
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/panelexamination","PUT",examination);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                //alertify.notify('Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                //loadView()
+                showResult('success','Panel Examination Detail Updated Successfully',6);
+                loadForm();
+                //loadSearchedTable();
+                parent.window.shipmentnumber ="";
+                //parent.loadUI('viewpanelexamination','Wajira Enterprises | Clearing process');
+            }
+            else {
+                $('#ModelAddContent').modal('hide');
+                showResult('error');
+                window.alert("Failed to Add as \n\n"+response);
+            }
+        }
+
+
+        function setStyle(style) {
+
+            dteDate.style.borderColor = style;
+            txtOfficer.style.borderColor = style;
+            cmbLocation.style.borderColor = style;
+            radioDuty.style.borderColor = style;
+            radioValue.style.borderColor = style;
+            radioContent.style.borderColor = style;
+            radioHSCode.style.borderColor = style;
+            radioQuantity.style.borderColor = style;
+
+        }
+
+
+        function disableButtons(add,upd) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+        }
+
+
+        function getErrors() {
+
+            var errors = "";
+
+            if(examination.date == null)
+                errors = errors + "Date is not selected<br>";
+
+            if(examination.customsofficer == null)
+                errors = errors + "Appraiser is invalid<br>";
+
+            if(examination.locationId == null)
+                errors = errors + "Location is not selected <br>";
+
+            if(examination.examinationhascheckpointsList[0].cpstatus  == null)
+                errors = errors + "Declared Value acceptance is not selected<br>";
+
+            if(examination.examinationhascheckpointsList[1].cpstatus  == null)
+                errors = errors + "HS Code acceptance is not selected<br>";
+
+            if(examination.examinationhascheckpointsList[2].cpstatus  == null)
+                errors = errors + "Cargo Content acceptance is not selected<br>";
+
+            if(examination.examinationhascheckpointsList[3].cpstatus  == null)
+                errors = errors + "Quantity acceptance is not selected<br>";
+
+            if(examination.examinationhascheckpointsList[4].cpstatus  == null)
+                errors = errors + "Duty rate acceptance is not selected<br>";
+
+            if (!dteValidate()){
+                errors = errors + "Examination Date Cannot Be Future Date<br>";
+            }
+
+            return errors;
+
+        }
+
+        function ModelAddContent() {
+
+
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                setStatus();
+                examination.pestatusId = JSON.parse(cmbStatus.value);
+                console.log(examination);
+                $('#ModelAddContent').modal('show');
+
+                spnNumber.innerHTML = txtShpNo.value;
+                spnRefNo.innerHTML = txtCusdecNo.value;
+                spnDate.innerHTML = examination.date;
+                spnStatus.innerHTML = examination.pestatusId.name;
+                spnAppriser.innerHTML = examination.customsofficer;
+                spnLocation.innerHTML = examination.locationId.name;
+                spnEmployee.innerHTML = examination.employeeId.callingname;
+
+                var element = document.getElementById("statustag");
+                content = "";
+                for ( x = 0; x < examination.examinationhascheckpointsList.length; x++ ){
+                    content =content+  examination.examinationhascheckpointsList[x].checkpointsId.name+" : "+examination.examinationhascheckpointsList[x].cpstatus +"<br>";
+                }
+                element.innerHTML = content;
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/panelexamination","POST",examination);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                showResult('success','Panel Examination Detail Saved Successfully',6);
+                //alertify.notify('Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+                parent.window.shipmentnumber ="";
+
+
+                //activerowno = 1;
+
+            }
+            else {
+                $('#ModelAddContent').modal('hide');
+                showResult('error');
+                window.alert("Failed to Add as \n\n"+response);
+            }
+        }
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+            var clear;
+            if(oldpaytaxes==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblCompany);
+            }
+
+        }
+
+        function checkStatus(status) {
+            return status == true;
+        }
+
+
+        function  setStatus() {
+            var statuses = new Array();
+            for (var x = 0; x<examination.examinationhascheckpointsList.length; x++){
+                statuses.push(examination.examinationhascheckpointsList[x].cpstatus );
+            }
+            if (statuses.every(checkStatus)){
+                fillCombo(cmbStatus,'Select Status',pestatus,'name','Pass');
+                examination.pestatusId = JSON.parse(cmbStatus.value);
+            }else {
+                if (examination.pestatusId.name != "Fail"){
+                    fillCombo(cmbStatus,'Select Status',pestatus,'name','Pending');
+                    examination.pestatusId = JSON.parse(cmbStatus.value);
+                }
+            }
+
+            console.log(statuses);
+            console.log(statuses.every(checkStatus));
+        }
+
+
+        function setcheckpointstatus(arraylocation,value,id) {
+            examination.examinationhascheckpointsList[arraylocation].cpstatus  = value;
+            if (oldexamination == null){
+                id.style.borderColor = valid;
+            }else{
+                if (examination.examinationhascheckpointsList[arraylocation].cpstatus  != oldexamination.examinationhascheckpointsList[arraylocation].cpstatus ){
+                    id.style.borderColor = updated;
+                }
+            }
+
+        }
+
+    </script>
+
+
+</head>
+<body>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px"><!--<i class="fal fa-building"></i>--> Panel Examination</h4>
+            <div class="card" style="border: 1px solid #282c2f;">
+                <!--card-header-->
+                <!--<div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 15px">
+
+                </div>-->
+
+                <!--card-body-start-->
+                <div class="card-body" style="background-color: #f9f9f9;border-radius: 15px;height: 480px">
+                    <div class="row">
+                        <!--Form-Start-->
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="card" id="formCard">
+                                <div class="card-body form-box-overflow" style="height: 440px"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false"  >
+
+                                        <div class="row">
+                                            <div class="col-md-6" id="r3c1"></div>
+                                            <div class="col-md-6" id="r3c2"></div>
+                                        </div>
+
+
+
+                                        <div class="row">
+
+                                            <div class="col-md-6">
+
+                                                <label class="txtinput-label" style="margin-top: 15px">Duty Rate Accepted&nbsp;<i class="fas fa-asterisk" style="color: #ff6666;font-size: 12px"></i></label>
+                                                <div id="radioDuty"  style="margin-top: 0px;border: 1px solid #d1d1d1;height: 35px;padding-top: 5px;border-radius: 3px;width: 271px;background-color: white">
+                                                    <div class="form-check form-check-inline" style="margin-left:40px">
+                                                        <input onclick="setcheckpointstatus(4,pass,radioDuty)" class="form-check-input" type="radio" name="inlineRadioOptions" id="RadioDutyAccepted" value="option1">
+                                                        <label class="form-check-label" for="RadioDutyAccepted">Accepted</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input onclick="setcheckpointstatus(4,fail,radioDuty)"  class="form-check-input" type="radio" name="inlineRadioOptions" id="RadioDutyDeclined" value="option2">
+                                                        <label class="form-check-label" for="RadioDutyDeclined">Declined</label>
+                                                    </div>
+                                                </div>
+
+                                                <label class="txtinput-label" style="margin-top: 15px">Declared Value Accepted&nbsp;<i class="fas fa-asterisk" style="color: #ff6666;font-size: 12px"></i></label>
+                                                <div id="radioValue" style="margin-top: 0px;border: 1px solid #d1d1d1;height: 35px;padding-top: 5px;border-radius: 3px;width: 271px;background-color: white">
+                                                    <div class="form-check form-check-inline" style="margin-left:40px">
+                                                        <input onclick="setcheckpointstatus(0,pass,radioValue)"  class="form-check-input" type="radio" name="inlineRadioOptions1" id="RadioValueAccepted" value="option1">
+                                                        <label   class="form-check-label" for="RadioValueAccepted">Accepted</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input onclick="setcheckpointstatus(0,fail,radioValue)" class="form-check-input" type="radio" name="inlineRadioOptions1" id="RadioValueDeclined" value="option2">
+                                                        <label class="form-check-label" for="RadioValueDeclined">Declined</label>
+                                                    </div>
+                                                </div>
+
+
+                                                <label class="txtinput-label" style="margin-top: 15px">Cargo Content Accepted&nbsp;<i class="fas fa-asterisk" style="color: #ff6666;font-size: 12px"></i></label>
+                                                <div id="radioContent"  style="margin-top: 0px;border: 1px solid #d1d1d1;height: 35px;padding-top: 5px;border-radius: 3px;width: 271px;background-color: white;margin-bottom: 15px">
+                                                    <div class="form-check form-check-inline" style="margin-left:40px">
+                                                        <input onclick="setcheckpointstatus(2,pass,radioContent)" class="form-check-input" type="radio" name="inlineRadioOptions2" id="RadioContainAccepted" value="option1">
+                                                        <label class="form-check-label" for="RadioContainAccepted">Accepted</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input onclick="setcheckpointstatus(2,fail,radioContent)" class="form-check-input" type="radio" name="inlineRadioOptions2" id="RadioContainDeclined" value="option2">
+                                                        <label class="form-check-label" for="RadioContainDeclined">Declined</label>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+
+                                            <div class="col-md-6">
+
+                                                <label class="txtinput-label" style="margin-top: 15px">HS Code Accepted&nbsp;<i class="fas fa-asterisk" style="color: #ff6666;font-size: 12px"></i></label>
+                                                <div id="radioHSCode"  style="margin-top: 0px;border: 1px solid #d1d1d1;height: 35px;padding-top: 5px;border-radius: 3px;width: 271px;background-color: white">
+                                                    <div class="form-check form-check-inline" style="margin-left:40px">
+                                                        <input onclick="setcheckpointstatus(1,pass,radioHSCode)" class="form-check-input" type="radio" name="inlineRadioOptions3" id="RadioHSCodeAccepted" value="option1">
+                                                        <label class="form-check-label" for="RadioHSCodeAccepted">Accepted</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input onclick="setcheckpointstatus(1,fail,radioHSCode)" class="form-check-input" type="radio" name="inlineRadioOptions3" id="RadioHSCodeDeclined" value="option2">
+                                                        <label class="form-check-label" for="RadioHSCodeDeclined">Declined</label>
+                                                    </div>
+                                                </div>
+
+
+                                                <label class="txtinput-label" style="margin-top: 15px">Quantity Accepted&nbsp;<i class="fas fa-asterisk" style="color: #ff6666;font-size: 12px"></i></label>
+                                                <div id="radioQuantity"  style="margin-top: 0px;border: 1px solid #d1d1d1;height: 35px;padding-top: 5px;border-radius: 3px;width: 271px;background-color: white">
+                                                    <div class="form-check form-check-inline" style="margin-left:40px">
+                                                        <input onclick="setcheckpointstatus(3,pass,radioQuantity)" class="form-check-input" type="radio" name="inlineRadioOptions4" id="RadioAmountAccepted" value="option1">
+                                                        <label class="form-check-label" for="RadioAmountAccepted">Accepted</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input onclick="setcheckpointstatus(3,fail,radioQuantity)" class="form-check-input" type="radio" name="inlineRadioOptions4" id="RadioAmountDeclined" value="option2">
+                                                        <label class="form-check-label" for="RadioAmountDeclined">Declined</label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6" id="r4c1"></div>
+                                            <div class="col-md-6" id="r4c2"></div>
+                                        </div>
+
+                                        <script>
+                                            dteField('r3c1','dteDate','Date','',"",'examination','date','oldexamination',true);
+                                            txtField('r3c2','txtOfficer','Appraiser','Appraiser\'s name','',"",'examination','customsofficer','oldexamination',true,"Name is valid","Invalid Name","Name is updated");
+                                            cmbBox('r3c1','cmbLocation','Location','examination','locationId','oldexamination',true);
+                                            txtField('r3c2','txtShpNo','Shipment Number','','',"",'','','');
+                                            cmbBox('r3c1','cmbEmployee','Clearing Clerk','examination','employeeId','oldexamination',true);
+                                            txtField('r3c2','txtCusdecNo','Customs Declaration Ref No','','','','','','');
+                                            cmbBox('r4c1','cmbStatus','Status','examination','pestatusId','oldexamination')
+
+                                        </script>
+
+
+
+
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-6"></div>
+                                            <div class="col-6">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="margin-right: -15px">
+                                                        <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                                    </div>
+                                                    <div class="col-md-4" >
+                                                        <button data-toggle="tooltip" data-placement="top" title="Update" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <button  data-toggle="tooltip" data-placement="top" title="Save" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+
+                        <!--Form-End-->
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeladd">Panel Examination</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Detail</h5>
+                                        <p class="content-model-text-title">Shipment Number                  : <span class="content-model-text-value" id="spnNumber"></span></p>
+                                        <p class="content-model-text-title">Customs Declaration Reference No          : <span class="content-model-text-value" id="spnRefNo"></span></p>
+                                        <p class="content-model-text-title">Date   : <span class="content-model-text-value" id="spnDate"></span></p>
+                                        <p class="content-model-text-title">Clearing Clerk   : <span class="content-model-text-value" id="spnEmployee"></span></p>
+                                        <p class="content-model-text-title">Appraiser         : <span class="content-model-text-value" id="spnAppriser"></span></p>
+                                        <p class="content-model-text-title">Location        : <span class="content-model-text-value" id="spnLocation"></span></p>
+                                        <p class="content-model-text-title" id="statustag"></p>
+                                        <p class="content-model-text-title">Status       : <span class="content-model-text-value" id="spnStatus"></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Panel Examination</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                        <!--Model Update Start-------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabelupdete">Panel Examination</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End---------------------------------------------->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

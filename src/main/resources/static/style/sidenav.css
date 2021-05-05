@@ -1,0 +1,103 @@
+/*side menu*/
+.sidepanel  {
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    height: 625px;
+    top: 0;
+    left: 0;
+    background-color: #282c2f;
+    overflow-x: hidden;
+    transition: 0.5s;
+   /* padding-top: 60px;*/
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+
+}
+
+.sidepanelclose {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidepanelclose {
+    color: #f1f1f1;
+}
+
+.sidepanel {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+}
+
+.closebtn{
+    position: absolute;
+    top: 0;
+    right: 7px;
+    font-size: 18px;
+}
+
+.rotate {
+    -moz-transition: all .5s linear;
+    -webkit-transition: all .5s linear;
+    transition: all .5s linear;
+}
+.rotate.down {
+    -moz-transform:rotate(90deg);
+    -webkit-transform:rotate(90deg);
+    transform:rotate(90deg);
+}
+
+.openbtn {
+    transition: 0.3s;
+    z-index: 999;
+    position:fixed;
+    width:40px;
+    height:40px;
+    margin-top: 550px;
+    right: 10px;
+    background-color: rgba(0, 123, 255, 0.42);
+    color:#FFF;
+    border: 2px solid transparent;
+    border-radius:40px;
+    text-align:center;
+    box-shadow: none;
+    cursor: pointer;
+    padding: 7px;
+
+
+}
+
+.openbtn:hover {
+    color: tomato;
+    background-color: #007bff;
+
+}
+
+
+
+.nav-link{
+    color: white;
+}
+/*bootstrap override*/
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: #007bff;
+    background-color: transparent;
+    border-bottom: 2px solid #007bff;
+    border-color:  transparent transparent #007bff transparent
+}
+
+.nav-tabs .nav-link:focus {
+    border-color:  transparent transparent #007bff transparent;
+    color: #007bff;
+}
+
+.nav-tabs .nav-link:hover{
+    border-color:  transparent;
+    color: #007bff;
+}

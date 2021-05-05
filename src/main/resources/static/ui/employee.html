@@ -1,0 +1,841 @@
+<!doctype html>
+<html>
+<head>
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Employee Management</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <!--<link rel="stylesheet" type="text/css" href="../plugin/select2/style/select2-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../plugin/select2/style/select2.css">
+    <script src="../plugin/select2/select2.min.js"></script>-->
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-css/1.4.6/select2-bootstrap.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css">-->
+
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnDelete.addEventListener("click",btnDeleteMC);
+
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+
+            dteDOBirth.onchange = dteDOBirthCH;
+            btnSearch.addEventListener("click",btnSearchMC);
+            btnSearchClear.addEventListener("click",btnSearchClearMC);
+
+            privilages = httpRequest("../privilages?module=EMPLOYEE","GET");
+
+            regexes = httpRequest("../regexes/employee","GET");
+            //txtNumber.setAttribute("data-pattern",regexes.number.regex);
+            txtFullname.setAttribute("data-pattern",regexes.fullname.regex);
+            txtCallingname.setAttribute("data-pattern",regexes.callingname.regex);
+            txtNIC.setAttribute("data-pattern",regexes.nic.regex);
+            txtAddress.setAttribute("data-pattern",regexes.address.regex);
+            txtMobile.setAttribute("data-pattern",regexes.mobile.regex);
+            txtLand.setAttribute("data-pattern",regexes.land.regex);
+            txtDescription.setAttribute("data-pattern",regexes.description.regex);
+
+            genders = httpRequest("../genders/list","GET");
+            designations = httpRequest("../designations/list","GET");
+            civilstatuses = httpRequest("../civilstatuses/list","GET");
+            employeestatuses = httpRequest("../employeestatuses/list","GET");
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+
+        }
+
+        function loadView() {
+
+            //Search Area
+            txtSearchName.value="";
+            txtSearchNIC.value="";
+            fillCombo(cmbSearchDesignation,"Designation",designations,"name","");
+            fillCombo(cmbSearchEmployeestatus,"Status",employeestatuses,"name","");
+            cmbSearchEmployeestatus.style.borderColor = "";
+            cmbSearchDesignation.style.borderColor = "";
+            txtSearchName.style.borderColor = "";
+            txtSearchNIC.style.borderColor = "";
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+            var query = "&name=&nic=&designationid=&employeestatusid=";
+            loadTable(1,cmbPageSize.value,query);
+        }
+
+        function loadTable(page,size,query) {
+            page = page - 1;
+            employees = new Array();
+            var data = httpRequest("/employees?page="+page+"&size="+size+query,"GET");
+            if(data.content!= undefined) employees = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblEmployee',employees,fillForm);
+            clearSelection(tblEmployee);
+            if(activerowno!="")selectRow(tblEmployee,activerowno,active);
+            window.location.href="#ui";
+        }
+
+        function paginate(page) {
+            var paginate;
+            if(oldemployee==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno=""
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+        function loadForm() {
+            nextnumber = httpRequestwithoutlist("../employee/nextnumber","GET");
+
+            employee = new Object();
+            oldemployee = null;
+
+            fillCombo(cmbGender,"Select Gender",genders,"name","");
+            fillCombo(cmbDesignation,"Select Designation",designations,"name","");
+            fillCombo(cmbCivilstatus,"Select Civil Status",civilstatuses,"name","");
+
+            fillCombo(cmbEmployeestatus,"",employeestatuses,"name","Working");
+            employee.employeestatusId=JSON.parse(cmbEmployeestatus.value);
+
+            var today = new Date();
+            var month = today.getMonth()+1;
+            if(month<10) month = "0"+month;
+            var date = today.getDate()+1;
+            if(date<10) date = "0"+date;
+
+            dteDOAssignment.value=today.getFullYear()+"-"+month+"-"+date;
+            employee.doassignment=dteDOAssignment.value;
+
+            txtNumber.value = nextnumber;
+            employee.number = txtNumber.value;
+            txtNumber.disabled = "disabled";
+
+            dteDOAssignment.disabled = "";
+            txtFullname.value = "";
+            txtCallingname.value = "";
+            dteDOBirth.value = "";
+            txtNIC.value = "";
+            txtAddress.value = "";
+            txtMobile.value = "";
+            txtLand.value = "";
+            txtDescription.value = "";
+            removeFile('flePhoto');
+
+            setStyle(initial);
+            cmbEmployeestatus.style.borderColor=valid;
+            dteDOAssignment.style.borderColor=valid;
+            txtNumber.style.borderColor=valid;
+
+            disableButtons(false, true, true);
+        }
+
+        function setStyle(style) {
+
+            txtNumber.style.borderColor = style;
+            txtFullname.style.borderColor = style;
+            txtCallingname.style.borderColor = style;
+            cmbGender.style.borderColor = style;
+            cmbCivilstatus.style.borderColor = style;
+            txtNIC.style.borderColor = style;
+            dteDOBirth.style.borderColor = style;
+            txtAddress.style.borderColor = style;
+            txtMobile.style.borderColor = style;
+            txtLand.style.borderColor = style;
+            cmbDesignation.style.borderColor = style;
+            dteDOAssignment.style.borderColor = style;
+            txtDescription.style.borderColor = style;
+            cmbEmployeestatus.style.borderColor = style;
+
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+
+        }
+
+
+
+        // Binding and Validation Functions for Non-Regex-Based
+        // When Regex-Based default validation is used, programmers do not need to define these functions
+        // Default Validation and Binding is coded in "ui.bitproject.earth.lk.js"
+
+        function dteDOBirthCH() {
+            var today = new Date();
+            var birthday = new Date(dteDOBirth.value);
+            if((today.getTime()-birthday.getTime())>(18*365*24*3600*1000)) {
+                employee.dobirth = dteDOBirth.value;
+                dteDOBirth.style.borderColor = valid;
+            }
+            else
+            {
+                employee.dobirth = null;
+                dteDOBirth.style.borderColor = invalid;
+            }
+        }
+
+
+
+        //Form Operation Functions
+        
+        function getErrors() {
+
+            var errors = "";
+
+
+            if (employee.fullname == null)
+                errors = errors + "\n" + regexes.fullname.message+"<br>";
+
+            if (employee.nic == null)
+                errors = errors + "\n" + regexes.nic.message+"<br>";
+
+            if (employee.callingname == null)
+                errors = errors + "\n" + regexes.callingname.message+"<br>";
+
+            if (employee.genderId == null)
+                errors = errors + "\n" + "Gender Not Selected <br>";
+
+            if (employee.civilstatusId == null)
+                errors = errors + "\n" + "Civilstatus Not Selected <br>";
+
+            if (employee.dobirth == null)
+                errors = errors + "\n" + "Birth Date Invalid <br>";
+
+            if (employee.address == null)
+                errors = errors + "\n" + regexes.address.message+"<br>";
+
+            if (employee.mobile == null)
+                errors = errors + "\n" + regexes.mobile.message+"<br>";
+
+            if (employee.land== null && txtLand.value!="")
+                errors = errors + "\n" + regexes.land.message+"<br>";
+
+            if (employee.designationId == null)
+                errors = errors + "\n" + "Designation Not Selected<br>";
+
+            if (employee.doassignment == null)
+                errors = errors + "\n" + "Assignment Date Invalid";
+
+            if (employee.description == null && txtDescription.value!="")
+                errors = errors + "\n" + regexes.description.message+"<br>";
+
+            if (employee.employeestatusId == null)
+                errors = errors + "\n" + "Employeestatus Not Selected<br>";
+
+            return errors;
+        }
+
+
+        function ModelAddContent() {
+
+            console.log(employee);
+
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+
+                spnNumber.innerHTML = employee.number;
+                spnFullName.innerHTML = employee.fullname;
+                spnCallingName.innerHTML = employee.callingname;
+                spnGender.innerHTML = employee.genderId.name;
+                spnCivilStatus.innerHTML = employee.civilstatusId.name;
+                spnNIC.innerHTML = employee.nic;
+                spnDOBirth.innerHTML = employee.dobirth;
+                spnAddress.innerHTML = employee.address;
+                spnMobile.innerHTML =  employee.mobile;
+                spnLand.innerHTML = employee.land;
+                spnDesignation.innerHTML = employee.designationId.name ;
+                spnAssigndate.innerHTML =  employee.doassignment;
+                spnDescription.innerHTML = employee.description;
+                spnStatus.innerHTML = employee.employeestatusId.name;
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+        
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/employees","POST",employee);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+
+                //alertify.notify('Employee Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Employee Saved Successfully',6);
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            }
+            else{
+                $('#ModelAddContent').modal('hide');
+                showResult('error');
+                window.alert("Failed to Add as \n\n"+response);
+            }
+        }
+
+
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+
+            var clear;
+            if(oldemployee==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblEmployee);
+            }
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+        }
+
+        function fillForm(emp,rowno){
+            activerowno = rowno;
+            var filling;
+            if(oldemployee==null){
+                filling=true;
+            }else{
+
+                if(getErrors()==''&&getUpdates()==''){
+                    filling=true;
+                }else{
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+
+            if(filling) {
+
+               clearSelection(tblEmployee);
+               selectRow(tblEmployee,activerowno,active);
+
+                employee = JSON.parse(JSON.stringify(emp));
+                oldemployee = JSON.parse(JSON.stringify(emp));
+
+                txtNumber.value = employee.number;    ///////////////////
+                txtNumber.disabled="disabled";
+                txtFullname.value = employee.fullname;
+                txtCallingname.value = employee.callingname;
+                dteDOBirth.value = employee.dobirth;
+                txtNIC.value = employee.nic;
+                txtAddress.value = employee.address;
+                txtMobile.value = employee.mobile;
+                txtLand.value = employee.land;
+                dteDOAssignment.value = employee.doassignment;
+                dteDOAssignment.disabled = "disabled";
+                txtDescription.value = employee.description;
+
+                fillCombo(cmbGender, "Select Gender", genders, "name", employee.genderId.name);
+                fillCombo(cmbDesignation, "Select Designation", designations, "name", employee.designationId.name);
+                fillCombo(cmbCivilstatus, "Select Civil Status", civilstatuses, "name", employee.civilstatusId.name);
+                fillCombo(cmbEmployeestatus, "", employeestatuses, "name", employee.employeestatusId.name);
+
+                setDefaultFile('flePhoto', employee.photo);
+
+                txtNumber.disabled="disabled";
+                dteDOAssignment.disabled="disabled";
+
+                disableButtons(true, false, true);
+                setStyle(valid);
+            }
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(employee!=null && oldemployee!=null) {
+
+                //if (employee.number != oldemployee.number)
+                    //updates = updates + "\nNumber is Changed";
+
+                if (employee.fullname != oldemployee.fullname)
+                    updates = updates + "Fullname is Changed : <span style='color: #ffc107'>"+oldemployee.fullname+" <i class=\"fas fa-arrow-right\"></i> "+employee.fullname+"</span><br>";
+
+
+                if (employee.nic != oldemployee.nic)
+                    updates = updates + "\nNIC is Changed :<span style='color: #ffc107'>"+oldemployee.nic+" <i class=\"fas fa-arrow-right\"></i> "+employee.nic+"</span><br>";
+
+                if (employee.callingname != oldemployee.callingname)
+                    updates = updates + "\nCallingname is Changed :<span style='color: #ffc107'>"+oldemployee.callingname+" <i class=\"fas fa-arrow-right\"></i> "+employee.callingname+"</span><br>";
+
+                if (employee.genderId.name != oldemployee.genderId.name)
+                    updates = updates + "\nGender is Changed :<span style='color: #ffc107'>"+oldemployee.genderId.name+" <i class=\"fas fa-arrow-right\"></i> "+employee.genderId.name+"</span><br>";
+
+                if (employee.civilstatusId.name != oldemployee.civilstatusId.name)
+                    updates = updates + "\nCivilstatus is Changed :<span style='color: #ffc107'>"+oldemployee.civilstatusId.name+" <i class=\"fas fa-arrow-right\"></i> "+employee.civilstatusId.name+"</span><br>";
+
+                if (employee.dobirth != oldemployee.dobirth)
+                    updates = updates + "\nDate of Birth is Changed :<span style='color: #ffc107'>"+oldemployee.dobirth+" <i class=\"fas fa-arrow-right\"></i> "+employee.dobirth+"</span><br>";
+
+                if (employee.photo != oldemployee.photo)
+                    updates = updates + "\nPhoto is Changed :<span style='color: #ffc107'>"+oldemployee.photo+" <i class=\"fas fa-arrow-right\"></i> "+employee.photo+"</span><br>";
+
+                if (employee.address != oldemployee.address)
+                    updates = updates + "\nAddress is Changed :<span style='color: #ffc107'>"+oldemployee.address+" <i class=\"fas fa-arrow-right\"></i> "+employee.address+"</span><br>";
+
+                if (employee.mobile != oldemployee.mobile)
+                    updates = updates + "\nMobile Number is Changed :<span style='color: #ffc107'>"+oldemployee.mobile+" <i class=\"fas fa-arrow-right\"></i> "+employee.mobile+"</span><br>";
+
+                if (employee.land != oldemployee.land)
+                    updates = updates + "\nLand Number is Changed :<span style='color: #ffc107'>"+oldemployee.land+" <i class=\"fas fa-arrow-right\"></i> "+employee.land+"</span><br>";
+
+                if (employee.designationId.name != oldemployee.designationId.name)
+                    updates = updates + "\nDesignation is Change :d<span style='color: #ffc107'>"+oldemployee.designationId.name+" <i class=\"fas fa-arrow-right\"></i> "+employee.designationId.name+"</span><br>";
+
+                if (employee.description != oldemployee.description)
+                    updates = updates + "\nDescription is Changed :<span style='color: #ffc107'>"+oldemployee.description+" <i class=\"fas fa-arrow-right\"></i> "+employee.description+"</span><br>";
+
+                if (employee.employeestatusId.name != oldemployee.employeestatusId.name)
+                    updates = updates + "\nEmployeestatus is Changed :<span style='color: #ffc107'>"+oldemployee.employeestatusId.name+" <i class=\"fas fa-arrow-right\"></i> "+employee.employeestatusId.name+"</span><br>";
+            }
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+
+        }
+
+        function btnUpdateMC() {
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/employees","PUT",employee);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                //alertify.notify('Employee Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Employee Updated Successfully',6);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            }
+            else{
+                $('#ModelUpdate').modal('hide');
+                showResult('error');
+                window.alert("Failed to Update as \n\n"+response);
+            }
+        }
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnEmployeeNnme.innerHTML =  employee.fullname + " - ("+employee.number+")";
+        }
+
+        function btnDeleteMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/employees","DELETE",employee);
+            if(response=="0"){
+                $('#ModelDelete').modal('hide');
+                //alertify.notify('Employee Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Employee Deleted Successfully',6);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            }
+            else{
+                $('#ModelDelete').modal('hide');
+                showResult('error');
+                window.alert("Failed to Delete as \n\n"+response);
+            }
+       }
+
+
+        //Search Functions
+
+        function loadSearchedTable() {
+
+            var name = txtSearchName.value;
+            var nic = txtSearchNIC.value;
+            var designation = cmbSearchDesignation.value;
+            var employeestatus = cmbSearchEmployeestatus.value;
+
+            var designationid="";
+            if(designation!="Designation")
+            { designationid = JSON.parse(designation).id;
+            cmbSearchDesignation.style.borderColor = active;}
+
+            var employeestatusid="";
+            if(employeestatus!="Status")
+            {  employeestatusid = JSON.parse(employeestatus).id;
+                cmbSearchEmployeestatus.style.borderColor = active; }
+
+            if(name!=""){  txtSearchName.style.borderColor = active; }
+            if(nic!=""){  txtSearchNIC.style.borderColor = active; }
+
+            var query ="&name=&nic=&designationid=&employeestatusid=";
+
+            if(name!="" || nic!="" || designationid!="" || employeestatusid!="" )
+                query = "&name=" + name + "&nic=" + nic + "&designationid=" + designationid + "&employeestatusid=" + employeestatusid;
+
+            //window.alert(query);
+            loadTable(activepage, cmbPageSize.value, query);
+
+        }
+
+        function btnSearchMC(){
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+               loadView();
+        }
+
+    </script>
+
+
+
+</head>
+
+<body>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px">Employee Management</h4>
+                    <div class="row" style="background-color: transparent">
+                        <!--Form-Start-->
+                        <div class="col-md-4">
+                            <div class="card" style="border: 1px solid #161616;border-radius: 5px">
+                                <div style="border: 1px solid transparent;border-radius: 5px" class="card-body form-box-overflow"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false" id="employeeform" >
+                                        <script>
+                                            txtField('employeeform','txtNumber','Number','Enter Number Here','',"",'employee','number','oldemployee',true);
+                                            txtField('employeeform','txtFullname','Full Name','Enter Full-Name Here','',"",'employee','fullname','oldemployee',true);
+                                            txtField('employeeform','txtCallingname','Calling Name','Enter Calling-Name Here','',"",'employee','callingname','oldemployee',true);
+                                            cmbBox('employeeform','cmbGender','Gender','employee','genderId','oldemployee');
+                                            cmbBox('employeeform','cmbCivilstatus','Civilstatus','employee','civilstatusId','oldemployee');
+                                            txtField('employeeform','txtNIC','NIC','Enter NIC Here','',"",'employee','nic','oldemployee',true);
+                                            dteField('employeeform','dteDOBirth','Birth Date','Select Birth Date',"",'employee','dobirth','oldemployee');
+                                            fileChooser('employeeform','flePhoto','Photo',0,['.jpg','.png'],5,true,'employee','photo','oldemployee');
+                                            txtArea('employeeform','txtAddress','Address','Enter Address Here','',"",'employee','address','oldemployee');
+                                            txtField('employeeform','txtMobile','Mobile','Enter Mobile-Number Here','',"",'employee','mobile','oldemployee');
+                                            txtField('employeeform','txtLand','Land','Enter Land Here','',"",'employee','land','oldemployee');
+                                            cmbBox('employeeform','cmbDesignation','Designation','employee','designationId','oldemployee');
+                                            dteField('employeeform','dteDOAssignment','Assignment Date','Select Assignment Date',"",'employee','doassignment','oldemployee')
+                                            txtArea('employeeform','txtDescription','Description','Enter Description Here','',"",'employee','description','oldemployee');
+                                            cmbBox('employeeform','cmbEmployeestatus','Employeestatus','employee','employeestatusId','oldemployee');
+                                        </script>
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-3" style="margin-right: 5px;">
+                                                <button  data-toggle="tooltip" data-placement="top"  title="Delete Employee" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: -5px; margin-left: -5px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: -6px;margin-left: -4px">
+                                                <button   data-toggle="tooltip" data-placement="top" title="Update Selected Employee" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 10px;margin-left: 3px">
+                                                <button  data-toggle="tooltip" data-placement="top" title="Add New Employee" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Form-End-->
+
+
+                        <!--Add Content Model Start------------------------------------------------------------------------------------>
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="far fa-users"></i> Employee Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true"  style="color: white">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Employee?</h5>
+                                        <p class="content-model-text-title">Employee Number  : <span class="content-model-text-value" id="spnNumber"></span></p>
+                                        <p class="content-model-text-title">Full Name        : <span class="content-model-text-value" id="spnFullName"></span></p>
+                                        <p class="content-model-text-title">Calling Name     : <span class="content-model-text-value" id="spnCallingName"></span></p>
+                                        <p class="content-model-text-title">Gender           : <span class="content-model-text-value" id="spnGender"></span></p>
+                                        <p class="content-model-text-title">Civil Status     : <span class="content-model-text-value" id="spnCivilStatus"></span></p>
+                                        <p class="content-model-text-title">NIC Number       : <span class="content-model-text-value" id="spnNIC"></span></p>
+                                        <p class="content-model-text-title">Birth Day        : <span class="content-model-text-value" id="spnDOBirth"></span></p>
+                                        <p class="content-model-text-title">Address          : <span class="content-model-text-value" id="spnAddress"></span></p>
+                                        <p class="content-model-text-title">Mobile Number    : <span class="content-model-text-value" id="spnMobile"></span></p>
+                                        <p class="content-model-text-title">Landline Number  : <span class="content-model-text-value" id="spnLand"></span></p>
+                                        <p class="content-model-text-title">Designation      : <span class="content-model-text-value" id="spnDesignation"></span></p>
+                                        <p class="content-model-text-title">Assignment Date  : <span class="content-model-text-value" id="spnAssigndate"></span></p>
+                                        <p class="content-model-text-title">Description      : <span class="content-model-text-value" id="spnDescription"></span></p>
+                                        <p class="content-model-text-title">Employee Number  : <span class="content-model-text-value" id="spnStatus"></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Add Content Model End-------------------------------------------------------------------------------------->
+                        <!--Model Error Start------------------------------------------------------------------------------------------>
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="far fa-users"></i> Employee Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true"  style="color: white">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error End------------------------------------------------------------------------------------------>
+                        <!--Model Delete Start--------------------------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="far fa-users"></i> Employee Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true"  style="color: white">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to delete following </h5>
+                                        <p  id="spnEmployeeNnme"></p>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Delete End----------------------------------------------------------------------------------------->
+                        <!--Model Update Start--------------------------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="far fa-users"></i> Employee Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true"  style="color: white">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End----------------------------------------------------------------------------------------->
+
+                        <!--table-start-->
+                        <div class="col-md-8">
+                            <div class="card" style="border: 1px solid #161616;border-radius: 5px;">
+                                <div class="card-header" style="height: 60px;border: 1px solid transparent">
+                                    <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <input placeholder="Search By Name" class="form-control form-control-sm txtinput" type="text" id="txtSearchName"/>
+                                        </div>
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <input placeholder="Search By NIC" class="form-control form-control-sm txtinput" type="text" id="txtSearchNIC"/>
+                                        </div>
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <select class="form-control form-control-sm txtinput" id="cmbSearchDesignation"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <select class="form-control form-control-sm txtinput" id="cmbSearchEmployeestatus"></select>
+                                        </div>
+                                        <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                        <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                                    </form>
+                                </div>
+                                <div class="card-body table-box-overflow"  id="employeeview" style="border: 1px solid transparent">
+
+                                   </hr>
+                                    <div class="table-responsive" id="tableParent">
+
+                                        <script>
+
+                                            function getNameColumn(ob) {
+                                                return ob.callingname+"("+ob.number+")";
+                                            }
+                                            var metadata = [
+                                                {name:'Number',search:false,datatype:'text',property:'number'},
+                                                {name:'Name',search:false,datatype:'text',property:'callingname'},
+                                                {name:'Photo',search:false,datatype:'photo',property:'photo'},
+                                                {name:'NIC',search:false,datatype:'text',property:'nic'},
+                                                {name:'Mobile',search:false,datatype:'text',property:'mobile'},
+                                                {name:'Designation',search:false,datatype:'text',property:'designationId.name'}
+                                            ];
+                                            table("tableParent","tblEmployee",metadata,[4,10,15,30,500,1000],btnSearchMC,true);
+                                        </script>
+                                    </div>
+                                    <ul id="pagination" class="pagination" style="margin-bottom: -50px"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!--table-end-->
+
+                    </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //  cmbGender.classList.add('js-example-basic-single');
+    $(document).ready(function (){
+        /* $(".js-example-basic-single").select2({
+
+         }) /!**/
+        $("#cmbDesignation").select2({
+            theme:"classic"
+        });
+
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Warehouse Inventory Management</title>
+
+            <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+            <script src="../plugin/pace/pace.min.js"></script>
+
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                    crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                    crossorigin="anonymous"></script>
+            <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+            <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+            <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+            <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+            <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+            <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+            <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+            <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+            <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+            <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+            <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+            <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+            <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+            <script src="../plugin/popper/popper.min.js" rel="script"></script>
+
+            <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+            <script src="../plugin/alertifyjs/alertify.js"></script>
+
+            <link rel="stylesheet" href="../style/common.css"/>
+            <script src="../script/my.ui.javascript.js"></script>
+
+            <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+            <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+            <style>
+            body {
+                height:100vh;
+                margin:0;
+                background-image:
+                        radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                        radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                        radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                        radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                        radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                        radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                        linear-gradient(135deg, #fff 0%, #fff 100%);
+            }
+        </style>
+
+            <script>
+
+                window.addEventListener("load", initialize);
+
+                //Initializing Functions
+
+                function initialize() {
+
+                    btnSearch.addEventListener("click", btnSearchMC);
+                    btnSearchClear.addEventListener("click", btnSearchClearMC);
+
+                    type = httpRequest("../activitytype/list", "GET");
+                    modules = httpRequest("../modules/list", "GET");
+                    privilages = httpRequest("../privilages?module=", "GET");
+                    employee =httpRequest("../employees/list","GET");
+
+
+                    valid = "#28a745";
+                    invalid = "#dc3545";
+                    initial = "#ced4da";
+                    updated = "#ffc107";
+                    active = "rgba(165,165,165,0.53)";
+
+
+                    loadView();
+
+                }
+
+                function loadView() {
+
+                    //Search Area
+                    /*fillCombo(cmbSearchStatus,"Status",clearingprocesstatus,"name","");
+                    fillCombo(cmbSearchClearingClerk,"Clearing Clerk",clearingclerks,"callingname","");*/
+                    fillCombo(cmbType,'Type',type,'name',"");
+                    fillCombo(cmbModule,'Module',modules,'name',"");
+                    fillCombo(cmbEmployee,'Employee',employee,'callingname',"");
+
+
+                    //Table Area
+                    activerowno = "";
+                    activepage = 1;
+
+                    var query = "&number=&customerid=&deliveragentid=";
+
+                    //var query = "&statusId=&vehicletypeId=&driveremployee=&drivingassistantemployee=&brandId=&modelId=";
+                    loadTable(1, cmbPageSize.value, query);
+                }
+
+                function loadTable(page, size, query) {
+                    page = page - 1;
+                    activitylogs = new Array();
+                    var data = httpRequest("/activitylog?page=" + page + "&size=" + size + query, "GET");
+                     //console.log(data);
+                    if (data.content != undefined) activitylogs = data.content;
+                    createPagination('pagination', data.totalPages, data.number + 1, paginate);
+                    fillTable('tblActivitylogs', activitylogs, fillForm);
+                    clearSelection(tblActivitylogs);
+                    if (activerowno != "") selectRow(tblActivitylogs, activerowno, active);
+                    window.location.href = "#ui";
+                }
+
+                function paginate(page) {
+
+                    activepage = page;
+                    activerowno = ""
+                    loadSearchedTable();
+                    loadForm();
+                }
+
+                function fillForm(dlo, rowno) {
+                    activerowno = rowno;
+                    $('#ModelViewDetail').modal('show');
+                    clearSelection(tblActivitylogs);
+                    selectRow(tblActivitylogs, activerowno, active);
+                    deliveryorder = JSON.parse(JSON.stringify(dlo));
+                    //console.log(deliveryorder);
+
+                    spnNumber.innerHTML = deliveryorder.deliveryId.shipmentId.number;
+                    spnClient.innerHTML = deliveryorder.clearingprocessId.shipmentId.companyId.name;
+                    spnDeliveryAgent.innerHTML = deliveryorder.deliveryagentId.name;
+                    spnDate.innerHTML = deliveryorder.date;
+                    spnIssuedBy.innerHTML = deliveryorder.issuedby;
+                    spcCollectedEmployee.innerHTML = deliveryorder.pickby.callingname;
+
+                }
+
+                function loadSearchedTable() {
+
+                    var type = cmbType.value;
+                    var module = cmbModule.value;
+                    var employee = cmbEmployee.value;
+
+
+
+                    var typeid="";
+                    if(type!="Type") {
+                        typeid = JSON.parse(type).id;
+                        cmbType.style.borderColor = active;
+                    }
+
+                    var moduleid="";
+                    if(module!="Module") {
+                        moduleid = JSON.parse(module).id;
+                        cmbModule.style.borderColor = active;
+                    }
+
+                    var employeeid="";
+                    if(employee!="Employee") {
+                        employeeid = JSON.parse(employee).id;
+                        cmbEmployee.style.borderColor = active;
+                    }
+
+
+                    var query = "&typeid=&moduleid=&employeeid=";
+
+                    if(typeid!="" || moduleid!="" || employeeid!="")
+                        query = "&typeid=" + typeid + "&moduleid=" + moduleid + "&employeeid=" + employeeid;
+                    //console.log(query);
+                    loadTable(activepage, cmbPageSize.value, query);
+
+                }
+
+                function btnSearchMC() {
+                    activepage=1;
+                    loadSearchedTable();
+                }
+
+                function btnSearchClearMC() {
+                    loadView();
+                }
+            </script>
+
+        </head>
+<body>
+
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div class="container-fluid">
+
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px;">User Activity logs</h4>
+            <div class="card" style="border: 1px solid #282c2f;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card-header" style="height: 60px">
+                            <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <select  class="form-control form-control-sm txtinput" id="cmbEmployee"></select>.
+                                </div>
+
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <select  class="form-control form-control-sm txtinput"  id="cmbModule"></select>.
+                                </div>
+
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <select  class="form-control form-control-sm txtinput"  id="cmbType"></select>.
+                                </div>
+
+                                <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear" id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                <button data-toggle="tooltip" data-placement="top" title="Search" class="btn btn-search btn-sm" id="btnSearch"><i class="fas fa-search"></i></button>
+                            </form>
+                        </div>
+                        <div class="card-body table-box-overflow "  id="employeeview">
+
+                            </hr>
+                            <div class="table-responsive" id="tableParent">
+
+                                <script>
+
+                                    var metadata = [
+                                        {name: 'User', search: false, datatype: 'text', property: 'userId.username'},
+                                        {name: 'Module', search: false, datatype: 'text', property: 'moduleId.name'},
+                                        {name: 'Type', search: false, datatype: 'text', property:'activitytypeId.name' },
+                                        {name: 'Date', search: false, datatype: 'text', property: 'date'},
+                                        {name: 'Time', search: false, datatype: 'text', property: 'time'},
+                                        {name: 'Description', search: false, datatype: 'text', property: 'description'}
+                                    ];
+                                    table("tableParent", "tblActivitylogs", metadata, [8, 15, 30, 50, 500, 1000], btnSearchMC, false);
+                                </script>
+                            </div>
+                            <ul id="pagination" class="pagination"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html></title>
+</head>
+<body>
+
+</body>
+</html>

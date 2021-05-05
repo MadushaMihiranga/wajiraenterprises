@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-loading-bar.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title> Wajira Enterprises</title>
+    <link href="../image/icon.png" rel="icon" >
+
+    <!---->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>-->
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">-->
+    <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>-->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.1/tinycolor.js"  crossorigin="anonymous"></script>
+
+    <link href="../plugin/bootstrap-4.4.1/bootstrap.min.css" rel="stylesheet">
+    <script src="../plugin/bootstrap-4.4.1/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <!--<link rel="stylesheet" href="../style/common.css"/>-->
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/stack.js"></script>
+    <link href="../style/subnav.css" rel="stylesheet">
+    <link href="../style/sidenav.css" rel="stylesheet">
+
+    <!---------------------------------------------------------------------------------------------------------------->
+    <!---------------------------------------------------------------------------------------------------------------->
+    <!--  https://codepen.io/hrtzt/pen/qdWRXv   -->
+    <!--  https://codepen.io/azouaoui-med/pen/wpBadb   -->
+    <!--  https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapse_sidepanel  -->
+    <!---------------------------------------------------------------------------------------------------------------->
+    <!-- ** ICON ANIMATION https://codepen.io/teerapuch/pen/vLJXeR  **-->
+    <!---------------------------------------------------------------------------------------------------------------->
+    <!---------------------------------------------------------------------------------------------------------------->
+
+
+    <script>
+
+        function openNav() {
+            var content = document.getElementById("sidenavelement");
+            if (sidenavvisible === false){
+               // $("#sidenavelement").bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd",function(){ content.style.visibility = "visible"; });
+                content.style.visibility = "visible";
+                document.getElementById("btnNav").innerHTML = "<i class=\"fas fa-ellipsis-h\"></i>";
+                document.getElementById("mySidepanel").style.width = "340px";
+                sidenavvisible = true;
+            }else if (sidenavvisible === true){
+                document.getElementById("btnNav").innerHTML = "<i class=\"fas fa-ellipsis-v\"></i>";
+                document.getElementById("mySidepanel").style.width = "0";
+                content.style.visibility = "hidden";
+                sidenavvisible = false;
+            }
+
+        }
+
+      /*  function closeNav() {
+
+        }*/
+
+        window.addEventListener("load", initialize );
+
+        window.addEventListener('load', function() {
+            function updateOnlineStatus(event) {
+                const condition = navigator.onLine ? "online" : "offline";
+                //console.log(condition);
+                if (condition === "online"){
+                    networkStatus.innerHTML = "<i class=\"fas fa-wifi\"></i>";
+                    networkStatus.style.color = '#818181';
+                }else if (condition === "offline"){
+                    networkStatus.innerHTML = "<i class=\"fas fa-wifi-slash\"></i>";
+                    window.setInterval(function(){
+                      if (navigator.onLine){
+                          return 0;
+                      }else {
+                          if( window.getComputedStyle(networkStatus, null).getPropertyValue("color") === 'rgb(129, 129, 129)'){
+                              networkStatus.style.color = 'tomato';
+                          }else{
+                              networkStatus.style.color = '#818181';
+                          }
+                      }
+                    }, 800);
+                }
+            }
+            window.addEventListener('online',  updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+        });
+
+        function initialize() {
+            
+            //spnUsername.innerHTML = " "+session.getObject("user").employeeId.callingname;
+            loadUI("home","Wajira Enterprises");
+            btnfullscreen.addEventListener("click",btnFullScreen);
+            fullscreen = false;
+            sidenavvisible = false;
+            //btnFullScreen();
+            OfflineDetection();
+            batteryStatus();
+            document.getElementById("sidenavelement").style.visibility = "hidden";
+            // myFunction();
+        }
+
+        function myFunction() {
+            setInterval(function(){ console.log("hello") }, 1000);
+        }
+
+
+        function batteryStatus() {
+
+            batterystatusicon  = document.getElementById("batterystatus");
+            batterystatuslevel  = document.getElementById("batterylevel");
+
+            navigator.getBattery().then(function(battery) {
+                function updateAllBatteryInfo(){
+                    updateChargeInfo();
+                    updateLevelInfo();
+                    //updateChargingInfo();
+                    //updateDischargingInfo();
+                }
+                updateAllBatteryInfo();
+
+                battery.addEventListener('chargingchange', function(){
+                    updateChargeInfo();
+                });
+                function updateChargeInfo(){
+                    if (battery.charging){
+                        batterystatusicon.innerHTML = "<i class=\"far fa-battery-bolt\"></i>";
+                    }else {
+                        batterystatusicon.innerHTML = "<i class=\"fal fa-battery-full\"></i>"
+                    }
+                }
+                battery.addEventListener('levelchange', function(){
+                    updateLevelInfo();
+                });
+                function updateLevelInfo(){
+                    batterystatuslevel.innerHTML = battery.level * 100 + "%"
+                }
+
+                battery.addEventListener('chargingtimechange', function(){
+                    updateChargingInfo();
+                });
+                function updateChargingInfo(){
+                    console.log("Battery charging time: " + battery.chargingTime + " seconds");
+                }
+
+                battery.addEventListener('dischargingtimechange', function(){
+                    updateDischargingInfo();
+                });
+                function updateDischargingInfo(){
+                    console.log("Battery discharging time: " + battery.dischargingTime + " seconds");
+                }
+
+            });
+        }
+
+
+        function changePassword() {
+            if (window.confirm("Do you need to change the Password ?")) {
+                cookie.setValue("username", "", 1);
+                cookie.setValue("password", "", 1);
+                session.setObject("user", new Object());
+                window.open("changepassword", "_self");
+            }
+        }
+        
+
+        function ShipmentStates() {
+
+        }
+        
+        function OfflineDetection() {
+            var condition = navigator.onLine ? "online" : "offline";
+
+            if (condition === "online"){
+                networkStatus.innerHTML = "<i class=\"fas fa-wifi\"></i>";
+                networkStatus.style.color = '#818181';
+            }else if (condition === "offline"){
+                networkStatus.innerHTML = "<i class=\"fas fa-wifi-slash\"></i>";
+                window.setInterval(function(){
+                    if (navigator.onLine){
+                        return 0;
+                    }else {
+                        if( window.getComputedStyle(networkStatus, null).getPropertyValue("color") === 'rgb(129, 129, 129)'){
+                            networkStatus.style.color = 'tomato';
+                        }else{
+                            networkStatus.style.color = '#818181';
+                        }
+                    }
+                }, 800);
+
+            }
+
+        }
+
+        
+        function btnFullScreen() {
+
+            const elem = document.documentElement;
+            const btn = document.getElementById("btnfullscreen");
+            if (fullscreen!==null){
+                if (fullscreen===false){
+                    //open full
+                    btn.innerHTML = "<i class=\"fas fa-compress\"></i>";
+                    btn.removeAttribute("title");
+                    btn.setAttribute("title","Full Screen");
+                    if (elem.requestFullscreen) {
+                        elem.requestFullscreen();
+                    } else if (elem.mozRequestFullScreen) { /* Firefox */
+                        elem.mozRequestFullScreen();
+                    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                        elem.webkitRequestFullscreen();
+                    } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                        elem.msRequestFullscreen();
+                    }
+                    fullscreen = true
+                }else if (fullscreen===true){
+                    // close full
+                    btn.removeAttribute("title");
+                    btn.innerHTML = "<i class=\"fas fa-expand\"></i>";
+                    btn.setAttribute("title","Full Screen");
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        document.mozCancelFullScreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                    fullscreen = false
+                }
+            }
+
+        }
+
+
+
+
+        function logout() {
+            if(window.confirm("Do you need to logout ?")) {
+
+                ajax = new XMLHttpRequest();
+                ajax.open("PUT", "/session", false);
+                // ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                ajax.send();
+                err.innerHTML=err.innerHTML+ajax.responseText;
+                if(ajax.status==200 && ajax.responseText!="") {
+                    responce = ajax.responseText;
+                    cookie.setValue("username", "", 1);
+                    cookie.setValue("password", "", 1);
+                    session.setObject("user", new Object());
+                    window.alert(responce);
+                    window.open("employeelogin","_self");
+
+                    // window.open("login", "_self");
+                }
+                else
+                    window.alert("Failed to logout");
+            }
+        }
+        
+        
+        /*UI Navigation */
+            var current = new Stack();
+            var forward = new Stack();
+            var backward = new Stack();
+
+            function btnDisable(){
+                if(current.isEmpty()){
+                    btnReload.disabled="disabled";
+                }else {
+                    btnReload.disabled="";
+                }
+                if(forward.isEmpty()){
+                    btnForward.disabled="disabled";
+                }else {
+                    btnForward.disabled="";
+                }
+                if(backward.isEmpty()){
+                    btnBackward.disabled="disabled";
+                }else {
+                    btnBackward.disabled="";
+                }
+            }
+
+            function printAll() {
+                console.log("Current  : "+current.printStack());
+                console.log("Forward  : "+forward.printStack());
+                console.log("BackWard : "+backward.printStack());
+            }
+
+           function loadUI(UI,titletext){
+                document.title = titletext;
+                //document.getElementById("iframeId").contentDocument.title;
+                if (current.isEmpty()){
+                    current.push(UI);
+                    btnDisable();
+                    frmMainWindow.src = 'http://localhost:8080/ui/'+UI;
+                }else{
+                    if (current.peek()!=UI){
+                        backward.push(current.pop());
+                        current.push(UI);
+                    }
+                    btnDisable();
+                    frmMainWindow.src = 'http://localhost:8080/ui/'+UI;
+                }
+               $(document).ready(function(){
+                   $('[data-toggle="tooltip"]').tooltip('hide')
+               });
+            }
+
+            function Reload() {
+                btnDisable();
+                $(document).ready(function(){
+                    $('[data-toggle="tooltip"]').tooltip('hide')
+                });
+                frmMainWindow.src = 'http://localhost:8080/ui/'+current.peek();
+            }
+
+           function Backward() {
+                backward.push(current.pop());
+                current.push(forward.pop());
+                Reload();
+            }
+
+            function Forward() {
+                forward.push(current.pop());
+                current.push(backward.pop());
+                Reload();
+            }
+
+        function GetModel() {
+            shipment = new Object();
+            oldshipment = null;
+            txtShpNumber.value = "";
+            txtShpNumber.style.borderColor = "#ced4da";
+            txtRspn.innerHTML = "";
+            $('#ModelClearingProcess').modal('show');
+        }
+
+
+            function findClearingProcess() {
+
+                window.shipmentnumber = "";
+
+                if (shipment.number == null){
+                    txtRspn.innerHTML = "Enter Shipment Number";
+                    txtRspn.style.color = '#ff4000';
+                    txtRspn.style.marginRight = '130px';
+                }else {
+                    var responce = httpRequest("/getclearingprocess","POST",shipment);
+                   if (responce != "0"){
+                       if (responce == "2"){
+                           loadUI('collectdo','Wajira Enterprises | Clearing process');
+                           $('#ModelClearingProcess').modal('hide');
+                       }else if (responce == "3"){
+                           loadUI('cusdec','Wajira Enterprises | Clearing process');
+                           $('#ModelClearingProcess').modal('hide');
+                       }else if (responce == "4"){
+                           loadUI('paytaxes','Wajira Enterprises | Clearing process');
+                           $('#ModelClearingProcess').modal('hide');
+                       }else if (responce == "5"){
+                           loadUI('panelexamination','Wajira Enterprises | Clearing process');
+                           $('#ModelClearingProcess').modal('hide');
+                       }else if (parseInt(responce)>5){
+                           txtShpNumber.style.borderColor = "#ffc107";
+                           txtRspn.innerHTML = "The clearance process for this shipment is over";
+                           txtRspn.style.color = '#ffc107';
+                       }
+                       window.shipmentnumber = txtShpNumber.value;
+                      // $('#ModelClearingProcess').modal('hide');
+                       //console.log(window.shipmentnumber+"mainwindow");
+                   }else {
+                       txtShpNumber.style.borderColor = "#dc3545";
+                       txtRspn.innerHTML = "Incorrect Shipment Number";
+                       txtRspn.style.color = '#ff4000';
+                       txtRspn.style.marginRight = '105px';
+                   }
+                }
+            }
+
+    </script>
+</head>
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    $(document).ready(function() {
+        $('body').tooltip({
+            selector: "[data-tooltip=tooltip]",
+            container: "body"
+        });
+    });
+</script>
+<body>
+
+<!--Side nav start-->
+<div id="mySidepanel" class="sidepanel">
+
+
+<div id="sidenavelement">
+
+    <div style="background-color: #3d4348;border: 1px solid #282c2f;border-radius: 10px">
+        <div class="row" >
+            <div class="col-md-4" style="border-bottom-left-radius: 5px">
+                <img style="width: 60px;height: 60px;border: 1px solid #282c2f;background-color: white;border-radius: 50%;margin: 10px 15px 10px 40px;" id="employeelogo"/>
+            </div>
+            <div class="col-md-8" style="border-bottom-right-radius: 5px">
+                <a style="margin-right: 15px" href="javascript:void(0)" class="closebtn" onclick="openNav()"><i class="fal fa-times"></i></a>
+                <p id="txtName" style="font-size: 18px;font-weight: normal;color:#fff;margin-bottom: 0px;margin-top: 30px"></p></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        employeelogo.src = atob(session.getObject("user").employeeId.photo);
+        txtName.innerHTML = session.getObject("user").employeeId.callingname;
+    </script>
+
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a style="font-size: 15px" class="nav-item nav-link active sidenav-tab" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab" aria-controls="nav-notification" aria-selected="true"><i class="fas fa-bell"></i></a>
+            <a style="font-size: 15px" class="nav-item nav-link sidenav-tab" id="nav-stickynote-tab" data-toggle="tab" href="#nav-stickynote" role="tab" aria-controls="nav-stickynote" aria-selected="false"><i class="fas fa-sticky-note"></i></a>
+            <a style="font-size: 15px" class="nav-item nav-link sidenav-tab" id="nav-todolist-tab" data-toggle="tab" href="#nav-todolist" role="tab" aria-controls="nav-todolist" aria-selected="false"><i class="fas fa-tasks"></i></a>
+            <a style="font-size: 15px" class="nav-item nav-link sidenav-tab" id="nav-message-tab" data-toggle="tab" href="#nav-message" role="tab" aria-controls="nav-message" aria-selected="false"><i class="fas fa-envelope"></i></a>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-notification" role="tabpanel" aria-labelledby="nav-notification-tab">notification</div>
+        <div class="tab-pane fade" id="nav-stickynote" role="tabpanel" aria-labelledby="nav-stickynote-tab">sticky note</div>
+        <div class="tab-pane fade" id="nav-todolist" role="tabpanel" aria-labelledby="nav-todolist-tab">to do list</div>
+        <div class="tab-pane fade" id="nav-message" role="tabpanel" aria-labelledby="nav-message-tab">message</div>
+    </div>
+
+</div>
+
+
+
+</div>
+<!--Side nav end-->
+<!-- ☰ Toggle Sidepanel -->
+<a id="btnNav" class="openbtn rotate" onclick="openNav()"> <i class="fas fa-ellipsis-v"></i></a>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12" style="padding-right: 0;padding-left: 0px">
+            <!--header-start-->
+            <!--title-panel-->
+<div class="row">
+    <div class="col-md-12" style="margin-left: 15px;">
+        <div class="row header" style="background-color: #161616">
+            <div class="col-md-2" ><img src="../image/logo-small-small.png"/></div>
+            <div class="col-md-7"></div>
+            <div class="col-md-3 text-right" style="padding-right: 40px">
+                <span style="margin-top: 4px" data-toggle="tooltip" data-placement="bottom"   class="user-btn"  id="batterylevel"></span>
+                <span style="margin-top: 4px" data-toggle="tooltip" data-placement="bottom"   class="user-btn"  id="batterystatus"></span>
+                <span style="margin-top: 4px" data-toggle="tooltip" data-placement="bottom"   class="user-btn"  id="networkStatus"></span>
+                <button data-toggle="tooltip" data-placement="bottom" title="Open Full Screen"  class="btn user-btn" type="button" id="btnfullscreen"><i class="fas fa-expand"></i></button>
+                <button data-toggle="tooltip" data-placement="bottom" title="Account Settings"  class="btn user-btn" type="button"></button>
+                <button onclick="changePassword()" data-toggle="tooltip" data-placement="bottom" title="Account Settings"  class="btn user-btn" type="button"><i class="fas fa-cog"></i></button>
+                <button onclick="logout()" data-toggle="tooltip" data-placement="bottom" title="Log Out"  class="btn user-btn" type="button"><i class="fas fa-sign-out-alt"></i></button>
+                <!--<ul class="list-inline" align="right" style="margin-top: 12px;margin-right: 30px">-->
+                <div class="dropdown" >
+
+
+
+                   <!-- <button  class="btn user-btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i  class="fas fa-user-circle" ></i><span id="spnUsername" class="" style="margin-left: 5px;font-size: 18px">username</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right drop-down-menu" aria-labelledby="dropdownMenuButton" style="margin-left: -15px">
+                        <a onclick="logout()" class="dropdown-item drop-down-menu-item" data-toggle="tooltip" data-placement="left" title="Log Out"><i class="fal fa-sign-out-alt"></i> Log Out</a>
+                        <a onclick="changePassword()" class="dropdown-item drop-down-menu-item" href="changepassword.html" data-toggle="tooltip" data-placement="left" title="Account Settings" ><i class="fal fa-cog"></i> Settings</a>
+                    </div>-->
+                </div>
+                <!--</ul>-->
+            </div>
+        </div>
+        <!--sub-nav-->
+        <div class="row">
+            <!--Navigation-Button-->
+
+
+
+            <div class="nav-bar">
+               
+                <button id="btnBackward" style="padding-left: 15px" onclick="Forward();" data-toggle="tooltip" data-placement="bottom" title="Click to Go Back" class="navigation"><i style="font-size: 18px" class="far fa-chevron-circle-left"></i></button>
+                <button id="btnForward" onclick="Backward();" data-toggle="tooltip" data-placement="bottom" title="Click to Go Forward" class="navigation" style="margin-left: -10px;margin-right: -10px"><i style="font-size: 18px" class="far fa-chevron-circle-right"></i></button>
+                <button id="btnReload" onclick="Reload();" data-toggle="tooltip" data-placement="bottom" title="Reload This Page" class="navigation"><i class="far fa-redo"></i></button>
+
+                <a onclick="loadUI('home','Wajira Enterprises')" data-toggle="tooltip" data-placement="bottom" title="Main Menu" class="subnav" ><i class="fal fa-home"></i> Home</a>
+                <!--<a onclick="loadUI('dashboard','Wajira Enterprises | Dashboard ')" data-toggle="tooltip" data-placement="bottom" title="DashBoard" class="subnav"><i class="fal fa-chart-bar"></i> Dashboard</a>-->
+                <div class="subnav">
+                    <button data-toggle="tooltip" data-placement="top" title="Admin Task" class="subnavbtn"><i class="fal fa-user-shield"></i> Admin <i class="fa fa-caret-down" style="margin-top: 2px; margin-left: 5px"></i></button>
+                    <div class="subnav-content">
+                        <a onclick="loadUI('employee','Wajira Enterprises | Employee')"  class="subnav"  data-toggle="tooltip" data-placement="bottom" title="Employee Manage"><i class="far fa-users"></i> Employee</a>
+                        <a onclick="loadUI('customer','Wajira Enterprises | Customer')"  class="subnav"  data-toggle="tooltip" data-placement="bottom" title="Customer Manage"><i class="fal fa-building"></i> Customer</a>
+                        <a onclick="loadUI('user','Wajira Enterprises | User')"  class="subnav"  data-toggle="tooltip" data-placement="bottom" title="User Manage"><i class="fal fa-user-lock"></i> User</a>
+                        <a onclick="loadUI('previlage','Wajira Enterprises | Privilege')"  class="subnav"  data-toggle="tooltip" data-placement="bottom" title="Privilege Manage"><i class="fal fa-shield-alt"></i> Privilege</a>
+                        <a onclick="loadUI('designation','Wajira Enterprises | Designation')"  class="subnav"  data-toggle="tooltip" data-placement="bottom" title="Designation Manage"><i class="fal fa-user-tag"></i> Designation</a>
+                        <a onclick="loadUI('vehicle','Wajira Enterprises | Vehicle')" data-toggle="tooltip" data-placement="bottom" title="Vehicle Manage" class="subnav"><i class="fal fa-truck-moving"></i> Vehicle</a>
+                        <a onclick="loadUI('activitylog','Wajira Enterprises | Activity Logs')" data-toggle="tooltip" data-placement="bottom" title="View User Activity Logs" class="subnav"><i class="fal fa-user-clock"></i> Activity Log</a>
+                    </div>
+                </div>
+                <div class="subnav">
+                    <button data-toggle="tooltip" data-placement="top" title="Manage Shipment" class="subnavbtn"><i class="fal fa-file-invoice"></i> Shipment <i class="fa fa-caret-down" style="margin-top: 2px; margin-left: 5px"></i></button>
+                    <div class="subnav-content">
+                        <a onclick="loadUI('shipment','Wajira Enterprises | Shipment')" class="subnav" data-toggle="tooltip" data-target="#ShipmentModel" data-placement="bottom" title="Shipment Management"><i class="fal fa-pallet-alt"></i> Shipment</a>
+                        <!--<a class="subnav" data-toggle="tooltip" data-placement="bottom" title="Documents Management"><i class="far fa-file-invoice"></i> Documents</a>-->
+                        <!--   <a onclick="loadUI('hscodeandlicence','Wajira Enterprises | HS Code')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Harmonized Code and Authorization Documents Manage"><i class="fal fa-passport"></i> HS Code</a>-->
+                        <a onclick="loadUI('shippingcompany','Wajira Enterprises | Shipping Company')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Shipping Company Management"><i class="fal fa-globe-asia"></i> Shipping Company</a>
+                        <a onclick="loadUI('deliveryagent','Wajira Enterprises | Delivery Agent')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Delivery Agent Management"><i class="fal fa-person-dolly"></i> Delivery Agent</a>
+                    </div>
+                </div>
+                <!--<a data-toggle="tooltip" data-placement="bottom" title="Manage Customs Clearing Process" class="subnav"><i class="fal fa-clipboard-check"></i> Clearing Process</a>-->
+               <!-- <a data-toggle="tooltip" data-placement="bottom" title="Payment Manage"class="subnav"><i class="fal fa-cash-register"></i> Payment</a>-->
+                <div class="subnav">
+                    <button data-toggle="tooltip" data-placement="top" title="Manage Shipment" class="subnavbtn"><i class="fal fa-clipboard-check"></i> Clearing Process <i class="fa fa-caret-down" style="margin-top: 2px; margin-left: 5px"></i></button>
+                    <div class="subnav-content">
+                        <a onclick="loadUI('clearingprocess','Wajira Enterprises | Clearing process')" class="subnav" data-toggle="tooltip" data-target="#ShipmentModel" data-placement="bottom" title="View All Clearing Process"><i class="fal fa-clipboard-check"></i> View Clearing process</a>
+                        <a onclick="GetModel()" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Go To Clearing Process"><i class="fal fa-clipboard-check"></i> Go to Clearing Process</a>
+                        <a onclick="loadUI('viewdeliveryorder','Wajira Enterprises | Clearing process')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="View All Delivery Orders"><i class="fal fa-clipboard-check"></i> View Delivery Orders</a>
+                        <a onclick="loadUI('viewcusdec','Wajira Enterprises | Clearing process')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="View All Customs declaration"><i class="fal fa-clipboard-check"></i> View CusDec</a>
+                        <a onclick="loadUI('viewpaytaxes','Wajira Enterprises | Clearing process')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="View All Tax Payment Details"><i class="fal fa-clipboard-check"></i> Tax Payments</a>
+                        <a onclick="loadUI('viewpanelexamination','Wajira Enterprises | Clearing process')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="View All Panel Examination Results"><i class="fal fa-clipboard-check"></i> Panel Examination Result</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button data-toggle="tooltip" data-placement="top" title="Delivery Management" class="subnavbtn"><i class="fal fa-dolly-flatbed-alt"></i> Delivery <i class="fa fa-caret-down" style="margin-top: 2px; margin-left: 5px"></i></button>
+                    <div class="subnav-content">
+                        <a onclick="loadUI('requestdelivery','Wajira Enterprises | Delivery Management')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Delivery Request"><i class="fal fa-truck-loading"></i> Delivery Request</a>
+                        <a onclick="loadUI('confirmdelivery','Wajira Enterprises | Delivery Management')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Confirm Delivery Request"><i class="fal fa-truck-loading"></i> Confirm Delivery Request</a>
+                        <a onclick="loadUI('vehiclerentelcompany','Wajira Enterprises | Delivery Management')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Vehicle Rental Company Management"><i class="fal fa-car-garage"></i> Vehicle Rental Company</a>
+                        <a onclick="loadUI('delivery','Wajira Enterprises | Delivery Management')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="View Delivery"><i class="fal fa-dolly"></i> View Delivery</a>
+                        <a onclick="loadUI('customeracceptence','Wajira Enterprises | Customer Acceptance')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="View Delivery"><i class="fal fa-box-check"></i>Customer Acceptance</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button data-toggle="tooltip" data-placement="top" title="Manage Warehouse" class="subnavbtn"><i class="fal fa-warehouse-alt"></i> Warehouse <i class="fa fa-caret-down" style="margin-top: 2px; margin-left: 5px"></i></button>
+                    <div class="subnav-content">
+                        <a onclick="loadUI('grn','Wajira Enterprises | Goods Received Note')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Create Goods Received Notes"><i class="far fa-clipboard-list-check"></i> Goods Received Note</a>
+                        <a onclick="loadUI('inventory','Wajira Enterprises | Warehouse Inventory')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Warehouse Inventory Management"><i class="far fa-inventory"></i> Inventory</a>
+                        <a onclick="loadUI('gdn','Wajira Enterprises | Goods Dispatched Note')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Create Goods Dispatch Notes"><i class="far fa-dolly-flatbed-alt"></i> Goods Dispatch Note</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button data-toggle="tooltip" data-placement="top" title="Finance Management" class="subnavbtn"><i class="fal fa-hand-holding-usd"></i> Finance <i class="fa fa-caret-down" style="margin-top: 2px; margin-left: 5px"></i></button>
+                    <div class="subnav-content">
+                        <a  onclick="loadUI('invoice','Wajira Enterprises | Invoice')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Create Invoice"><i class="fal fa-file-invoice-dollar"></i> Invoice</a>
+                        <a  onclick="loadUI('payment','Wajira Enterprises | Payment')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Payment Management"><i class="fal fa-cash-register"></i> Payment</a>
+                        <a  onclick="loadUI('cheque','Wajira Enterprises | Cheque')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Cheques Management"><i class="fal fa-money-check-alt"></i> Cheques</a>
+                        <a  onclick="loadUI('credit','Wajira Enterprises | Credit')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Credit Management"><i class="fal fa-donate"></i> Credit</a>
+                    </div>
+                </div>
+
+
+
+                <div class="subnav">
+                    <button data-toggle="tooltip" data-placement="top" title="Generate Report" class="subnavbtn"><i class="fal fa-chart-line"></i> Reports <i class="fa fa-caret-down" style="margin-top: 2px; margin-left: 5px"></i></button>
+                    <div class="subnav-content">
+                        <!--<a onclick="loadUI('report/shipmentreport','Wajira Enterprises | Report')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Shipment report"><i class="fal fa-pallet-alt"></i> Shipment Report</a>-->
+                        <a onclick="loadUI('report/shipmenttimerange','Wajira Enterprises | Report')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Shipments Between Time Range"><i class="fal fa-pallet-alt"></i> Shipments</a>
+                        <a onclick="loadUI('report/shipmentbyclearingclerk','Wajira Enterprises | Report')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Shipment by Clearing Clerk"><i class="fal fa-pallet-alt"></i> Shipment by Clearing Clerk</a>
+                        <a onclick="loadUI('report/shipmentbycustomer','Wajira Enterprises | Report')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Shipment By customer"><i class="fal fa-pallet-alt"></i> Shipment By customer</a>
+                        <a onclick="loadUI('report/shipmentbystatus','Wajira Enterprises | Report')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Shipment By status"><i class="fal fa-pallet-alt"></i> Shipment By status</a>
+                        <a onclick="loadUI('report/shipmentreport','Wajira Enterprises | Report')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Shipment By Mode"><i class="fal fa-pallet-alt"></i> Shipment By Mode</a>
+                        <a onclick="loadUI('report/deliverybyvehicle','Wajira Enterprises | Report')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Delivery by Vehicle"><i class="fal fa-truck-loading"></i> Delivery by Vehicle</a>
+                        <a onclick="loadUI('report/deliverybydriver','Wajira Enterprises | Report')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Delivery by Driver"><i class="fal fa-truck-loading"></i> Delivery by Driver</a>
+                    </div>
+                </div>
+
+                <a onclick="loadUI('email','Wajira Enterprises | Email')" class="subnav" data-toggle="tooltip" data-placement="bottom" title="Send E-mail"><i class="fal fa-envelope-open-text"></i> E-mail</a>
+
+
+
+                <!-- <a class="subnav" data-tooltip="tooltip" data-toggle="modal" data-target="#MessageModel" data-placement="bottom" title="View Message"><i class="fal fa-envelope"></i> Message</a>-->
+            </div>
+        </div>
+    </div>
+</div>
+            <!--header-end-->
+
+            <!--Frame-Start-->
+            <iframe id="frmMainWindow"  style="width:100%;height: 537px;border:0;margin-bottom: -15px"></iframe>
+            <!--Frame-End-->
+
+        </div>
+    </div>
+
+    <!--Message-->
+    <div id="MessageModel" class="modal fade" role="dialog" style="margin-top: 12%">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Some text in the modal.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!--Message-->
+
+
+
+</div>
+<div id="err"></div>
+
+<div class="modal fade" id="ModelClearingProcess" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"> Go To Clearing Process</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <div class="row">
+                   <div class=col-md-12>
+                       <form class="" onsubmit="return false" id="getprocess">
+                           <script>
+                               txtField('getprocess','txtShpNumber','Enter Shipment Number','Enter Shipment Number Here','',"",'shipment','number','oldshipment',true);
+                           </script>
+                       </form>
+                   </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+                <p id="txtRspn"></p>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                <button onclick="findClearingProcess()" type="button" class="btn btn-primary btn-primary-action">Find <i class="fal fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-loading-bar.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title> Wajira Enterprises</title>
+    <link href="../image/icon.png" rel="icon" >
+
+    <!---->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <link rel="stylesheet" href="../style/shipment-form.css"/>
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/stack.js"></script>
+    <link href="../style/subnav.css" rel="stylesheet">
+    <link href="../style/customer-home.css" rel="stylesheet">
+    <link href="../style/shipmentStatusView.css" rel="stylesheet">
+
+
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .image {
+            background-image: url("../image/clientbackground.jpg");
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .tab-not-active{
+            height: 50px;
+            width: 228px;
+        }
+
+        .active-tab{
+            border: 1px solid black;
+            height: 50px;
+            background-color: white;
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            border-right-color: white;
+            width: 307px;
+            position: relative;
+            z-index: 100000;
+            margin-bottom: 15px;
+        }
+
+        .tab-text{
+            margin-top:12px;
+            margin-left: 15px;
+            font-weight: bold;
+
+        }
+
+        .tab-text:hover{
+            color: tomato;
+            cursor: pointer;
+        }
+
+    </style>
+
+    <script>
+        window.addEventListener("load", initialize);
+
+        function initialize() {
+        //txtUserName.innerHTML = " "+session.getObject("user").companyId.name;
+        console.log(session.getObject("user").companyId);
+        console.log(session.getObject("user"));
+       companyName.innerHTML = session.getObject("user").companyId.name;
+       customerStatus.innerHTML = session.getObject("user").companyId.customerstatusId.name;
+       credit = httpRequest("../credit/bycompany?number="+session.getObject("user").companyId.number,"GET");
+            tap.innerHTML = "Rs. "+credit.value+".00";
+            creditlimit.innerHTML = "Rs. "+credit.maxvalue+".00";
+
+        loadShipmentView();
+
+
+
+        }
+
+        function loadShipmentView() {
+
+            var shipments = httpRequest("../clearingprocess/bycompany?comapnyId="+session.getObject("user").companyId.id,"GET");
+            console.log(shipments);
+
+            for (shp = 0; shp < shipments.length; shp++){
+                shipmentStatusView('shipment',shipments[shp].shipmentId.number,shipments[shp].shipmentId.dateofregisterd,shipments[shp].shipmentId.companyId.name,shipments[shp].shipmentId.itemList,shipments[shp].clearingprocessstatusId);
+        }
+
+        }
+
+
+        function changePassword() {
+            if (window.confirm("Do you need to change the Password ?")) {
+                cookie.setValue("username", "", 1);
+                cookie.setValue("password", "", 1);
+                session.setObject("user", new Object());
+                window.open("changepassword", "_self");
+            }
+        }
+
+        function logout() {
+            if(window.confirm("Do you need to logout ?")) {
+
+                ajax = new XMLHttpRequest();
+                ajax.open("PUT", "/session", false);
+                // ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                ajax.send();
+                err.innerHTML=err.innerHTML+ajax.responseText;
+                if(ajax.status==200 && ajax.responseText!="") {
+                    responce = ajax.responseText;
+                    cookie.setValue("username", "", 1);
+                    cookie.setValue("password", "", 1);
+                    session.setObject("user", new Object());
+                    window.alert(responce);
+                    window.open("customerlogin","_self");
+
+                    // window.open("login", "_self");
+                }
+                else
+                    window.alert("Failed to logout");
+            }
+        }
+
+
+    </script>
+</head>
+
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+<body >
+
+
+<div class="image" style="height: 620px">
+
+    <!--Header-Start-->
+    <div style="border: 1px solid #161616;background-color: #161616;margin: 0px 0px 0px 0px;border-radius: 0px">
+        <div class="row">
+            <div class="col-md-2" ><img style="margin-left: 11px;margin-top: 2px;margin-bottom: 2px" src="../image/logo-small-small.png"/></div>
+            <div class="col-md-9"></div>
+            <div class="col-md-1" align="right">
+                <div class="dropdown" >
+                    <button style="margin-left: 30px" class="btn customer-user-btn " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="far fa-bars" style="font-size: 20px"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right drop-down-menu" aria-labelledby="dropdownMenuButton">
+                        <a onclick="logout()" class="dropdown-item drop-down-menu-item" data-toggle="tooltip" data-placement="left" title="Log Out"><i class="fal fa-sign-out-alt"></i> Log Out</a>
+                        <a onclick="changePassword()" class="dropdown-item drop-down-menu-item" data-toggle="tooltip" data-placement="left" title="Account Settings" ><i class="fal fa-cog"></i> Settings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid" >
+
+        <div style="height: 538px;width: 100%; background-color: rgba(240,240,240,0.7);margin-top: 15px;border: 1px solid #646b6e;border-radius: 5px">
+
+
+                    <div class="row">
+
+                        <!--Navigation-->
+                        <div style="padding: 0px 0px 0px 15px;margin-left: 15px;width: 321px" >
+                            <div  style="border: 1px solid black;margin: 15px 10px 15px 25px;border-radius: 5px;background-color: white;width: 260px">
+
+                                <div align="center" >
+                                    <img  id="customerlogo" style="border: 1px solid black;border-radius: 5px;margin: 15px;"/>
+                                    <script>
+                                        customerlogo.src = atob(session.getObject("user").companyId.logo);
+                                    </script>
+                                </div>
+                                <p id="companyName" style="font-weight: bold;margin-bottom: 0px" class="text-center"></p>
+                                <div class="text-center" style="font-weight: bold"><span>Status : </span><span id="customerStatus"></span></div>
+
+                                <div class="row text-center" style="margin-top: 20px">
+                                    <div class="col-md-4 " style="padding: 0px">
+                                        <p style="font-size: 11px;margin-left: 20px;margin-bottom: 5px">All Shipments</p>
+                                        <p style="font-weight: bold;margin-bottom: 5px;margin-right: 5px;font-size: 15px" id="allshipments"></p>
+                                    </div>
+                                    <div class="col-md-4" style="border-right: 2px solid black;border-left: 2px solid black;padding: 0px">
+                                        <p style="font-size: 11px;margin-bottom: 5px">Air Cargo</p>
+                                    </div>
+                                    <div class="col-md-4" style="padding: 0px">
+                                        <p style="font-size: 11px;margin-bottom: 5px;margin-right: 15px">Sea Cargo</p>
+                                    </div>
+                                </div>
+
+
+
+                                        <div class="row " style="margin-top: 20px" >
+                                            <div class="col-md-6 text-right" style="border-right: 1px solid black;padding: 0px" >
+                                                <p style="font-size: 11px;margin-right: 5px;margin-bottom: 5px">Total Amount Payable</p>
+                                                <p style="font-weight: bold;margin-bottom: 5px;margin-right: 5px;font-size: 15px" id="tap"></p>
+                                            </div>
+                                            <div class="col-md-6" style="border-left: 1px solid black;padding: 0px">
+                                                <p style="font-size: 11px;margin-left: 5px;margin-bottom: 5px"  >Credit Limit</p>
+                                                <p style="font-weight: bold;margin-bottom: 5px;margin-left: 5px;font-size: 15px" id="creditlimit"></p>
+                                            </div>
+                                        </div>
+
+
+
+
+                                <div class="row" style="margin-bottom: 15px;margin-top: 20px">
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-8">
+                                        <div class="row ">
+                                            <div class="col-md-4 text-center" ><i class="fal fa-sign-out-alt" style="font-weight: bold" data-toggle="tooltip" data-placement="bottom" title="Log out" ></i></div>
+                                            <div class="col-md-4 text-center" style="border-right: 2px solid black;border-left:2px solid black" data-toggle="tooltip" data-placement="bottom" title="Account Settings" ><i class="fal fa-cog" style="font-weight: bold"></i></div>
+                                            <div class="col-md-4 text-center"><i class="fal fa-bell" style="font-weight: bold" data-toggle="tooltip" data-placement="bottom" title="Notification" ></i></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2"></div>
+                                </div>
+
+                            </div>
+
+                            <div class="active-tab">
+                                <p data-toggle="tooltip" data-placement="right" title="View Shipment" class="tab-text"><i class="far fa-pallet-alt"></i>&nbsp;&nbsp;&nbsp;&nbsp;View Your Shipments</p>
+                            </div>
+
+                            <div class="tab-not-active">
+                            <p data-toggle="tooltip" data-placement="right" title="View Invoice" class="tab-text">&nbsp;<i class="far fa-file-invoice-dollar"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VIew Your Invoice</p>
+                            </div>
+
+                            <div class="tab-not-active">
+                                <p data-toggle="tooltip" data-placement="right" title="View Payments" class="tab-text"><i class="far fa-cash-register"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VIew Your Payments</p>
+                            </div>
+
+                        </div>
+
+
+                        <!--Content-->
+                        <div  style="padding: 0px 0px 0px 0px">
+                            <div style="background-color: white;height: 508px;width:1000.75px; margin-top: 15px;margin-right: 0px;border-radius: 5px;border: 1px solid black;overflow-y: scroll">
+                                <div id="shipment"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<div id="err"></div>
+</body>
+</html>

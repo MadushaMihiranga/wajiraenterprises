@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+
+    <title> Login</title>
+    <link href="../icon/account_circle.png" rel="icon" >
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--<link href="../fonts/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">-->
+    <link href="../plugin/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../style/employee-login.css" rel="stylesheet">
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <!--<link href="../style/common.css" rel="stylesheet">-->
+    <script src="../plugin/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../plugin/jquery/jquery.min.js"></script>
+
+       <script>
+
+        window.addEventListener("load", initialize);
+
+        function initialize() {
+            btnLogin.addEventListener("click", btnLoginMC);
+        }
+
+        function btnLoginMC() {
+
+            var username = txtUsername.value.trim();
+            var password = txtPassword.value.trim();
+
+            if (username != "" && password != ""){
+
+                ajax = new XMLHttpRequest();
+                ajax.open("POST", "/session", false);
+                ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                ajax.send("username="+username+"&password="+password);
+                err.innerHTML=err.innerHTML+ajax.responseText;
+                console.log(ajax.responseText);
+                if(ajax.status==200 && ajax.responseText!="") {
+                      sessionlog = JSON.parse(ajax.responseText);
+                      cookie.setValue("username",  username, 1);
+                        cookie.setValue("password", password, 1);
+                        cookie.setValue("sessionid", sessionlog.id, 1);
+                        session.setObject("user", sessionlog.userId);
+                        err.innerHTML = err.innerHTML + ajax.responseText;
+
+                        window.open("mainwindow", "_self");
+                    }
+                else
+                    window.alert("Incorect User Details");
+            }
+            else
+                window.alert("Enter both Username or Password");
+        }
+
+    </script>
+
+</head>
+<body>
+<div class="image">
+<div class="container-fluid">
+    <div class="row"></div>
+    <div class="row">
+        <div align="center" class="col-md-12" >
+            <div class="main-border" style="margin-top: 16px">
+            <div class=" main-container-container" style="margin-top: 50px;">
+                <div class=" main-container" style="margin-top: 2px; border-color: #161616;"  >
+                    <div class="panel-body" >
+                        <!--Logo container-->
+                        <div class="logo-container" ><img src="../image/logo.png" style="margin-top: 3px"></div>
+                        <!--Login Box-->
+                        <div class="loginbox">
+                            <div class="col-md-12">
+                                <div  class="row" ><h1  class="logintitle">Log&nbsp;In</h1></div>
+                                <div id="form" >
+                                    <form  class="form-horizontal" id="loginForm" onsubmit="return false">
+                                        <div class="wrapinput">
+                                            <input class="txtinput form-control" id="txtUsername" name="user name" placeholder="username" type="text">
+                                            <span class="icon"><i class="far fa-user"></i></span>
+                                        </div>
+                                        <div class="wrapinput">
+                                            <input class="txtinput form-control" id="txtPassword" name="password" placeholder="password" type="password">
+                                            <span class="icon"><i class="far fa-key"></i></span>
+                                        </div>
+                                        <div class="btnlogin-container">
+                                            <button class="btnLogin" id="btnLogin">LOG IN</button>
+                                        </div>
+                                        <div class="text-center container-txt">
+                                            <!--<span class="liPswForgot">Forgot&nbsp; </span>
+                                            <a class="linkPswForgot" href="#"> Username / Password?</a>-->
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="row"></div>
+</div>
+</div>
+<div id="err"></div>
+</body>
+</html>

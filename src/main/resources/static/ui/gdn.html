@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title>GDN</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <link rel="stylesheet" href="../style/shipment-form.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnDelete.addEventListener("click",btnDeleteMC);
+
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+
+            txtShipmentNo.addEventListener("keyup", txtShipmentMC);
+
+            btnAddItem.addEventListener("click", btnAddItemMC);
+            cmbItem.addEventListener("change", cmbItemCH);
+            //cmbItem.addEventListener("change", test);
+
+
+
+            //dteDOBirth.onchange = dteDOBirthCH;
+            btnSearch.addEventListener("click",btnSearchMC);
+            btnSearchClear.addEventListener("click",btnSearchClearMC);
+
+            privilages = httpRequest("../privilages?module=GDN","GET");
+            employes = httpRequest("../employees/list", "GET");
+            packagetype= httpRequest("../packagetypes/list", "GET");
+
+
+            /*  regexes = httpRequest("../regexes/employee","GET");
+              //txtNumber.setAttribute("data-pattern",regexes.number.regex);
+              txtFullname.setAttribute("data-pattern",regexes.fullname.regex);
+              txtCallingname.setAttribute("data-pattern",regexes.callingname.regex);
+              txtNIC.setAttribute("data-pattern",regexes.nic.regex);
+              txtAddress.setAttribute("data-pattern",regexes.address.regex);
+              txtMobile.setAttribute("data-pattern",regexes.mobile.regex);
+              txtLand.setAttribute("data-pattern",regexes.land.regex);
+              txtDescription.setAttribute("data-pattern",regexes.description.regex);*/
+
+            /*  genders = httpRequest("../genders/list","GET");
+              designations = httpRequest("../designations/list","GET");
+              civilstatuses = httpRequest("../civilstatuses/list","GET");
+              employeestatuses = httpRequest("../employeestatuses/list","GET");*/
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+
+        }
+
+        function loadView() {
+
+            //Search Area
+            txtgdnno.value = "";
+            txtgdnno.style.borderColor = "";
+            txtShpNo.value = "";
+            txtShpNo.style.borderColor = "";
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+            var query = "&name=&nic=&designationid=&employeestatusid=";
+            loadTable(1, cmbPageSize.value, query);
+        }
+
+        function loadTable(page,size,query) {
+            page = page - 1;
+            gdns = new Array();
+            var data = httpRequest("/gdn?page="+page+"&size="+size+query,"GET");
+            if(data.content!= undefined) gdns = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblgdn',gdns,fillForm);
+            clearSelection(tblgdn);
+            if(activerowno!="")selectRow(tblgdn,activerowno,active);
+            window.location.href="#ui";
+        }
+
+        function paginate(page) {
+            var paginate;
+            if(oldgdn==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno=""
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+        function loadForm() {
+            nextnumber = httpRequestwithoutlist("../gdn/nextnumber","GET");
+            setStyle(initial);
+
+            gdn = new Object();
+            oldgdn = null;
+
+            gdn.gdnhasinventoryitemList = new Array();
+            refreshInnerFrom();
+
+
+            fillCombo(cmbEmployee, "Select Employee", employes, "callingname", session.getObject("user").employeeId.callingname);
+            gdn.issuedby=JSON.parse(cmbEmployee.value);
+            cmbEmployee.disabled = "disabled";
+
+
+            var today = new Date();
+            var month = today.getMonth()+1;
+            if(month<10) month = "0"+month;
+            var date = today.getDate();
+            if(date<10) date = "0"+date;
+
+            dteDate.value=today.getFullYear()+"-"+month+"-"+date;
+            gdn.date=dteDate.value;
+            dteDate.style.borderColor=valid;
+            dteDate.disabled = "disabled";
+
+            txtNumber.value = nextnumber;
+            gdn.number = txtNumber.value;
+            txtNumber.disabled = "disabled";
+            txtNumber.style.borderColor=valid;
+
+            var parent1 = document.getElementById("shptext");
+            if (parent1.hasChildNodes()){
+                parent1.firstChild.remove();
+            }
+
+            txtShipmentNo.value = "";
+
+
+            cmbItem.disabled = "disabled";
+            //cmbItemStatus.disabled = "disabled";
+            txtQty.disabled = "disabled";
+            cmbPackageType.disabled = "disabled";
+            txtNote.disabled = "disabled";
+
+            disableButtons(false, true, true);
+        }
+
+
+        //DeliveryRequestController
+        function txtShipmentMC() {
+            var string = txtShipmentNo.value;
+            var patern = new RegExp(/^SHP-\d{8}$/);
+            var result = patern.test(string);
+
+            var parent = document.getElementById("shptext");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+
+            cmbItem.disabled = "disabled";
+            txtQty.disabled = "disabled";
+            cmbPackageType.disabled = "disabled";
+            txtNote.disabled = "disabled";
+
+            if (result){
+                txtShipmentNo.style.borderColor = valid;
+                //DeliveryRequestController
+                var shpresult = httpRequestwithoutlist("../findshipment/clearingprocessid?number="+string,"GET"); //clearingprocesscontroller
+                var element = createElement('p','ptagshpres');
+                element.style.marginBottom = "-10px";
+                element.style.marginTop = "-10px";
+                element.style.fontSize = "13px";
+                if (parseInt(shpresult)<= 6 ){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML = "The items of this shipment are doesn't receive to warehouse yet";
+                    gdn.shipmentId = null;
+                }else if (parseInt(shpresult) == 10){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML ="This Shipment is Terminated. ";
+                    gdn.shipmentId = null;
+                }else if (parseInt(shpresult) == 9){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML = "The items of this shipment already sent to the customer";
+                    gdn.shipmentId = null;
+                }else if (parseInt(shpresult) == 7 || parseInt(shpresult) == 8){
+                    txtShipmentNo.style.borderColor = valid;
+                    element.style.color = valid;
+                    element.innerHTML ="Shipment number is correct";
+                    gdn.shipmentId = httpRequest("../getshipment?shipmentno="+string,"GET");
+                    //document.getElementById("txtDeliveryNo").placeholder = "Enter Delivery Number";
+                    cmbItem.disabled = "";
+                    //cmbItemStatus.disabled = "";
+                    txtQty.disabled = "";
+                    cmbPackageType.disabled = "";
+                    txtNote.disabled = "";
+                    //txtDeliveryNo.disabled = "";
+
+                    /**Shipment Item List**/
+                    items = httpRequest("../inventoryitem/listByShipmentNumber?number="+string,"GET");
+                    console.log(items)
+                    fillComboBoxInner(cmbItem,items,"","",fillItem,"Select Item");
+
+                    //getLocations(string);
+                }else if (shpresult == 0){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML ="Shipment number doesn't exist ";
+                    gdn.shipmentId = null;
+                }else {
+                    txtShipmentNo.style.borderColor = invalid;
+                    window.alert(shpresult);
+                    gdn.shipmentId = null;
+
+                }
+                parent.appendChild(element);
+            }else {
+                txtShipmentNo.style.borderColor = invalid;
+                gdn.shipmentId = null;
+            }
+        }
+        function fillItem(ob){
+
+            return ob.grnhasitemId.itemId.description;
+        }
+
+        function txtDeliveryMC() {
+            var string = txtDeliveryNo.value;
+            var patern = new RegExp(/^DLV-\d{8}$/);
+            var result = patern.test(string);
+
+            var parent = document.getElementById("deltext");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+            if (result){
+                txtDeliveryNo.style.borderColor = valid;
+
+
+                //DeliveryRequestController
+                var delresult = httpRequestwithoutlist("../finddelivery?number="+string,"GET");
+                var element = createElement('p','ptagshpres');
+                element.style.marginBottom = "-10px";
+                element.style.marginTop = "-10px";
+                element.style.fontSize = "13px";
+                if (delresult == 1){
+                    txtDeliveryNo.style.borderColor = valid;
+                    element.style.color = valid;
+                    element.innerHTML ="Delivery number is correct";
+                    gdn.deliveryId = httpRequest("../getdelivery?number="+string,"GET");
+                    //console.log(gdn);
+                    //getLocations(string);
+                }else if (delresult == 0){
+                    txtDeliveryNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML ="Invalid Delivery number";
+                    gdn.deliveryId = null;
+                }else {
+                    txtDeliveryNo.style.borderColor = invalid;
+                    window.alert(delresult);
+                    gdn.deliveryId = null;
+                }
+                parent.appendChild(element);
+            }else {
+
+                txtDeliveryNo.style.borderColor = invalid;
+                gdn.deliveryId = null;
+            }
+        }
+
+        function cmbItemCH() {
+            spnItemName.innerHTML = JSON.parse(cmbItem.value).grnhasitemId.itemId.description;
+            spnItemTotalQuantity.innerHTML = JSON.parse(cmbItem.value).storedqty+" "+JSON.parse(cmbItem.value).grnhasitemId.itemId.packagetypeId.name;
+        }
+
+        function refreshInnerFrom() {
+
+            fillInnerTable("tblgdnItem",  gdn.gdnhasinventoryitemList ,removeItem);
+            txtNote.value = "";
+            txtQty.value = "";
+            spnItemTotalQuantity.innerHTML = "";
+            spnItemName.innerHTML = "";
+            //fillCombo(cmbItemStatus,"Select Status",itemstatus,"name","");
+            fillCombo(cmbPackageType,"Select Package Type",packagetype,"name","");
+        }
+
+        function removeItem(gdnhasinventoryitemList,index){
+            gdn.gdnhasinventoryitemList.splice(index-1, 1);
+            refreshInnerFrom();
+        }
+
+        function btnAddItemMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            gdnitems = new Object();
+
+            var itmerrors = getItemErrors();
+            if (itmerrors == ""){
+                gdnitems.inventryId = JSON.parse(cmbItem.value);
+                //gdnitems.gdnitemstatusId = JSON.parse(cmbItemStatus.value);
+                gdnitems.packagetypeId = JSON.parse(cmbPackageType.value);
+                gdnitems.qty = parseInt(txtQty.value);
+                gdnitems.note = txtNote.value;
+                gdn.gdnhasinventoryitemList.push(gdnitems);
+                refreshInnerFrom();
+                //items = httpRequest("../inventoryitem/listByShipmentNumber?number="+string,"GET");
+                //fillCombo(cmbItem,"Select Item",items,"number","");
+            }else {
+                window.alert("gdn Item has following Errors\n\n"+itmerrors);
+            }
+        }
+
+
+        function getItemErrors() {
+            itemerrors = "";
+
+            if (isNaN(txtQty.value) || txtQty.value == "")
+                itemerrors = itemerrors + "invalid Quantity\n";
+
+            if (cmbPackageType.value == "Select Package Type")
+                itemerrors = itemerrors + "Package type is not selected \n";
+
+            if (cmbItem.value == "Select Item")
+                itemerrors = itemerrors + "Item Name is not selected \n";
+
+            return itemerrors;
+        }
+
+
+
+        function setStyle(style) {
+
+            txtNumber.style.borderColor = style;
+            dteDate.style.borderColor = style;
+            txtShipmentNo.style.borderColor = style;
+            cmbEmployee.style.borderColor = style;
+
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+
+        }
+
+
+
+
+
+        //Form Operation Functions
+
+        function getErrors() {
+
+            var errors = "";
+
+            if (gdn.shipmentId == null)
+                errors = errors + "Invalid Shipment Number<br>";
+
+
+            if (gdn.gdnhasinventoryitemList === undefined || gdn.gdnhasinventoryitemList.length == 0)
+                errors = errors + "gdn dosn't have any Items<br>";
+
+
+            return errors;
+        }
+
+
+        function ModelAddContent() {
+
+            console.log(gdn);
+
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+
+                spngdnNo.innerHTML = gdn.number;
+                spnNumber.innerHTML = gdn.shipmentId.number;
+                spnDate.innerHTML = gdn.date;
+                spnEmp.innerHTML = gdn.issuedby.callingname;
+
+                for (gdnitem = 0; gdnitem<gdn.gdnhasinventoryitemList.length; gdnitem++){
+                    showItemList(gdn.gdnhasinventoryitemList[gdnitem]);
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+
+        function showItemList(gdnitm) {
+            var parent = document.getElementById("itmParent");
+            var itemelement = document.createElement('p');
+            var content = "";
+            content =content+gdnitm.inventryId.grnhasitemId.itemId.description+"<br>";
+            content =content+gdnitm.qty+" "+gdnitm.packagetypeId.name+"<br>";
+            content =content+gdnitm.note+"<br>";
+
+            var brake = document.createElement('br');
+            itemelement.innerHTML = content;
+            parent.appendChild(itemelement);
+            parent.appendChild(brake);
+        }
+
+        function ChangeTabToForm(){ $('[href="#Form"]').tab('show'); }
+
+        function ChangeTabToTable(){ $('[href="#Table"]').tab('show'); }
+
+
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/gdn","POST",gdn);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                //alertify.notify('gdn Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','GDN Saved Successfully',6);
+                ChangeTabToTable();
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            }
+            else {
+                $('#ModelAddContent').modal('hide');
+                showResult('error');
+                window.alert("Failed to Add as \n\n"+response);
+            }
+        }
+
+
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+
+            var clear;
+            if(oldgdn==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblgdn);
+            }
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+        }
+
+        function fillForm(gn,rowno){
+            ChangeTabToForm();
+
+            activerowno = rowno;
+            var filling;
+            if(oldgdn==null){
+                filling=true;
+            }else{
+
+                if(getErrors()==''&&getUpdates()==''){
+                    filling=true;
+                }else{
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+
+            if(filling) {
+
+                clearSelection(tblgdn);
+                selectRow(tblgdn,activerowno,active);
+
+                gdn = JSON.parse(JSON.stringify(gn));
+                oldgdn = JSON.parse(JSON.stringify(gn));
+
+                txtNumber.value = gdn.number;    ///////////////////
+                dteDate.value = gdn.date;
+                txtShipmentNo.value = gdn.shipmentId.number;
+                //txtDeliveryNo.value = gdn.deliveryId.number;
+
+                txtNumber.disabled="disabled";
+                dteDate.disabled="disabled";
+                txtShipmentNo.disabled="disabled";
+                //txtDeliveryNo.disabled="disabled";
+
+
+                fillCombo(cmbEmployee, "Select Employee", employes, "callingname",gdn.issuedby.callingname );
+
+                refreshInnerFrom();
+
+                disableButtons(true, true, false);
+                setStyle(valid);
+            }
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(gdn!=null && oldgdn!=null) {
+
+                //if (gdn.number != oldgdn.number)
+                //updates = updates + "\nNumber is Changed";
+                /*
+                                if (isEqual(gdn.gdnhasitemList,oldgdn.gdnhasitemList,"itemId.description")){
+                                    newitems="";
+                                    olditems="";
+                                    for (itm = 0;itm<gdn.gdnhasitemList.length;itm++) {
+                                        newitems += gdn.gdnhasitemList[itm].itemId.description+" [ "+gdn.gdnhasitemList[itm].recivedqty+" ] <br>"
+                                    }
+                                    for (olditm = 0;olditm<oldgdn.gdnhasitemList.length;olditm++) {
+                                        olditems += oldgdn.gdnhasitemList[olditm].itemId.description+" [ "+oldgdn.gdnhasitemList[olditm].recivedqty+" ] <br>"
+                                    }
+                                    updates = updates + "\nItems is Changed : <span style='color: #ffc107'>"+olditems+" <i class=\"fas fa-arrow-right\"></i> "+newitems+"</span><br>";
+                                }*/
+
+            }
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+
+        }
+
+        function btnUpdateMC() {
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/employees","PUT",employee);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                alertify.notify('Employee Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Update as \n\n"+response);
+        }
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnEmployeeNnme.innerHTML =   "gdn Number : "+gdn.number;
+        }
+
+        function btnDeleteMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/gdn","DELETE",gdn);
+            if(response=="0"){
+                $('#ModelDelete').modal('hide');
+                alertify.notify('Employee Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Delete as \n\n"+response);
+        }
+
+
+        //Search Functions
+
+        function loadSearchedTable() {
+
+            var gdn = txtgdnno.value;
+            var shipment = txtShpNo.value;
+            // var item = txtItem.value;
+
+            if(gdn!=""){  txtgdnno.style.borderColor = active; }
+            if(shipment!=""){  txtShpNo.style.borderColor = active; }
+            //if(item!=""){  txtItem.style.borderColor = active; }
+
+            var query ="&gdn=&shipment=";
+
+            if(gdn!="" || shipment!="" )
+                query = "&gdn=" + gdn + "&shipment=" + shipment ;
+            //window.alert(query);
+            loadTable(activepage, cmbPageSize.value, query);
+
+        }
+
+        function btnSearchMC(){
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+            loadView();
+        }
+
+    </script>
+
+
+
+
+</head>
+<body>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist" style="margin-top: 5px ;border-color: black;background-color: #f9f9f9;">
+    <li class="nav-item" style="border-color: black;margin-left: 15px">
+        <a class="nav-link active" id="Form-tab" data-toggle="tab" href="#Form" role="tab" aria-controls="Form" aria-selected="true">Add Goods Dispatch Note</a>
+    </li>
+    <li class="nav-item" style="border-color: black">
+        <a class="nav-link" id="Table-tab" data-toggle="tab" href="#Table" role="tab" aria-controls="Table" aria-selected="false">View Goods Dispatch Notes</a>
+    </li>
+
+</ul>
+<div class="tab-content" id="myTabContent">
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!--Form Area Start-->
+    <div class="tab-pane fade show active" id="Form" role="tabpanel" aria-labelledby="Form-tab">
+        <div class="container-fluid">
+            <div class="row" id="ui">
+                <div class="col-md-12">
+                    <!--card-start-->
+
+                    <!--<div class="card" style="border: 1px solid #282c2f;margin-top: 15px">-->
+                        <!--card-header-->
+                        <!--<div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 15px">
+
+                        </div>-->
+
+                        <!--card-body-start-->
+                        <!--<div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">-->
+                            <div class="row">
+                                <!--Form-Start-->
+                                <!-- <div class="col-md-2"></div>-->
+                                <div class="col-md-12">
+                                    <div class="card" style="border: 1px solid #161616;border-radius: 5px;margin-top: 10px;height: 475px">
+                                        <div style="border: 1px solid transparent;border-radius: 5px"  class="card-body form-box-overflow"><!--height:480px;overflow-y:scroll;-->
+                                            <form class="form-horizontal" onsubmit="return false"  >
+                                                <div class="row">
+
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-md-4" id="gdnform1"></div>
+                                                            <div class="col-md-4" id="gdnform2"></div>
+                                                            <div class="col-md-4" id="gdnform3"></div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-4" >
+                                                                <div id="gdnform4"></div>
+                                                                <div id="shptext"></div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div id="gdnform5"></div>
+                                                                <div id="deltext"></div>
+                                                            </div>
+                                                            <div class="col-md-4" id="gdnform6"></div>
+                                                        </div>
+
+                                                        <script>
+                                                            txtField('gdnform1','txtNumber','GDN Number','GDN Number Here','',"",'gdn','number','oldgdn');
+                                                            dteField('gdnform2','dteDate','Date','',"",'gdn','date','oldgdn');
+                                                            cmbBox('gdnform3','cmbEmployee','Issued by','gdn','issuedby','oldgdn',true);
+                                                            txtField('gdnform4','txtShipmentNo','Shipment Number','Enter Shipment Number Here','',"",'','','',true);
+                                                        </script>
+                                                    </div>
+
+                                                </div>
+
+
+                                                <!--Innerform strat-->
+                                                <div class="row" style="border: 1px solid #ced4da;border-radius: 5px;background-color: rgba(237,243,249,0.42);margin-top: 15px">
+                                                    <div class="col-md-12">
+
+                                                        <!--Inner Form-->
+                                                        <div class="row">
+                                                            <div class="col-md-12"  id="innerFormgdn">
+                                                                <div class="row" style="padding-right: 15px">
+                                                                    <div class="col-md-7">
+                                                                        <div class="row">
+                                                                            <div class="col-md-9" id="innerFormgdnR1C1"></div>
+                                                                            <div class="col-md-3" id="innerFormgdnR1C2"></div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-md-4" id="innerFormgdnR2C1"></div>
+                                                                            <div class="col-md-4" id="innerFormgdnR2C2"></div>
+                                                                            <div class="col-md-4" id="innerFormgdnR1C3"></div>
+                                                                        </div>
+                                                                        <div class="text-right" style="margin-bottom: 10px;">
+                                                                            <button data-toggle="tooltip" data-placement="top" title="Add Item" class="btn btn-secondary btn-sm" type="button" id="btnAddItem"  style="">Add Item <i class="fal fa-plus-circle"></i></button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!--shipment Item Description-->
+                                                                    <div class="col-md-5" style="border: 1px solid #aaafb4;margin-top: 15px;margin-bottom: 10px;border-radius: 5px">
+                                                                        <h6 style="margin-top: 5px">Item Detail according to Warehouse Inventory</h6>
+                                                                        <p style="margin-bottom: 5px">Item Name : <span id="spnItemName"></span></p>
+                                                                        <p>Total Quantity  : <span id="spnItemTotalQuantity"></span></p>
+                                                                    </div>
+                                                                </div>
+
+                                                                <script>
+                                                                    cmbBox('innerFormgdnR1C1','cmbItem','Select Item','','','',true);
+                                                                   // cmbBox('innerFormgdnR1C2','cmbItemStatus','Item Status','','','',true);
+                                                                    txtField('innerFormgdnR2C1','txtQty','Dispatched Quantity','Enter dispatched Dispatched here ','',"",'','','',true)
+                                                                    cmbBox('innerFormgdnR2C2','cmbPackageType','Package Type','','','',true);
+                                                                    txtArea('innerFormgdnR1C3','txtNote','Description','Enter Description Here','',"",'',"",'');
+
+                                                                    // txtField('innerFormgdn','txtTaxvalue','Value','Enter Value here','',"",'','',"",true)
+                                                                </script>
+
+                                                            </div>
+                                                        </div>
+
+                                                        <!--Inner Table-->
+                                                        <div class="row">
+                                                            <div class="col-md-12 table-responsive" id="innerTablegdn">
+
+                                                                <script>
+                                                                    var metadatainnertabletax = [
+                                                                        {name:'Item',search:false,datatype:'text',property:'inventryId.grnhasitemId.itemId.description'},
+                                                                        //{name:'Status',search:false,datatype:'text',property:'gdnitemstatusId.name'},
+                                                                        {name:'Notes',search:false,datatype:'text',property:'note'},
+                                                                        {name:'Quantity',search:false,datatype:'text',property:'qty'},
+                                                                        {name:'Package Type',search:false,datatype:'text',property:'packagetypeId.name'},
+                                                                    ];
+                                                                    tableForInnerForm("innerTablegdn","tblgdnItem",metadatainnertabletax,true);
+                                                                </script>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+
+                                                <!--Form-Button Start-->
+                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                                <div class="row" >
+                                                    <div class="col-md-8"></div>
+                                                    <div class="col-4">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <button  data-toggle="tooltip" data-placement="top"  title="Delete" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                                            </div>
+                                                            <div class="col-md-3" style="margin-right: -15px">
+                                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                                            </div>
+                                                            <div class="col-md-3" >
+                                                                <button data-toggle="tooltip" data-placement="top" title="Update" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <button  data-toggle="tooltip" data-placement="top" title="Save" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--Form button End-->
+                                            </form>
+
+
+                                            <!--Add Content Model Start------------------------------------------------------------------------------------>
+                                            <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabeladd">Employee Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>Are you sure to add following Employee?</h5>
+                                                            <p class="content-model-text-title">gdn Number    : <span class="content-model-text-value" id="spngdnNo"></span></p>
+                                                            <p class="content-model-text-title">Shipment Number  : <span class="content-model-text-value" id="spnNumber"></span></p>
+                                                            <p class="content-model-text-title">Date     : <span class="content-model-text-value" id="spnDate"></span></p>
+                                                            <p class="content-model-text-title">Issued By           : <span class="content-model-text-value" id="spnEmp"></span></p>
+                                                            <span class="content-model-text-value" >gdn Items : </span>
+                                                            <div id="itmParent"></div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                                            <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Add Content Model End-------------------------------------------------------------------------------------->
+                                            <!--Model Error Start------------------------------------------------------------------------------------------>
+                                            <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Employee Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>You Have Following Errors</h5>
+                                                            <p id="spnErrors" style="color: #dc3545"></p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Error End------------------------------------------------------------------------------------------>
+                                            <!--Model Delete Start--------------------------------------------------------------------------------------->
+                                            <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabeldelete">Employee Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>Are your sure to delete following </h5>
+                                                            <p  id="spnEmployeeNnme"></p>
+                                                        </div>
+                                                        <div class="modal-footer ">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                                            <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Delete End----------------------------------------------------------------------------------------->
+                                            <!--Model Update Start--------------------------------------------------------------------------------------->
+                                            <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabelupdete">Vehicle Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>Are your sure to update followings</h5>
+                                                            <p id="spnUpdate"></p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                                            <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Update End----------------------------------------------------------------------------------------->
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--  <div class="col-md-2"></div>-->
+
+                                <!--Form-End-->
+
+                            </div>
+                        <!--</div>-->
+                   <!-- </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Form Area End-->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!--Table Area Start-->
+    <div class="tab-pane fade" id="Table" role="tabpanel" aria-labelledby="Table-tab">
+
+        <div class="card" style=";border: 1px solid #282c2f;border-radius: 5px;margin-left: 15px;margin-right: 15px;margin-top: 10px">
+            <!--<div class="card" style="border: 1px solid #a6a6a6;border-radius: 1px;margin-top: 15px">-->
+            <div class="card-header" style="height: 60px">
+                <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <input placeholder="Search By gdn Number" class="form-control form-control-sm txtinput" type="text" id="txtgdnno"/>
+                    </div>
+
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <input placeholder="Search By Shipment Number" class="form-control form-control-sm txtinput" type="text" id="txtShpNo"/>
+                    </div>
+
+
+                    <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                    <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="card-body table-box-overflow"  id="shipmentview">
+                <div class="table-responsive" id="tableParent" >
+
+                    <script>
+                        function getItemColumn(ob) {
+                            var gdnhasinventoryitemList="";
+                            for(x in ob.gdnhasinventoryitemList)
+                                gdnhasinventoryitemList = gdnhasinventoryitemList + (gdnhasinventoryitemList==""?"":"")+"[ "+ob.gdnhasinventoryitemList[x].inventryId.number+" ] - "+ob.gdnhasinventoryitemList[x].inventryId.grnhasitemId.itemId.description+"<br>";
+                            return gdnhasinventoryitemList;
+                        }
+
+                        function getqtyColumn(ob) {
+                            var gdnhasinventoryitemList="";
+                            for(x in ob.gdnhasinventoryitemList)
+                                gdnhasinventoryitemList = gdnhasinventoryitemList + (gdnhasinventoryitemList==""?"":"")+ob.gdnhasinventoryitemList[x].qty+" "+ob.gdnhasinventoryitemList[x].packagetypeId.name+"<br>";
+                            return gdnhasinventoryitemList;
+                        }
+
+
+                        var metadata = [
+                            {name:'gdn Number',search:false,datatype:'text',property:'number'},
+                            {name:'Shipment Number',search:false,datatype:'text',property:'shipmentId.number'},
+                            {name:'Items',search:false,datatype:'text',property:getItemColumn},
+                            {name:'Quantity',search:false,datatype:'text',property:getqtyColumn},
+                            {name:'Date',search:false,datatype:'text',property:'date'},
+                        ];
+                        table("tableParent","tblgdn",metadata,[7,10,15,30,500,1000],btnSearchMC,true);
+
+                    </script>
+                </div>
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+    </div>
+    <!--Table Area End-->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shipment Reports</title>
+
+    <link rel="stylesheet" href="../../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../../plugin/pace/pace.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+    <script src="../../plugin/Chart.js/Chart.min.js"></script>
+
+    <link href="../../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../../plugin/alertifyjs/css/alertify.css">
+    <script src="../../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../../style/common.css"/>
+    <link rel="stylesheet" href="../../style/dashboard.css">
+    <script src="../../script/my.ui.javascript.js"></script>
+
+    <script src="../../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script type="text/javascript" src="../../plugin/html2canvas.js/html2canvas.js"></script>
+    <script  type="text/javascript" src="../../plugin/jsPDF-master/dist/jspdf.min.js"></script>
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        function initialize() {
+
+            btnRefreshShpByMod.addEventListener("click",shipmentByMode);
+            //btnRefreshShpByStatus.addEventListener("click",shipmentByStatus);
+            btnPrintShpByMod.addEventListener("click",printShipmentByMod);
+            //btnPrintShpByStatus.addEventListener("click",printShipmentByStatus);
+            //shipmentByStatus();
+            shipmentByMode();
+            //ShipmentByCountry();
+            //shipmentByCustomer();
+            today = new Date().toISOString().slice(0, 10)
+
+        }
+
+        function shipmentByMode() {
+            shipmentByModeData=httpRequest("../../reports/shipmentbymodes","GET");
+            drawChart('shipmentByModeChart','doughnut',shipmentByModeData);
+            var aircargo;
+            var seacargo;
+            for (var x=0; x<shipmentByModeData.length; x++){
+                if (shipmentByModeData[x].label ==="Sea Cargo"){
+                    seacargo = shipmentByModeData[x].value;
+                }
+                if (shipmentByModeData[x].label ==="Air Cargo"){
+                    aircargo = shipmentByModeData[x].value;
+                }
+            }
+            txtAllShpCount.innerHTML = aircargo+seacargo ;
+            txtAirCargo.innerHTML = aircargo;
+            txtSeaCargo.innerHTML = seacargo ;
+        }
+
+        function printShipmentByMod() {
+            genPDFofTag('shpByMod','Report: Shipments by Mod [' +today+' ]','Shipment By Mod Report',today);
+        }
+
+        function shipmentByStatus() {
+            shipmentByStatusData=httpRequest("../../reports/shipmentbystatus","GET");
+            var metadata1 = [{name:'Shipment Status',property: 'label'},
+                {name:'No of Shipment',property: 'value'}];
+            tableForReport('tbl','tblShipmentByStatus',['table', 'table-sm', 'table-bordered'],metadata1,shipmentByStatusData,true)
+            drawChart('shipmentByStatusChart','horizontalBar',shipmentByStatusData);
+        }
+
+
+        function shipmentByCustomer() {
+            shipmentByCustomerData=httpRequest("../../reports/customershipment","GET");
+            var metadata2 = [{name:'Customer Name',property: 'label'},
+                {name:'No of Shipment',property: 'value'}];
+            tableForReport('tb2','tblShipmentByClient',['table', 'table-sm', 'table-bordered'],metadata2,shipmentByCustomerData,true)
+            drawChart('shipmentByCustomerChart','doughnut',shipmentByCustomerData);
+        }
+
+
+        function printShipmentByStatus() {
+            genPDFofTag('shpByStatus','Report: Shipments by Status [' +today+' ]','Shipment By Status Report',today);
+        }
+
+        function ShipmentByCountry() {
+          /*  google.charts.load('current', {
+                'packages':['geochart'],
+                // Note: you will need to get a mapsApiKey for your project.
+                // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+                'mapsApiKey': 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY'
+            });
+            google.charts.setOnLoadCallback(drawRegionsMap);
+
+            function drawRegionsMap() {
+                var data = google.visualization.arrayToDataTable([
+                    ['Country', 'Popularity'],
+                    ['Germany', 200],
+                    ['New Zealand', 300],
+                    ['Brazil', 400],
+                    ['Canada', 500],
+                    ['France', 600],
+                    ['Philippines', 700]
+                ]);
+
+                var options = {
+                    colorAxis: {
+                        colors: ['tomato']
+                    }
+                };
+
+                var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+                chart.draw(data, options);
+            }*/
+          drawGeoChart('regions_div')
+        }
+
+
+    </script>
+
+</head>
+<body style="background-color: #F9F9FC">
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div class="container-fluid" >
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="row" style="margin-top: 15px">
+                <div class="col-md-6"><h4>Shipment Report</h4></div>
+                <div class="col-md-6"></div>
+            </div>
+            <div class="row" >
+                <div class="col-md-6" >
+                    <div class="card" style="border: 1px solid #cbcbcd;border-radius: 15px">
+                        <div class="card-body" >
+                          <div class="row">
+                              <div class="col-md-6">  <h5 style="color:#4d505e;">Shipments By Mod</h5></div>
+                              <div class="col-md-6 text-right">
+                                  <button id="btnPrintShpByMod" class="report-btn" data-toggle="tooltip" data-placement="top" title="Print" type="button"><i class="far fa-print"></i></button>
+                                  <button id="btnRefreshShpByMod" class="report-btn" data-toggle="tooltip" data-placement="top" title="Refresh" type="button"><i class="far fa-sync-alt"></i> </button>
+                              </div>
+                          </div>
+                            <div class="row" id="shpByMod">
+                                <div class="col-md-6" style="margin-top: 40px" >
+                                    <p style="color:#6B6F82;margin-bottom: 0px">Total Shipments</p>
+                                    <p id="txtAllShpCount" style="font-size:30px;color:#6B6F82;margin-bottom: 0px;margin-top: 0px"></p>
+                                    <div class="row" style="margin-top: 15px;">
+                                        <div class="col-md-6">
+                                            <p style="color:#6B6F82;margin-bottom: 0px">Sea Cargo</p>
+                                            <p id="txtSeaCargo" style="font-size: 23px;color:#6B6F82;margin-bottom: 0px"></p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p style="color:#6B6F82;margin-bottom: 0px">Air Cargo</p>
+                                            <p id="txtAirCargo" style="font-size: 23px;color:#6B6F82;margin-bottom: 0px"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <canvas  id="shipmentByModeChart" style="width: 50px;height: 50px" ></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+
+
+
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+
+</div>
+
+</body>
+</html>

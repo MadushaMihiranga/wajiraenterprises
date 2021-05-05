@@ -1,0 +1,91 @@
+
+
+.notification-footer{
+    background-color: #f3f3f3;
+    border-top-color: #f3f3f3;
+    height: 25px;
+    padding: 0px
+}
+
+.footer-text{
+    color: black;
+    font-weight: normal;
+    font-size: 11px;
+}
+
+.footer-link{
+    color: black;
+    font-weight: normal;
+    font-size: 11px;
+}
+
+.footer-link:hover{
+    color: tomato;
+    font-weight: normal;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.footer-link-disabled{
+    color: #606060;
+    font-weight: normal;
+    font-size: 11px;
+    cursor: not-allowed;
+}
+
+
+.notification-card-not-read{
+    width: 282px;
+    height: 80px;
+    border: 2px solid tomato;
+    background-color: white;
+    margin-bottom: 3px;
+    border-radius: 5px
+}
+
+.notification-card-read{
+    width: 282px;
+    height: 80px;
+    border: 2px solid #525252;
+    background-color: white;
+    margin-bottom: 3px;
+    border-radius: 5px
+}
+
+
+.notification-icon-read{
+    font-size: 25px;
+    margin-top: 15px;
+    margin-right: 30px
+}
+
+.notification-icon-not-read{
+    font-size: 25px;
+    margin-top: 15px;
+    margin-right: 30px;
+    color: tomato;
+}
+
+.notification-title{
+    font-weight: bold;
+    color: black;
+    padding: 0px;
+    margin: 0px 0px 0px 5px;
+    font-size: 13px
+}
+
+
+.notification-title:hover{
+    font-weight: bold;
+    padding: 0px;
+    margin: 0px 0px 0px 5px;
+    font-size: 13px;
+    color: tomato;
+    cursor: pointer;
+}
+
+
+.notification-content{
+    font-size: 11px;
+    margin: 0px 0px 0px 5px
+}

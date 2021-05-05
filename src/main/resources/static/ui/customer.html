@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title>Customer Management</title>
+    <link href="../icon/customer.png" rel="icon" >
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+
+    <script>
+
+
+            window.addEventListener("load",initialize);
+
+            function initialize(){
+
+                btnAdd.addEventListener("click",btnAddMC);
+                btnClear.addEventListener("click",btnClearMC);
+                btnUpdate.addEventListener("click",btnUpdateMC);
+                btnDelete.addEventListener("click",btnDeleteMC);
+                btnModelDelete.addEventListener("click", ModelDelete);
+                btnModelUpdate.addEventListener("click", ModelUpdate);
+                btnModelAdd.addEventListener("click", ModelAddContent);
+                btnSearch.addEventListener("click",btnSearchMC);
+                btnSearchClear.addEventListener("click",btnSearchClearMC);
+
+                privilages = httpRequest("../privilages?module=COMPANY","GET");
+
+                regexes = httpRequest("../regexes/company","GET",'');
+
+                txtName.setAttribute("data-pattern",regexes.name.regex);
+                txtTIN.setAttribute("data-pattern",regexes.tin.regex);
+                txtComRegNo.setAttribute("data-pattern",regexes.companyregno.regex);
+                //txtImlino.setAttribute("data-pattern",regexes.importlicenseno.regex);
+                //txtTeleno.setAttribute("data-pattern",regexes.telephoneno.regex);
+                txtAddress.setAttribute("data-pattern",regexes.address.regex);
+                txtEmail.setAttribute("data-pattern",regexes.emailaddress.regex);
+                txtDescr.setAttribute("data-pattern",regexes.description.regex);
+                //txtNumber.disabled="disabled";.setAttribute("data-pattern",regexes.number.regex);
+                txtCPerName.setAttribute("data-pattern",regexes.contactpersonname.regex);
+                txtCPerNo.setAttribute("data-pattern",regexes.contactpersonteleno.regex);
+                employees = httpRequest("../employees/list","GET",'');
+                statuses = httpRequest("../customerstatus/list","GET",'');
+
+
+                valid = "#28a745";
+                invalid = "#dc3545";
+                initial = "#ced4da";
+                updated = "#ffc107";
+                active = "khaki";
+                console.log("initialize")
+
+                loadView();
+                loadForm();
+
+            }
+
+                function loadView() {
+
+                console.log("loadview")
+
+
+                    txtSearchName.value="";
+                    txtSearchNumber.value="";
+
+                    txtSearchName.style.background = "";
+                    txtSearchNumber.style.background = "";
+
+                    fillCombo(cmbCustomerStatus,"Status",statuses,"name",'');
+
+                    //Table Area
+                    activerowno = "";
+                    activepage = 1;
+                    var query = "&name=&number=";
+                    loadTable(1,cmbPageSize.value,query);
+                }
+
+                function loadTable(page,size,query) {
+                    console.log("loadtable")
+                    page = page - 1;
+                    companys = [];
+                    var data = httpRequest("/companys?page="+page+"&size="+size+query,"GET",'');
+                    console.log(data)
+
+                    if(data.content!= undefined) companys = data.content;
+                    createPagination('pagination',data.totalPages, data.number+1,paginate);
+                    fillTable('tblCompany',companys,fillForm);
+                    clearSelection(tblCompany);
+                    if(activerowno!="")selectRow(tblCompany,activerowno,active);
+                    window.location.href="#ui";
+                    //console.log(companys);
+                }
+
+            function paginate(page) {
+                var paginate;
+                if(oldcompany==null){
+                    paginate=true;
+                }else{
+                    if(getErrors()==''&&getUpdates()==''){
+                        paginate=true;
+                    }else{
+                        paginate = window.confirm("Form has Some Errors or Update Values. " +
+                            "Are you sure to discard that changes ?");
+                    }
+                }
+                if(paginate) {
+                    activepage=page;
+                    activerowno=""
+                    loadSearchedTable();
+                    loadForm();
+                }
+
+            }
+
+            function loadForm() {
+
+                nextnumber = httpRequestwithoutlist("../companys/nextnumber","GET");
+
+
+                company = new Object();
+                oldcompany = null;
+
+               // fillCombo(cmbAddEmp,"Select Employee",employees,"callingname",'');
+                //console.log(session.getObject("user").employeeId.callingname);
+
+                fillCombo(cmbAddEmp,"Select Employee",employees,"callingname",session.getObject("user").employeeId.callingname);
+                company.createemployee = JSON.parse(cmbAddEmp.value);
+                cmbAddEmp.disabled = "disabled";
+               // cmbAddEmp.style.borderColor = valid;
+
+                var today = new Date();
+                var month = today.getMonth()+1;
+                if(month<10) month = "0"+month;
+                var date = today.getDate();
+                if(date<10) date = "0"+date;
+
+                dteAdd.value=today.getFullYear()+"-"+month+"-"+date;
+                company.adddate=dteAdd.value;
+                dteAdd.disabled = "disabled";
+
+                txtCusno.value = nextnumber;
+                company.number = txtCusno.value;
+                txtCusno.disabled = "disabled";
+
+                txtName.value="";
+                txtTIN.value="";
+                //txtImlino.value="";
+                //txtTeleno.value="";
+                txtAddress.value="";
+                txtEmail.value="";
+                txtDescr.value="";
+                //txtCusno.value="";
+                txtCPerNo.value="";
+                txtCPerName.value="";
+                txtComRegNo.value="";
+                detReg.value="";
+                removeFile('flePhoto');
+
+                setStyle(initial);
+
+                //cmbAddEmp.disabled="disabled";
+                dteAdd.style.borderColor=valid;
+                cmbAddEmp.style.borderColor=valid;
+                txtCusno.style.borderColor=valid;
+
+
+                 disableButtons(false, true, true);
+            }
+
+            function setStyle(style) {
+
+                txtComRegNo.style.borderColor = style;
+                detReg.style.borderColor = style;
+                txtName.style.borderColor = style;
+                txtTIN.style.borderColor = style;
+               // txtImlino.style.borderColor = style;
+                //txtTeleno.style.borderColor = style;
+                txtAddress.style.borderColor = style;
+                txtEmail.style.borderColor = style;
+                txtDescr.style.borderColor = style;
+                txtCusno.style.borderColor = style;
+                txtCPerNo.style.borderColor = style;
+                txtCPerName.style.borderColor = style;
+                dteAdd.style.borderColor = style;
+                cmbAddEmp.style.borderColor = style;
+
+            }
+
+
+            function disableButtons(add, upd, del) {
+
+                if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+                else btnModelAdd.removeAttribute("disabled");
+
+                if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+                else btnModelUpdate.removeAttribute("disabled");
+
+                if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+                else btnModelDelete.removeAttribute("disabled");
+
+            }
+
+
+            function getErrors() {
+
+                var errors = "";
+
+                if(company.name == null)
+                errors = errors + "\n" + regexes.name.message+"<br>";
+
+                if(company.tin == null)
+                errors = errors + "\n" + regexes.tin.message+"<br>";
+
+                if(company.companyregno == null)
+                    errors = errors + "\n" + "Invalid Company Registration Number"+"<br>";
+
+                /*if(company.companyregdate == null)
+                    errors = errors + "\n" + "Invalid company Registration Date"+"<br>";*/
+
+                /*if(company.importlicenseno == null)
+                errors = errors + "\n" + regexes.importlicenseno.message+"<br>";*/
+
+               /* if(company.telephoneno == null)
+                errors = errors + "\n" + regexes.telephoneno.message+"<br>";*/
+
+                if(company.address == null)
+                errors = errors + "\n" + regexes.address.message+"<br>";
+
+                if(company.emailaddress == null)
+                errors = errors + "\n" + regexes.emailaddress.message+"<br>";
+
+
+               // if(company.number == null)
+                //errors = errors + "\n" + regexes.number.message;
+
+                if(company.contactpersonname == null)
+                errors = errors + "\n" + regexes.contactpersonname.message+"<br>";
+
+                if(company.contactpersonteleno == null)
+                errors = errors + "\n" + regexes.contactpersonteleno.message+"<br>";
+
+                return errors;
+
+            }
+
+            function ModelAddContent() {
+
+                var errors = getErrors();
+
+                if (errors==""){
+                    /**Lunch Model confirm**/
+                    $('#ModelAddContent').modal('show');
+
+                    spnNumber.innerHTML = company.number;
+                    spnName.innerHTML = company.name;
+                    spnTIN.innerHTML = company.tin;
+                    //spnILN.innerHTML = company.importlicenseno;
+                    //spnCountactNo.innerHTML = company.telephoneno;
+                    spnAddress.innerHTML = company.address;
+                    spnEmail.innerHTML = company.emailaddress;
+                    spnDescription.innerHTML = company.description;
+                    spnAddEmp.innerHTML = company.createemployee.callingname;
+                    spnCPN.innerHTML = company.contactpersonname;
+                    spnCPTele.innerHTML = company.contactpersonteleno;
+
+                }else {
+                    spnErrors.innerHTML = errors;
+                    $('#ModelError').modal('show');
+                }
+            }
+
+            function btnAddMC() {
+
+                $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+                var response = httpRequest("/companys","POST",company);
+                if(response=="0"){
+                    $('#ModelAddContent').modal('hide');
+                   // alertify.notify('Company Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                    showResult('success','Customer Saved Successfully',6);
+                    loadForm();
+                    loadView();
+                    activerowno = 1;
+                    loadSearchedTable();
+                }
+                else{
+                    $('#ModelAddContent').modal('hide');
+                    showResult('error');
+                    window.alert("Failed to Add as \n\n"+response);
+                }
+            }
+
+            function btnClearMC() {
+                //Get Cofirmation from the User window.confirm();
+
+                $(document).ready(function(){
+                    $('[data-toggle="tooltip"]').tooltip('hide')
+                });
+
+                var clear;
+                if(oldcompany==null){
+                    clear=true;
+                }else{
+                    if(getErrors()==''&&getUpdates()==''){
+                        clear=true;
+                    }else{
+                        clear = window.confirm("Form has Some Errors or Update Values. " +
+                            "Are you sure to discard that changes ?");
+                    }
+                }
+                if(clear) {
+                    loadForm();
+                    clearSelection(tblCompany);
+                }
+
+            }
+
+
+            function fillForm(cus,rowno){
+                activerowno = rowno;
+                var filling;
+                if(oldcompany==null){
+                    filling=true;
+                }else{
+
+                    if(getErrors()==''&&getUpdates()==''){
+                        filling=true;
+                    }else{
+                        filling = window.confirm("Form has Some Errors or Update Values. " +
+                            "Are you sure to discard that changes ?");
+                    }
+                }
+
+                if(filling) {
+
+                    clearSelection(tblCompany);
+                    selectRow(tblCompany,activerowno,active);
+
+                    company = JSON.parse(JSON.stringify(cus));
+                    oldcompany = JSON.parse(JSON.stringify(cus));
+
+                    //txtFullName.value = employee.fullname;
+                    txtName.value = company.name;
+                    txtTIN.value  = company.tin;
+                    //txtImlino.value = company.importlicenseno;
+                   // txtTeleno.value = company.telephoneno;
+                    txtAddress.value = company.address;
+                    txtEmail.value = company.emailaddress;
+                    txtDescr.value = company.description;
+                    txtCusno.value = company.number;
+                    txtCPerName.value = company.contactpersonname;
+                    txtCPerNo.value = company.contactpersonteleno;
+                    txtComRegNo.value = company.companyregno;
+                    detReg.value = company.companyregdate;
+                    dteAdd.value = company.adddate;
+                    fillCombo(cmbAddEmp,"Select Employee",employees,"callingname",company.createemployee.callingname);
+
+                    txtCusno.disabled="disabled";
+                    txtName.disabled="disabled";
+                    txtTIN.disabled="disabled";
+                    txtComRegNo.disabled="disabled";
+                    detReg.disabled="disabled";
+
+                    setDefaultFile('flePhoto', company.logo);
+
+                    disableButtons(true, false, true);
+                    setStyle(valid);
+                }
+
+            }
+
+            function getUpdates() {
+
+                var updates = "";
+
+                if(company!=null && oldcompany!=null) {
+
+                    if (company.name != oldcompany.name)
+                        updates = updates + "\n Name is Changed : <span style='color: #ffc107'>"+oldcompany.name +" <i class=\"fas fa-arrow-right\"></i> "+ company.name+"</span><br>";
+
+                    if (company.tin != oldcompany.tin)
+                        updates = updates + "\nTax index number is Changed : <span style='color: #ffc107'>"+oldcompany.tin +" <i class=\"fas fa-arrow-right\"></i> "+ company.tin+"</span><br>";
+
+                   /* if (company.importlicenseno != oldcompany.importlicenseno)
+                        updates = updates + "\nImport Licene is Changed : <span style='color: #ffc107'>"+oldcompany.importlicenseno +" <i class=\"fas fa-arrow-right\"></i> "+ company.importlicenseno+"</span><br>";*/
+/*
+
+                    if (company.telephoneno != oldcompany.telephoneno)
+                        updates = updates + "\nContact Number is Changed : <span style='color: #ffc107'>"+oldcompany.telephoneno +" <i class=\"fas fa-arrow-right\"></i> "+ company.telephoneno+"</span><br>";
+*/
+
+                    if (company.address != oldcompany.address)
+                        updates = updates + "\nAddress is Changed : <span style='color: #ffc107'>"+oldcompany.address +" <i class=\"fas fa-arrow-right\"></i> "+ company.address+"</span><br>";
+
+                    if (company.emailaddress != oldcompany.emailaddress)
+                        updates = updates + "\nEmail Address is Changed : <span style='color: #ffc107'>"+oldcompany.emailaddress +" <i class=\"fas fa-arrow-right\"></i> "+ company.emailaddress+"</span><br>";
+
+                    if (company.description != oldcompany.description)
+                        updates = updates + "\nDescription is Changed : <span style='color: #ffc107'>"+oldcompany.description +" <i class=\"fas fa-arrow-right\"></i> "+ company.description+"</span><br>";
+
+                    if (company.logo != oldcompany.logo)
+                        updates = updates + "\nlogo is changed : <span style='color: #ffc107'>"+oldcompany.logo +" <i class=\"fas fa-arrow-right\"></i> "+ company.logo+"</span><br>";
+
+                    if (company.contactpersonname != oldcompany.contactpersonname)
+                        updates = updates + "\nContact Person is changed : <span style='color: #ffc107'>"+oldcompany.name +" <i class=\"fas fa-arrow-right\"></i> "+ company.name+"</span><br>";
+
+                    if (company.contactpersonteleno != oldcompany.contactpersonteleno)
+                        updates = updates + "\nContact Person's Phone Number is changed : <span style='color: #ffc107'>"+oldcompany.contactpersonteleno +" <i class=\"fas fa-arrow-right\"></i> "+ company.contactpersonteleno+"</span><br>";
+
+                }
+                return updates;
+            }
+
+            function ModelUpdate() {
+
+                var errors = getErrors();
+
+                if (errors == "") {
+                    $('#ModelUpdate').modal('show');
+                    var updates = getUpdates();
+                    if (updates == ""){
+                        spnUpdate.innerHTML = "Nothing Updated!";
+                        btnUpdate.disabled = "disabled"
+                    }else {
+                        spnUpdate.innerHTML = updates;
+                        btnUpdate.disabled = ""
+                    }
+                }else {
+                    spnErrors.innerHTML = errors;
+                    $('#ModelError').modal('show');
+                }
+
+            }
+
+            function btnPrintTable() {
+                genPDFofTag()
+            }
+
+            function btnUpdateMC() {
+
+                $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+                var response = httpRequest("/companys","PUT",company);
+                if(response=="0"){
+                    $('#ModelUpdate').modal('hide');
+                    //alertify.notify('Company Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                    showResult('success','Customer Updated Successfully',6);
+                    loadForm();
+                    loadView();
+                    loadSearchedTable();
+                }
+                else {
+                    showResult('error');
+                    window.alert("Failed to Update as \n\n"+response);
+                }
+            }
+
+
+            function ModelDelete() {
+                $('#ModelDelete').modal('show');
+                spnCompanyName.innerHTML =  company.name  + " - ("+company.number+") ";
+            }
+
+
+            function btnDeleteMC() {
+
+                $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+                var response = httpRequest("/companys","DELETE",company);
+                if(response=="0"){
+                    $('#ModelDelete').modal('hide');
+                    //alertify.notify('Company Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                    showResult('success','Customer Deleted Successfully',6);
+                    loadView();
+                    loadForm();
+                    loadSearchedTable();
+                }
+                else{
+                    showResult('error');
+                    window.alert("Failed to Delete as \n\n"+response);
+                }
+            }
+
+            function loadSearchedTable() {
+
+                var name = txtSearchName.value;
+                var number = txtSearchNumber.value; //cmbCustomerStatus
+                var status = cmbCustomerStatus.value; //cmbCustomerStatus
+
+                if(name!=""){  txtSearchName.style.borderColor = valid; }
+                if(number!=""){  txtSearchNumber.style.borderColor = valid; }
+
+                var statusid="";
+                if(status!="Status")
+                {  statusid = JSON.parse(status).id;
+                    //cmbCustomerStatus.style.borderColor = valid;
+                    }
+
+                var query ="&name=&number=&statusid=";
+
+                if(name!="" || number!="" || statusid!="" )
+                    query = "&name=" + name + "&number=" + number+ "&statusid=" + statusid;
+                //console.log(query);
+
+                loadTable(activepage, cmbPageSize.value, query);
+
+            }
+
+
+            function btnSearchMC(){
+
+                activepage=1;
+                loadSearchedTable();
+            }
+
+            function btnSearchClearMC(){
+                loadView();
+            }
+
+    </script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px"><!--<i class="fal fa-building"></i>--> Customer Management</h4>
+                    <div class="row">
+                        <!--Form-Start-->
+                        <div class="col-md-4">
+                            <div class="card" style="border: 1px solid #161616;border-radius: 5px">
+                                <div class="card-body form-box-overflow" style="border: 1px solid transparent;border-radius: 5px"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false" id="customerform" ><!--onsubmit="return false"-->
+                                        <div class="row">
+                                            <div class="col-md-12" id="cusform">
+                                                <script>
+                                                    txtField('cusform','txtCusno','Customer Number','Enter Company Number Here','',"",'company','number','oldcompany');
+                                                    txtField('cusform','txtName','Company Name','Enter Company Name here','',"",'company','name','oldcompany',true);
+                                                    txtField('cusform','txtTIN','Taxpayer Identification Number (TIN)','Enter TIN Here','',"",'company','tin','oldcompany',true);
+                                                    txtField('cusform','txtComRegNo','Company Registration Number','Registration Number','',"",'company','companyregno','oldcompany',true);
+                                                    dteField('cusform','detReg','Registered Date','',"",'company','companyregdate','oldcompany');
+                                                    //txtField('cusform','txtImlino','Import License Number','Enter Import License No Here','',"",'company','importlicenseno','oldcompany',true);
+                                                    //txtField('cusform','txtTeleno','Contact Number','Enter Contact Number Here','',"",'company','telephoneno','oldcompany');
+                                                    txtArea('cusform','txtAddress','Address','Enter Address Here','',"",'company','address','oldcompany',true);
+                                                    txtArea('cusform','txtDescr','Company Description','Enter Description Here','',"",'company','description','oldcompany');
+                                                    //cmbBox('cusform','cmbAddEmp','Employee','company','employeeId','oldcompany');
+                                                    fileChooser('cusform','flePhoto','logo',0,['.jpg','.png'],5,true,'company','logo','oldcompany');
+                                                    txtField('cusform','txtCPerName','Contact Person Name','Enter Contact Person Name Here','',"",'company','contactpersonname','oldcompany',true);
+                                                    txtField('cusform','txtCPerNo','Contact Person Telephone no','Enter Telephone no Here','',"",'company','contactpersonteleno','oldcompany',true);
+                                                    txtField('cusform','txtEmail','E-mail Address','Enter E-mail Address Here','',"",'company','emailaddress','oldcompany',true);
+                                                    cmbBox('cusform','cmbAddEmp','Employee','company','createemployee','oldcompany');
+                                                    dteField('cusform','dteAdd','Add Date','',"",'company','adddate','oldcompany');
+
+                                                </script>
+                                            </div>
+                                        </div>
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-3" style="margin-right: 5px;">
+                                                <button  data-toggle="tooltip" data-placement="top"  title="Delete Employee" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: -5px; margin-left: -5px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: -6px;margin-left: -4px">
+                                                <button   data-toggle="tooltip" data-placement="top" title="Update Selected Employee" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 10px;margin-left: 3px">
+                                                <button  data-toggle="tooltip" data-placement="top" title="Add New Employee" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Form-End-->
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="fal fa-building"></i> Customer Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true" style="color: white">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Customer</h5>
+                                        <p class="content-model-text-title">company Number                  : <span class="content-model-text-value" id="spnNumber"></span></p>
+                                        <p class="content-model-text-title">Company Name          : <span class="content-model-text-value" id="spnName"></span></p>
+                                        <p class="content-model-text-title">TIN Number      : <span class="content-model-text-value" id="spnTIN"></span></p>
+                                        <!--<p class="content-model-text-title">Import licene No      : <span class="content-model-text-value" id="spnILN"></span></p>-->
+                                        <p class="content-model-text-title">Address        : <span class="content-model-text-value" id="spnAddress"></span></p>
+<!--
+                                        <p class="content-model-text-title">Contact numbrer        : <span class="content-model-text-value" id="spnCountactNo"></span></p>
+-->
+                                        <p class="content-model-text-title">E-mail Address        : <span class="content-model-text-value" id="spnEmail"></span></p>
+                                        <p class="content-model-text-title">Description       : <span class="content-model-text-value" id="spnDescription"></span></p>
+                                        <p class="content-model-text-title">Add Employee                : <span class="content-model-text-value" id="spnAddEmp"></span></p>
+                                        <p class="content-model-text-title">Contact Person Name                  : <span class="content-model-text-value" id="spnCPN"></span></p>
+                                        <p class="content-model-text-title">Contact Person Telephone No         : <span class="content-model-text-value" id="spnCPTele"></span></p>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="fal fa-building"></i> Customer Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true" style="color: white">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                        <!--Model Delete Start-------------------------------------------->
+                        <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="fal fa-building"></i> Customer Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true" style="color: white">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to delete following </h5>
+                                        <p  id="spnCompanyName"></p>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Delete End---------------------------------------------->
+
+                        <!--Model Update Start-------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: tomato;height: 40px;padding-top: 8px;border: 1px solid transparent">
+                                        <p  class="modal-title" style="color:  white;font-size: 17px"><i class="fal fa-building"></i> Customer Management</p>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true" style="color: white">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End---------------------------------------------->
+
+
+                        <!--table-start-->
+                        <div class="col-md-8">
+                            <div class="card form-box-overflow" style="border: 1px solid #161616;border-radius: 5px;">
+                                <div class="card-body" style="border: 1px solid transparent" id="employeeview">
+                                    <!--Search-Form-start-->
+                                    <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <input placeholder="Search By Number" class="form-control form-control-sm txtinput" type="text" id="txtSearchNumber"/>
+                                        </div>
+
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <input placeholder="Search By Name" class="form-control form-control-sm txtinput" type="text" id="txtSearchName"/>
+                                        </div>
+
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <select class="form-control txtinput" id="cmbCustomerStatus"></select>
+                                        </div>
+
+
+                                        <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                        <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                                        <!--<button data-toggle="tooltip" data-placement="top" title="Print Table"  class="btn btn-search btn-sm"  id="btnPrintTable"><i class="fas fa-print"></i></button>-->
+                                    </form>
+                                    <!--Form-Searc-End-->
+                                    </hr>
+                                    <div class="table-responsive" id="tableParent">
+
+                                        <script>
+
+
+                                            function getNameColumn(ob) {
+                                                return ob.callingname+"("+ob.number+")";
+                                            }
+
+                                            var metadata = [
+                                                {name:'Number',search:false,datatype:'text',property:'number'},
+                                                {name:'Name',search:true,datatype:'text',property:'name'},
+                                                /*{name:'TIN',search:false,datatype:'text',property:'tin'},*/
+                                                {name:'Status',search:false,datatype:'text',property:'customerstatusId.name'},
+                                               // {name:'Contact No',search:false,datatype:'text',property:'telephoneno'},
+                                                //{name:'Description',search:false,datatype:'text',property:'description'},
+                                            ];
+                                            table("tableParent","tblCompany",metadata,[6,10,15,30,500,1000],btnSearchMC,true);
+
+
+                                        </script>
+
+
+                                    </div>
+                                    <ul id="pagination" class="pagination"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!--table-end-->
+
+                    </div>
+<!--                </div>-->
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<div id="err">
+
+
+</div>
+</body>
+</html>

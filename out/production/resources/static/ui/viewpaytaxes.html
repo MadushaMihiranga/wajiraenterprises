@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pay Taxes</title>
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js" rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnSearch.addEventListener("click", btnSearchMC);
+            btnSearchClear.addEventListener("click", btnSearchClearMC);
+            btnUpdate.addEventListener("click", btnLoadUpdatePage);
+
+            companys = httpRequest("../companys/list", "GET");
+            //clearingprocesstatus = httpRequest("../clearingprocessstatus/list", "GET");
+            //clearingclerks = httpRequest("../employee/listbydesgnation?designationId=2","GET");
+            privilages = httpRequest("../privilages?module=CLEARINGPROCESS", "GET");
+            deliveryagent =httpRequest("../deliveryagents/list","GET");
+            paymenttype = httpRequest("../paymenttype/list", "GET");
+
+
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+
+            loadView();
+
+        }
+
+        function loadView() {
+
+            //Search Area
+            /*fillCombo(cmbSearchStatus,"Status",clearingprocesstatus,"name","");
+            fillCombo(cmbSearchClearingClerk,"Clearing Clerk",clearingclerks,"callingname","");*/
+            //fillCombo(cmbSearchDeliveryAgent,'Select Delivery Agent',deliveryagent,'name',"");
+            fillCombo(cmbSearchCustomer,"Customer",companys,"name","");
+            fillCombo(cmbPaymentType,'Payment type',paymenttype,'name','');
+            txtSearchName.style.borderColor = "";
+            txtSearchName.value = "";
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+
+            var query = "&number=&customerid=&deliveragentid=";
+
+            //var query = "&statusId=&vehicletypeId=&driveremployee=&drivingassistantemployee=&brandId=&modelId=";
+            loadTable(1, cmbPageSize.value, query);
+        }
+
+        function loadTable(page, size, query) {
+            page = page - 1;
+            paytaxes = new Array();
+            var data = httpRequest("/paytaxes?page=" + page + "&size=" + size + query, "GET");
+            // console.log(data);
+            if (data.content != undefined) paytaxes = data.content;
+            createPagination('pagination', data.totalPages, data.number + 1, paginate);
+            fillTable('tblPayTaxes', paytaxes, fillForm);
+            clearSelection(tblPayTaxes);
+            if (activerowno != "") selectRow(tblPayTaxes, activerowno, active);
+            window.location.href = "#ui";
+        }
+
+        function paginate(page) {
+
+            activepage = page;
+            activerowno = ""
+            loadSearchedTable();
+            loadForm();
+        }
+
+        function fillForm(ptx, rowno) {
+            activerowno = rowno;
+            $('#ModelViewDetail').modal('show');
+            clearSelection(tblPayTaxes);
+            selectRow(tblPayTaxes, activerowno, active);
+            paytaxes = JSON.parse(JSON.stringify(ptx));
+            console.log(paytaxes);
+
+            spnNumber.innerHTML = paytaxes.clearingprocessId.shipmentId.number;
+            spnCustomer.innerHTML = paytaxes.clearingprocessId.shipmentId.companyId.name;
+            spnRefNo.innerHTML = paytaxes.cusdecId.customrefno;
+            spnAssessmentno.innerHTML = paytaxes.cusdecId.assessmentnumber;
+            spnValue.innerHTML = paytaxes.payedvalue+".00 LKR";
+            spnType.innerHTML = paytaxes.paymenttypeId.name;
+            spnBank.innerHTML = paytaxes.branchId.bankId.name+" - "+paytaxes.branchId.name;
+            spnPayorderno.innerHTML = paytaxes.payordernumber;
+            spnDate.innerHTML = paytaxes.date;
+            spnEmployee.innerHTML = paytaxes.employeeId.callingname;
+        }
+
+        function btnLoadUpdatePage() {
+            parent.window.shipmentnumber = paytaxes.clearingprocessId.shipmentId.number;
+            parent.loadUI('paytaxes','Wajira Enterprises | Clearing process');
+        }
+
+
+
+
+
+        function loadSearchedTable() {
+
+            var number = txtSearchName.value;
+            var customer = cmbSearchCustomer.value;
+            var cusdecrefno = txtCusdecRefno.value;
+            var paymenttype = cmbPaymentType.value;
+
+
+            var customerid="";
+            if(customer!="Customer") {
+                customerid = JSON.parse(customer).id;
+                cmbSearchCustomer.style.borderColor = active;
+            }
+
+            var paymenttypeid="";
+            if(paymenttype!="Payment type") {
+                paymenttypeid = JSON.parse(paymenttype).id;
+                cmbPaymentType.style.borderColor = active;
+            }
+
+            if(number!=""){  txtSearchName.style.borderColor = active; }
+
+            if(cusdecrefno!=""){  txtCusdecRefno.style.borderColor = active; }
+
+            var query = "&number=&customerid=&paymenttypeid=&cusdecrefno=";
+
+            if(number!="" || customerid!="" || paymenttypeid!="" || cusdecrefno!="")
+                query = "&number=" + number + "&customerid=" + customerid + "&paymenttypeid=" + paymenttypeid+ "&cusdecrefno=" + cusdecrefno;
+            //console.log(query);
+            loadTable(activepage, cmbPageSize.value, query);
+        }
+
+        function btnSearchMC() {
+            //  activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC() {
+            loadView();
+        }
+    </script>
+
+</head>
+<body>
+
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div class="container-fluid">
+
+
+    <div class="modal fade" id="ModelViewDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Tax payments</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-12" id="doform">
+                                <p class="content-model-text-title">Shipment Number                  : <span class="content-model-text-value" id="spnNumber"></span></p>
+                                <p class="content-model-text-title">Customer                 : <span class="content-model-text-value" id="spnCustomer"></span></p>
+                                <p class="content-model-text-title">Customs Declaration Reference No          : <span class="content-model-text-value" id="spnRefNo"></span></p>
+                                <p class="content-model-text-title">Assessment No          : <span class="content-model-text-value" id="spnAssessmentno"></span></p>
+                                <p class="content-model-text-title">Paid value   : <span class="content-model-text-value" id="spnValue"></span></p>
+                                <p class="content-model-text-title">Payment Type   : <span class="content-model-text-value" id="spnType"></span></p>
+                                <p class="content-model-text-title">Bank        : <span class="content-model-text-value" id="spnBank"></span></p>
+                                <p class="content-model-text-title">Pay order number        : <span class="content-model-text-value" id="spnPayorderno"></span></p>
+                                <p class="content-model-text-title">Date        : <span class="content-model-text-value" id="spnDate"></span></p>
+                                <p class="content-model-text-title">Payed By        : <span class="content-model-text-value" id="spnEmployee"></span></p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary-action" id="btnUpdate">Update</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px;">Tax payments</h4>
+            <div class="card" style="border: 1px solid #282c2f;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card-header" style="height: 60px">
+                            <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <input placeholder="Shipment Number" class="form-control form-control-sm txtinput" type="text" id="txtSearchName"/>
+                                </div>
+
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <input placeholder="CusDec Reference no" class="form-control form-control-sm txtinput" type="text" id="txtCusdecRefno"/>
+                                </div>
+
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <select  class="form-control form-control-sm txtinput" id="cmbSearchCustomer"></select>
+                                </div>
+
+
+
+                                <div class="form-group form-group-sm" style="margin-right: 5px">
+                                    <select  class="form-control form-control-sm txtinput" id="cmbPaymentType"></select>
+                                </div>
+
+
+
+
+                                <butto data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear" id="btnSearchClear"><i class="fas fa-times"></i></butto>
+                                <button data-toggle="tooltip" data-placement="top" title="Search" class="btn btn-search btn-sm" id="btnSearch"><i class="fas fa-search"></i></button>
+                            </form>
+                        </div>
+                        <div class="card-body table-box-overflow" id="employeeview">
+
+                            </hr>
+                            <div class="table-responsive" id="tableParent">
+
+                                <script>
+
+                                    function getEmployee(ob) {
+                                        return  ob.employeeId.callingname+" [ "+ob.employeeId.number+" ] "
+                                    }
+
+                                    function getBank(ob) {
+                                        return  ob.branchId.bankId.name+" - "+ob.branchId.name;
+                                    }
+
+                                    function getValue(ob) {
+                                        return  ob.payedvalue+".00 LKR";
+                                    }
+
+
+                                    var metadata = [
+                                        {name: 'Shipment Number', search: false, datatype: 'text', property: 'clearingprocessId.shipmentId.number'},
+                                        {name: 'Payment Type', search: false, datatype: 'text', property: 'paymenttypeId.name'},
+                                        {name: 'Payed Value', search: false, datatype: 'text', property: getValue},
+                                        {name: 'Bank', search: false, datatype: 'text', property:getBank},
+                                        {name: 'Date', search: false, datatype: 'text', property: 'date'},
+                                        {name: 'Employee', search: false, datatype: 'text', property: getEmployee}
+                                    ];
+                                    table("tableParent", "tblPayTaxes", metadata, [7, 10, 15, 30, 500, 1000], btnSearchMC, true);
+                                </script>
+                            </div>
+                            <ul id="pagination" class="pagination"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

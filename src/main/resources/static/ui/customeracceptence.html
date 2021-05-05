@@ -1,0 +1,904 @@
+<!doctype html>
+<html>
+<head>
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Customer Acceptance</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnDelete.addEventListener("click",btnDeleteMC);
+            btnSearch.addEventListener("click",btnSearchMC);
+            btnSearchClear.addEventListener("click",btnSearchClearMC);
+            txtShipmentNo.addEventListener("keyup", txtShipmentMC);
+            txtDeliveryNo.addEventListener("keyup", txtDeliveryNoMC);
+            txtGDNNo.addEventListener("keyup", txtGDNMC);
+
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+
+            privilages = httpRequest("../privilages?module=CUSTOMERACCEPTENCE","GET");
+            employes = httpRequest("../employees/list", "GET");
+            accstatus = httpRequest("../acceptencestatus/list", "GET");
+
+            regexes = httpRequest("../regexes/customeracceptenc","GET");
+            //console.log(regexes);
+            txtAcceptePersonName.setAttribute("data-pattern",regexes.acceptedpersonname.regex);
+            txtAcceptePersonNIC.setAttribute("data-pattern",regexes.acceptedpersonnic.regex);
+
+
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+        }
+
+        function loadView() {
+
+            //Search Area
+            txtSearchName.value="";
+            txtSearchName.style.borderColor = "";
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+            var query = "&name=";
+            loadTable(1,cmbPageSize.value,query);
+        }
+
+        function loadTable(page,size,query) {
+            page = page - 1;
+            acceptances = new Array();
+            var data = httpRequest("/customeracceptenc?page="+page+"&size="+size+query,"GET");
+            console.log(data)
+            if(data.content!= undefined) acceptances = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblacceptance',acceptances,fillForm);
+            clearSelection(tblacceptance);
+            if(activerowno!="")selectRow(tblacceptance,activerowno,active);
+            window.location.href="#ui";
+        }
+
+        function paginate(page) {
+            var paginate;
+            if(oldacceptance==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno=""
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+        function loadForm() {
+            acceptance = new Object();
+            oldacceptance = null;
+            setStyle(initial);
+
+
+            //txtNumber.value = "";
+            //txtNumber.disabled="";
+            txtShipmentNo.value = "";
+            txtDeliveryNo.value = "";
+            txtGDNNo.value = "";
+            txtAcceptePersonName.value = "";
+            txtAcceptePersonNIC.value = "";
+            dteAccDate.value = "";
+            txtNote.value = "";
+
+
+            txtShipmentNo.disabled = "";
+            txtDeliveryNo.disabled = "disabled";
+            txtGDNNo.disabled = "disabled";
+            txtAcceptePersonName.disabled = "";
+            txtAcceptePersonNIC.disabled = "";
+            dteAccDate.disabled = "disabled";
+            txtNote.disabled = "";
+
+            var today = new Date();
+            var month = today.getMonth()+1;
+            if(month<10) month = "0"+month;
+            var date = today.getDate()+1;
+            if(date<10) date = "0"+date;
+
+            dteAccDate.value=today.getFullYear()+"-"+month+"-"+date;
+            acceptance.date=dteAccDate.value;
+            dteAccDate.style.borderColor=valid;
+            dteAccDate.disabled = "disabled";
+
+            fillCombo(cmbStatus,"Select Status",accstatus,"name",'');
+            fillCombo(cmbEmployee,"Requested by",employes,"callingname",session.getObject("user").employeeId.callingname);
+            acceptance.employeeId = JSON.parse(cmbEmployee.value);
+            cmbEmployee.disabled="disabled";
+            cmbEmployee.style.borderColor=valid;
+
+            var parent = document.getElementById("acceptanceform2");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+            var parent = document.getElementById("acceptanceform4");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+            var parent = document.getElementById("acceptanceform6");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+
+
+            disableButtons(false, true, true);
+        }
+
+        function setStyle(style) {
+            txtShipmentNo.style.borderColor = style;
+            txtDeliveryNo.style.borderColor = style;
+            txtGDNNo.style.borderColor = style;
+            txtAcceptePersonName.style.borderColor = style;
+            txtAcceptePersonNIC.style.borderColor = style;
+            dteAccDate.style.borderColor = style;
+            txtNote.style.borderColor = style;
+            cmbEmployee.style.borderColor = style;
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+
+        }
+
+        function txtShipmentMC() {
+            var string = txtShipmentNo.value;
+            var patern = new RegExp(/^SHP-\d{8}$/);
+            var result = patern.test(string);
+
+            var parent = document.getElementById("acceptanceform2");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+            if (result){
+                txtShipmentNo.style.borderColor = valid;
+                //DeliveryRequestController
+                var shpresult = httpRequestwithoutlist("../findshipment/clearingprocessid?number="+string,"GET"); //clearingprocesscontroller
+                var element = createElement('p','ptagshpres');
+                element.style.marginBottom = "-10px";
+                element.style.marginTop = "-10px";
+                element.style.fontSize = "13px";
+                if (parseInt(shpresult)<= 6 ){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML = "Clearing process for this shipment does not finish yet";
+                    acceptance.shipmentId = null;
+                }else if (parseInt(shpresult) == 10){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML ="This Shipment is Terminated. ";
+                    acceptance.shipmentId = null;
+                }else if (parseInt(shpresult) == 9){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML = "This shipment already complete";
+                    acceptance.shipmentId = null;
+                }else if (parseInt(shpresult) == 7 || parseInt(shpresult) == 8){
+                    txtShipmentNo.style.borderColor = valid;
+                    element.style.color = valid;
+                    element.innerHTML ="Shipment number is correct";
+                    acceptance.shipmentId = httpRequest("../getshipment?shipmentno="+string,"GET");
+                    if (acceptance.shipmentId.deliverymethodId.id == 1){
+                        txtGDNNo.disabled = "disabled";
+                        txtDeliveryNo.disabled = "";
+                    }else if (acceptance.shipmentId.deliverymethodId.id == 2){
+                        txtGDNNo.disabled = "";
+                        txtDeliveryNo.disabled = "disabled";
+                        acceptance.deliveryId = null;
+
+                    }
+                }else if (shpresult == 0){
+                    txtShipmentNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML ="Shipment number doesn't exist ";
+                    acceptance.shipmentId = null;
+                }else {
+                    txtShipmentNo.style.borderColor = invalid;
+                    window.alert(shpresult);
+                    acceptance.shipmentId = null;
+
+                }
+                parent.appendChild(element);
+            }else {
+                txtShipmentNo.style.borderColor = invalid;
+                acceptance.shipmentId = null;
+            }
+        }
+
+        function txtDeliveryNoMC() {
+            var string = txtDeliveryNo.value;
+            var patern = new RegExp(/^DLV-\d{8}$/);
+            var result = patern.test(string);
+
+            var parent = document.getElementById("acceptanceform4");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+            if (result){
+                txtDeliveryNo.style.borderColor = valid;
+                //DeliveryRequestController
+                var delresult = httpRequestwithoutlist("../finddelivery?number="+string,"GET");
+                var element = createElement('p','ptagshpres');
+                element.style.marginBottom = "-10px";
+                element.style.marginTop = "-10px";
+                element.style.fontSize = "13px";
+                if (delresult == 1){
+
+                    res = httpRequest("../getdelivery?number="+string,"GET");
+                    console.log(res)
+                    if (res.deliveryconfirmationId.deliveryrequestId.shipmentId.number == acceptance.shipmentId.number){
+                        if (res.deliveryconfirmationId.deliveryrequestId.deliverytypeId.id == 2){
+                            acceptance.deliveryId = res;
+                            txtDeliveryNo.style.borderColor = valid;
+                            element.style.color = valid;
+                            element.innerHTML ="Delivery number is correct";
+                            if (res.deliveryconfirmationId.deliveryrequestId.shipmentId.deliverymethodId.id==1){
+                                txtGDNNo.disabled = "disabled";
+                                txtGDNNo.value = acceptance.deliveryId.deliveryconfirmationId.deliveryrequestId.gdnId.number;
+                                txtGDNMC();
+                            }
+                        }else {
+                            txtDeliveryNo.style.borderColor = invalid;
+                            element.style.color = invalid;
+                            element.innerHTML ="Invalid Delivery number";
+                            acceptance.deliveryId = null;
+                        }
+                    }else {
+                        txtDeliveryNo.style.borderColor = invalid;
+                        element.style.color = invalid;
+                        element.innerHTML ="Invalid Delivery number";
+                        acceptance.deliveryId = null;
+                    }
+
+                    //console.log(acceptance);
+                    //getLocations(string);
+                }else if (delresult == 0){
+                    txtDeliveryNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML ="Invalid Delivery number";
+                    acceptance.deliveryId = null;
+                }else {
+                    txtDeliveryNo.style.borderColor = invalid;
+                    window.alert(delresult);
+                    acceptance.deliveryId = null;
+                }
+                parent.appendChild(element);
+            }else {
+
+                txtDeliveryNo.style.borderColor = invalid;
+                acceptance.deliveryId = null;
+            }
+        }
+
+        function txtGDNMC() {
+            var string = txtGDNNo.value;
+            var patern = new RegExp(/^GDN-\d{8}$/);
+            var result = patern.test(string);
+
+            var parent = document.getElementById("acceptanceform6");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+            if (result){
+                txtGDNNo.style.borderColor = valid;
+                //DeliveryRequestController
+                var delres = httpRequestwithoutlist("../hasgdn?number="+string,"GET");
+                var element = createElement('p','ptagdelres');
+                element.style.marginBottom = "-10px";
+                element.style.marginTop = "-10px";
+                element.style.fontSize = "13px";
+                if (delres == 1){
+                    gdnres = httpRequest("../getgdn?number="+string,"GET");
+                   if (gdnres.shipmentId.number == acceptance.shipmentId.number){
+                       txtGDNNo.style.borderColor = valid;
+                       element.style.color = valid;
+                       element.innerHTML = "GDN Number Is Correct";
+                       acceptance.gdnId = gdnres;
+                   }else {
+                       txtGDNNo.style.borderColor = invalid;
+                       element.style.color = invalid;
+                       element.innerHTML = "GDN Number Is Incorrect";
+                       acceptance.gdnId = null;
+                   }
+                }else if (delres == 0){
+                    txtGDNNo.style.borderColor = invalid;
+                    element.style.color = invalid;
+                    element.innerHTML = "GDN Number Is Incorrect";
+                    acceptance.gdnId = null;
+                }
+                parent.appendChild(element);
+            }else {
+                txtGDNNo.style.borderColor = invalid;
+                acceptance.gdnId = null;
+            }
+        }
+
+
+        // Binding and Validation Functions for Non-Regex-Based
+        // When Regex-Based default validation is used, programmers do not need to define these functions
+        // Default Validation and Binding is coded in "ui.bitproject.earth.lk.js
+
+        //Form Operation Functions
+
+        function getErrors() {
+
+            var errors = "";
+
+            if (acceptance.shipmentId == null){
+                errors = errors + "Shipment Number is empty<br>";
+            }else if (acceptance.shipmentId.deliverymethodId.id==1) {
+                if (acceptance.deliveryId == null)
+                    errors = errors + "GDN Number is Empty<br>";
+            }
+
+            if (acceptance.gdnId == null)
+                errors = errors + "GDN Number is Empty<br>";
+
+            if (acceptance.employeeId == null)
+                errors = errors + "Employee is not selected<br>";
+
+            if (acceptance.acceptencestatusId == null)
+                errors = errors + "Status is not selected<br>";
+
+            if (acceptance.date == null)
+                errors = errors + "Date is not selected<br>";
+
+            if (acceptance.acceptedpersonnic == null)
+                errors = errors + "Accepted Person's NIC is Empty<br>";
+
+            if (acceptance.acceptedpersonname == null)
+                errors = errors + "Accepted Person's Name is Empty<br>";
+
+
+
+            return errors;
+        }
+
+
+        function ModelAddContent() {
+            //console.log(vehicle)
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+                spnShipment.innerHTML = acceptance.shipmentId.number;
+                if (acceptance.shipmentId.deliverymethodId.id==1) {
+                    spnDelivery.innerHTML = acceptance.deliveryId.number;
+                }
+                spnGDN.innerHTML =acceptance.gdnId.number;
+                spnAccPerName.innerHTML = acceptance.acceptedpersonname;
+                spnAccPerNic.innerHTML = acceptance.acceptedpersonnic;
+                spnStatus.innerHTML = acceptance.acceptencestatusId.name;
+                spnDate.innerHTML = acceptance.date;
+                spnNote.innerHTML =acceptance.note;
+                spnEmp.innerHTML = acceptance.employeeId.callingname;
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/customeracceptenc","POST",acceptance);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                ///alertify.notify('Delivery Agent Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Customer Acceptance Saved Successfully',6);
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            }
+            else {
+                $('#ModelAddContent').modal('hide');
+                showResult('error');
+                window.alert("Failed to Add as \n\n"+response);
+            }
+        }
+
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+
+            var clear;
+            if(oldacceptance==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblacceptance);
+            }
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+        }
+
+        function fillForm(dla,rowno){
+            activerowno = rowno;
+            var filling;
+            if(oldacceptance==null){
+                filling=true;
+            }else{
+
+                if(getErrors()==''&&getUpdates()==''){
+                    filling=true;
+                }else{
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+
+            if(filling) {
+
+                clearSelection(tblacceptance);
+                selectRow(tblacceptance,activerowno,active);
+
+                acceptance = JSON.parse(JSON.stringify(dla));
+                oldacceptance = JSON.parse(JSON.stringify(dla));
+
+                txtShipmentNo.disabled = "disabled";
+                txtDeliveryNo.disabled = "disabled";
+                txtGDNNo.disabled = "disabled";
+
+                txtShipmentNo.value = acceptance.shipmentId.number;
+                txtShipmentMC();
+
+                if (acceptance.shipmentId.deliverymethodId.id==1) {
+                    txtDeliveryNo.value = acceptance.deliveryId.number;
+                    txtDeliveryNoMC();
+                    txtDeliveryNo.disabled = "disabled";
+
+                }
+                txtGDNNo.value = acceptance.gdnId.number;
+                txtGDNMC();
+                txtAcceptePersonName.value = acceptance.acceptedpersonname;
+                txtAcceptePersonNIC.value = acceptance.acceptedpersonnic;
+                dteAccDate.value =  acceptance.date;
+                txtNote.value = acceptance.note;
+                fillCombo(cmbStatus,"Select Status",accstatus,"name",acceptance.acceptencestatusId.name);
+                fillCombo(cmbEmployee,"Requested by",employes,"callingname",acceptance.employeeId.callingname);
+
+                disableButtons(true, false, true);
+                setStyle(valid);
+            }
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if(acceptance!=null && oldacceptance!=null) {
+
+                if (acceptance.acceptedpersonname != oldacceptance.acceptedpersonname)
+                    updates = updates + "\nAccepted Person Name is Changed : <span style='color: #ffc107'>"+oldacceptance.acceptedpersonname+" <i class=\"fas fa-arrow-right\"></i> "+acceptance.acceptedpersonname+"</span><br>";
+
+                if (acceptance.acceptedpersonnic != oldacceptance.acceptedpersonnic)
+                    updates = updates + "\nAccepted Person NIC is Changed : <span style='color: #ffc107'>"+oldacceptance.acceptedpersonnic+" <i class=\"fas fa-arrow-right\"></i> "+acceptance.acceptedpersonnic+"</span><br>";
+
+                if (acceptance.acceptencestatusId.name != oldacceptance.acceptencestatusId.name)
+                    updates = updates + "\nStatus is Changed : <span style='color: #ffc107'>"+oldacceptance.acceptencestatusId.name+" <i class=\"fas fa-arrow-right\"></i> "+acceptance.acceptencestatusId.name+"</span><br>";
+
+                if (acceptance.note != oldacceptance.note)
+                    updates = updates + "\nNotes is Changed : <span style='color: #ffc107'>"+oldacceptance.note+" <i class=\"fas fa-arrow-right\"></i> "+acceptance.note+"</span><br>";
+
+
+            }
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnUpdateMC() {
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/customeracceptenc","PUT",acceptance);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                alertify.notify('Delivery Agent Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadView()
+                loadForm();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Update as \n\n"+response);
+        }
+
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnDeliveryComDel.innerHTML =   acceptance.name;
+        }
+
+
+        function btnDeleteMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/acceptance","DELETE",acceptance);
+            if(response=="0"){
+                $('#ModelDelete').modal('hide');
+                alertify.notify('Delivery Agent Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadView()
+                loadForm();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Delete as \n\n"+response);
+        }
+
+
+        //Search Functions
+
+        function loadSearchedTable() {
+            console.log("Load Search table")
+
+            var name = txtSearchName.value;
+
+            if(name!=""){  txtSearchName.style.borderColor = active; }
+
+            var query ="&name=";
+
+            if(name!="" )
+                query = "&name=" + name;
+
+            //window.alert(query);
+            loadTable(activepage, cmbPageSize.value, query);
+
+        }
+
+        function btnSearchMC(){
+            console.log("btnSearchMC")
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+            loadView();
+        }
+
+    </script>
+
+
+
+</head>
+
+<body>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h3 style="margin-top: 15px">Customer Acceptance Form</h3>
+            <div class="card" style=";border: 1px solid #282c2f;">
+                <!--card-header-->
+                <!-- <div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 1px">
+                     <h3><i class="far fa-users"></i> Employee Management</h3>
+                 </div>-->
+
+                <!--card-body-start-->
+                <div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">
+                    <div class="row">
+                        <!--Form-Start-->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div style="" class="card-body form-box-overflow"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false" id="acceptanceform" >
+                                        <div id="acceptanceform1"></div>
+                                        <div id="acceptanceform2"></div>
+                                        <div id="acceptanceform3"></div>
+                                        <div id="acceptanceform4"></div>
+                                        <div id="acceptanceform5"></div>
+                                        <div id="acceptanceform6"></div>
+                                        <div id="acceptanceform7"></div>
+                                        <script>
+                                            txtField('acceptanceform1','txtShipmentNo','Shipment Number','Enter Shipment Number Here','',"",'','','',true);
+                                            txtArea('acceptanceform3','txtDeliveryNo','Delivery Number','Enter Delivery Number Here','',"",'','','',true);
+                                            txtField('acceptanceform5','txtGDNNo','GDN Number','Enter GDN Number Here','',"",'','','',true);
+                                            txtField('acceptanceform7','txtAcceptePersonName','Accepted Person Name','Enter Accepted Person Name','',"",'acceptance','acceptedpersonname','oldacceptance',true);
+                                            txtField('acceptanceform7','txtAcceptePersonNIC','Accepted Person NIC','Enter Accepted Person NIC','',"",'acceptance','acceptedpersonnic','oldacceptance',true);
+                                            cmbBox('acceptanceform7','cmbStatus','Status','acceptance','acceptencestatusId','oldacceptance',true);
+                                            dteField('acceptanceform7','dteAccDate','Date','',"",'acceptance','date','oldacceptance',true);
+                                            txtArea('acceptanceform7','txtNote','Note','','','','acceptance','note','oldacceptance');
+                                            cmbBox('acceptanceform7','cmbEmployee','Add Employee','acceptance','employeeId','oldacceptance',true);
+
+
+                                        </script>
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-3" style="margin-right: 5px;margin-left: -10px">
+                                                <button data-toggle="tooltip" data-placement="top"  title="Delete Delivery Agent" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 0px; margin-left: 0px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 10px;margin-left: -5px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Update Selected Delivery Agent" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button  data-toggle="tooltip" data-placement="top" title="Add New Delivery Agent" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Form-End-->
+
+
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeladd">Customer Acceptance</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add followings</h5>
+                                        <p class="content-model-text-title">Shipment Number    : <span class="content-model-text-value" id="spnShipment"></span></p>
+                                        <p class="content-model-text-title">Delivery Number         : <span class="content-model-text-value" id="spnDelivery"></span></p>
+                                        <p class="content-model-text-title">GDN Number  : <span class="content-model-text-value" id="spnGDN"></span></p>
+                                        <p class="content-model-text-title">Accepted Person Name  : <span class="content-model-text-value" id="spnAccPerName"></span></p>
+                                        <p class="content-model-text-title">Accepted person NIC      : <span class="content-model-text-value" id="spnAccPerNic"></span></p>
+                                        <p class="content-model-text-title">Status    : <span class="content-model-text-value" id="spnStatus"></span></p>
+                                        <p class="content-model-text-title">Date        : <span class="content-model-text-value" id="spnDate"></span></p>
+                                        <p class="content-model-text-title">note  : <span class="content-model-text-value" id="spnNote"></span></p>
+                                        <p class="content-model-text-title">Add Employee  : <span class="content-model-text-value" id="spnEmp"></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Acceptance</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                        <!--Model Delete Start-------------------------------------------->
+                        <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeldelete">Acceptance</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to delete following </h5>
+                                        <p  id="spnDeliveryComDel"></p>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Delete End---------------------------------------------->
+
+                        <!--Model Update Start-------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabelupdete">Acceptance</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End---------------------------------------------->
+
+
+                        <!--table-start-->
+                        <div class="col-md-8">
+                            <div class="card" style="border: 1px solid #a6a6a6;border-radius: 1px">
+                                <div class="card-header" style="height: 60px">
+                                    <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+                                        <div class="form-group form-group-sm" style="margin-right: 5px">
+                                            <input placeholder="Search By Name" class="form-control form-control-sm txtinput" type="text" id="txtSearchName"/>
+                                        </div>
+
+                                        <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                        <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                                    </form>
+                                </div>
+                                <div class="card-body table-box-overflow"  id="employeeview">
+
+                                    </hr>
+                                    <div class="table-responsive" id="tableParent">
+
+                                        <script>
+
+                                            function getAccPerson(ob) {
+                                                return ob.acceptedpersonname+"("+ob.acceptedpersonnic+")";
+                                            }
+
+                                            var metadata = [
+                                                {name:'Company Name',search:false,datatype:'text',property:'shipmentId.companyId.name'},
+                                                {name:'Shipment Number',search:false,datatype:'text',property:'shipmentId.number'},
+                                                //{name:'Delivery Number',search:false,datatype:'text',property:'deliveryId.number'},
+                                                {name:'GDN Number',search:false,datatype:'text',property:'gdnId.number'},
+                                                {name:'Date',search:false,datatype:'text',property:'date'},
+                                                {name:'Accepted By',search:false,datatype:'text',property:getAccPerson},
+                                            ];
+                                            table("tableParent","tblacceptance",metadata,[3,10,15,30,500,1000],btnSearchMC,true);
+
+                                        </script>
+
+
+                                    </div>
+                                    <ul id="pagination" class="pagination"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!--table-end-->
+
+                    </div>
+
+                </div>
+                <!--card-body-end-->
+
+                <!--<div class="card-footer"></div>-->
+                <!--card-end-->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

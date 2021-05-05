@@ -1,0 +1,2473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title>Shipment Management</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <link rel="stylesheet" href="../style/shipment-form.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+
+    <script>
+        window.addEventListener("load", initialize);
+
+        function initialize() {
+            //Event handelers
+            cmbMod.addEventListener("change", cmbModCH);
+            cmbDeliveryMethod.addEventListener("change", cmbDeliveryMethodCH);
+            btnModelCOO.addEventListener("click", loadCountryForm);
+            btnModelTC.addEventListener("click", loadCountryFormTC);
+            btnCountryOfLoading.addEventListener("click", loadCountryFormPL);
+            cmbCountryofLoading.addEventListener("change", cmbCountryofLoadingCH);
+            btnPlaceofLoading.addEventListener("click", PlaceOfLoadingForm);
+            btnplaceOfDischarge.addEventListener("click", PlaceOfDischargeForm);
+            btnModelCurrency.addEventListener("click", loadCurrencyForm);
+            //cmbImportersBank.addEventListener("change", cmbBankCH);
+            //btnModelBank.addEventListener("click", loadBankForm);
+            //btnModelBankBranch.addEventListener("click", loadBranchForm);
+            btnModelShippingCo.addEventListener("click", loadShippingCompanyForm);
+            btnModelDeliveryAgent.addEventListener("click", loadDeliveryAgentForm);
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnDelete.addEventListener("click",btnDeleteMC);
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+            btnSearch.addEventListener("click", btnSearchMC);
+            btnSearchClear.addEventListener("click", btnSearchClearMC);
+            btnAddLicence.addEventListener("click", btnAddLicenceMC);
+            btnAddShipmentItem.addEventListener("click", btnAddItemMC);
+            txtQuantity.addEventListener("keyup", calculateItemValue);
+
+            //data lists
+            privilages = httpRequest("../privilages?module=SHIPMENT","GET");
+            companys = httpRequest("../companys/list", "GET");
+            mods = httpRequest("../mods/list", "GET");
+            licences = httpRequest("../licence/list", "GET");
+            countrys = httpRequest("../country/list","GET");
+            tradeagreement = httpRequest("../tradeagreement/list","GET");
+            shippingcompany = httpRequest("../shippingcompany/list","GET");
+            deliveryagent =httpRequest("../deliveryagents/list","GET");
+            containertype = httpRequest("../containertype/list","GET");
+            deliveryterm = httpRequest("../deliveryterms/list","GET");
+            currency = httpRequest("../currency/list","GET");
+            //banks = httpRequest("../banks/list","GET");
+            //termsofpayment = httpRequest("../termsofpayment/list","GET");
+            clearingclerks = httpRequest("../employee/listbydesgnation?designationId=2","GET");
+            employes = httpRequest("../employees/list", "GET");
+            deliverymethods = httpRequest("../deliverymethod/list", "GET");
+            lcregex = httpRequest("../regexes/letterifcredit", "GET");
+            shipmentregex = httpRequest("../regexes/shipment", "GET");
+            packagetype =  httpRequest("../packagetypes/list", "GET");
+
+            //itemregex = httpRequest("../regexes/item", "GET");
+
+            console.log(shipmentregex);
+
+            //set regex pattern
+            txtExporterName.setAttribute("data-pattern",shipmentregex.exportername.regex);
+            txtExporterAddress.setAttribute("data-pattern",shipmentregex.exporteraddress.regex);
+            txtCOORef.setAttribute("data-pattern",shipmentregex.coorefno.regex);
+            txtinvoiceno.setAttribute("data-pattern",shipmentregex.cminvoiceno.regex);
+            //txtExportersBank.setAttribute("data-pattern",lcregex.exportersbank.regex);
+            //txtLCApplicantName.setAttribute("data-pattern",lcregex.lcapplicantname.regex);
+
+           // txtLCAmount.setAttribute("data-pattern",lcregex.amount.regex);
+            //txtLCBeneficiaryName.setAttribute("data-pattern",lcregex.exportersbank.regex);
+
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+        }
+
+        function loadView() {
+            /**Search Area***/
+            txtSearchName.value="";
+            fillCombo(cmbSearchType,"Search by Shipment Type",mods,"name","");
+            fillCombo(cmbSearcClient,"Search by Client",companys,"name","");
+            fillCombo(cmbSearchClearingClerk,"Search By Clearing Clerk",clearingclerks,"callingname","");
+            txtSearchName.style.borderColor = "";
+            cmbSearchType.style.borderColor = "";
+            cmbSearcClient.style.borderColor = "";
+            cmbSearchClearingClerk.style.borderColor = "";
+
+            /**Table Area***/
+            activerowno = "";
+            activepage = 1;
+            var query = "&number=&modsid=&customerid=&clearingclerkid=";
+            loadTable(1,cmbPageSize.value,query);
+        }
+
+        //load data to table
+        function loadTable(page,size,query) {
+            page = page - 1;
+            shipments = new Array();
+            var data = httpRequest("/shipments?page="+page+"&size="+size+query,"GET");
+            if(data.content!= undefined) shipments = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblShipment',shipments,fillForm);
+            clearSelection(tblShipment);
+            if(activerowno!="")selectRow(tblShipment,activerowno,active);
+            window.location.href="#ui";
+        }
+
+        //pagination for table
+        function paginate(page) {
+            var paginate;
+            if(oldshipment==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno=""
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+        //change tab to form
+        function ChangeTabToForm(){ $('[href="#Form"]').tab('show'); }
+        //change tab to table
+        function ChangeTabToTable(){ $('[href="#Table"]').tab('show'); }
+
+        function fillForm(shp,rowno){
+
+            ChangeTabToForm();
+
+            activerowno = rowno;
+            var filling;
+            if(oldshipment==null){
+                filling=true;
+            }else{
+
+                if(getErrors()==''&&getUpdates()==''){
+                    filling=true;
+                }else{
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                                    "Are you sure to discard that changes ?");
+                }
+            }
+            //fill data to form
+            if(filling) {
+
+                prgressBar(100);
+
+                clearSelection(tblShipment);
+                selectRow(tblShipment,activerowno,active);
+
+                shipment = JSON.parse(JSON.stringify(shp));
+                oldshipment = JSON.parse(JSON.stringify(shp));
+
+               // letterofcredit = JSON.parse(JSON.stringify(shp.letterofcreditList[0]));
+               /// oldletterofcredit = JSON.parse(JSON.stringify(shp.letterofcreditList[0]));
+
+                /*console.log(shipment);
+                console.log(oldshipment);*/
+                refreshInnerFrom();
+
+                txtnumber.value = shipment.number;
+                //txtCOORef.value = shipment.coorefno;
+                txtinvoiceno.value = shipment.cminvoiceno;
+                txtCOORef.value = shipment.coorefno;
+                txtDeliveryLocation.value = shipment.deliverylocation;
+                //txtinvoiceno.value = shipment.cminvoiceno;
+                txtExporterName.value = shipment.exportername;
+                txtExporterAddress.value = shipment.exporteraddress;
+                //txtExportersBank.value = letterofcredit.exportersbank;
+                //txtLCno.value = letterofcredit.lcnumber;
+                //dteLCIssuedDate.value = letterofcredit.lcissueddate;
+                //txtLCApplicantName.value = letterofcredit.lcapplicantname;
+                //txtLCBeneficiaryName.value = letterofcredit.lcbenificiaryname;
+                //txtLCAmount.value = letterofcredit.amount;
+
+                fillCombo(cmbCustomer, "Select Customer", companys, "name", shipment.companyId.name);
+                fillCombo(cmbMod, 'Select Mod', mods, "name",shipment.modsId.name);
+                cmbModCH();
+                if (shipment.tradeagreementId !== null){
+                    fillCombo(cmbTradAgreements, "Select Trade Agreement", tradeagreement, "description", shipment.tradeagreementId.description);
+                }
+                if (shipment.modsId.name=="Air Cargo"){
+                    txtTrancdoc.value = shipment.airwaybillbno;
+                }else {
+                    txtTrancdoc.value = shipment.billofloadingno;
+                }
+                //fill data to form
+                fillCombo(cmbShippingCompany,'Select Shipping Company',shippingcompany,'name',shipment.shippingcompanyId.name);
+                fillCombo(cmbDeliveryAgent,'Select Delivery Agent',deliveryagent,'name',shipment.deliveryagentId.name);
+                fillCombo(cmbContainerType,'Select Container Type',containertype,'name',shipment.containertypeId.name);
+                //fillCombo(cmbDeliveryTerm,'Select Delivery Term',deliveryterm,'description',shipment.deliverytermsId.description);
+                fillCombo(cmbCountryofLoading,'Select Country',countrys,'name',shipment.placeofloading.countryId.name);
+                cmbCountryofLoadingCH();
+                fillCombo(cmbPlaceOfLoading,'Select Place of Loading',placeofloading,'name',shipment.placeofloading.name);
+                fillCombo(cmbPlaceOfDischarge,"Select Place of Discharge",placeofdischarge,'name',shipment.placeofdischarge.name);
+                //fillCombo(cmbImportersBank,'Select Importers Bank',banks,'name',letterofcredit.branchId.bankId.name);
+                //cmbBankCH();
+                //fillCombo(cmbImportersBankBranch,'Select Branch',branches,'name',letterofcredit.branchId.name);
+                //fillCombo(cmbLCCurrency,'Select Currency',currency,'name',letterofcredit.currencyId.name);
+                //fillCombo(cmbTermsOfPayment,'Select Terms of Payment',termsofpayment,'description',letterofcredit.termsofpaymentId.description);
+                fillCombo(cmbClearingClerk,'Select Clearing Clerk',clearingclerks,"callingname",shipment.clearingclerk.callingname);
+                fillCombo(cmbAddEmployee, "Select Employee", employes, "callingname", shipment.addemployee.callingname);
+                fillCombo(cmbDeliveryMethod,'Select Delivery Method',deliverymethods,"name",shipment.deliverymethodId.name);
+
+                txtnumber.disabled="disabled";
+                cmbCustomer.disabled="disabled";
+                cmbMod.disabled="disabled";
+                cmbAddEmployee.disabled="disabled";
+                txtExporterName.disabled="disabled";
+                txtExporterAddress.disabled="disabled";
+                txtDeliveryLocation.disabled="";
+                //txtExportersBank.disabled="disabled";
+
+                disableButtons(true, false, false);
+                setStyle(valid);
+            }
+
+        }
+
+        //check user privilage and disable buttons
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+        }
+
+        //Rest Form
+        function loadForm() {
+            shipment = new Object();
+            oldshipment = null;
+
+            number = httpRequestwithoutlist("../shipment/nextnumber","GET");
+
+
+            letterofcredit = new Object();
+            oldletterofcredit = null;
+
+            shipment.itemList = new Array();
+            shipment.letterofcreditList = new Array();
+            shipment.letterofcreditList.push(letterofcredit);
+
+            if (document.getElementById("TransportDoc").hasChildNodes()){
+                document.getElementById("TransportDoc").firstChild.remove();
+            }
+
+            setStyle(initial);
+            prgressBar(0);
+
+            var today = new Date();
+            var month = today.getMonth()+1;
+            if(month<10) month = "0"+month;
+            var date = today.getDate();
+            if(date<10) date = "0"+date;
+
+            refreshInnerFrom();
+
+            txtCOORef.value = "";
+            txtinvoiceno.value = "";
+            //txtLCno.value = "";
+            txtExporterName.value = "";
+            txtExporterAddress.value = "";
+            cmbPlaceOfLoading.value = "";
+            cmbPlaceOfDischarge.value = "";
+            txtShipmentTotalValue.value = "";
+            //cmbImportersBankBranch.value = "";
+            //txtExportersBank.value = "";
+           // dteLCIssuedDate.value = "";
+            //txtLCApplicantName.value = "";
+            //txtLCAmount.value = "";
+           // txtLCBeneficiaryName.value = "";
+            dteAddDate.value = "";
+            txtnumber.value = "";
+            txtDeliveryLocation.value = "";
+
+            txtnumber.disabled = "disabled";
+            cmbCountryofLoading.disabled = "disabled";
+            btnCountryOfLoading.disabled = "disabled";
+            cmbPlaceOfLoading.disabled = "disabled";
+            btnPlaceofLoading.disabled = "disabled";
+            cmbPlaceOfDischarge.disabled = "disabled";
+            btnplaceOfDischarge.disabled = "disabled";
+            cmbCountryofDischarge.disabled = "disabled";
+            btnCountryOfDischarge.disabled = "disabled";
+            //cmbImportersBankBranch.disabled = "disabled";
+            //btnModelBankBranch.disabled = "disabled";
+            cmbAddEmployee.disabled = "disabled";
+            dteAddDate.disabled = "disabled";
+            txtDeliveryLocation.disabled = "disabled";
+            txtShipmentTotalValue.disabled = "disabled";
+
+            cmbCustomer.disabled="";
+            cmbMod.disabled="";
+            txtExporterName.disabled="";
+            txtExporterAddress.disabled="";
+            //txtExportersBank.disabled="";
+
+
+            txtnumber.value = number;
+            shipment.number = txtnumber.value;
+            txtnumber.style.borderColor = valid;
+            cmbAddEmployee.style.borderColor=valid;
+            dteAddDate.value = today.getFullYear()+"-"+month+"-"+date;
+            shipment.dateofregisterd = dteAddDate.value;
+            dteAddDate.style.borderColor=valid;
+
+            fillCombo(cmbMod, 'Select Mod', mods, "name","");
+            fillCombo(cmbCustomer, "Select Customer", companys, "name", "");
+            fillCombo(cmbTradAgreements, "Select Trade Agreement", tradeagreement, "description", "");
+            fillCombo(cmbShippingCompany,'Select Shipping Company',shippingcompany,'name',"");
+            fillCombo(cmbDeliveryAgent,'Select Delivery Agent',deliveryagent,'name',"");
+            fillCombo(cmbCountryofLoading,'Select Country',countrys,'name',"");
+            fillCombo(cmbCountryofDischarge,'Select Country',countrys,'name',"Sri Lanka");
+            fillCombo(cmbContainerType,'Select Container Type',containertype,'name',"");
+            fillCombo(cmbDeliveryTerm,'Select Delivery Term',deliveryterm,'description',"");
+            //fillCombo(cmbImportersBank,'Select Importers Bank',banks,'name',"");
+            //fillCombo(cmbTermsOfPayment,'Select Terms of Payment',termsofpayment,'description',"");
+            //fillCombo(cmbLCCurrency,'Select Currency',currency,'name',"");
+            fillCombo(cmbClearingClerk,'Select Clearing Clerk',clearingclerks,"callingname","");
+            fillCombo(cmbDeliveryMethod,'Select Delivery Method',deliverymethods,"name","");
+            fillCombo(cmbAddEmployee, "Select Employee", employes, "callingname", session.getObject("user").employeeId.callingname);
+            shipment.addemployee = JSON.parse(cmbAddEmployee.value);
+
+            txtDeliveryLocation.style.height = "105px"
+
+            disableButtons(false, true, true);
+        }
+
+        //rest innerform for licence
+        function refreshInnerFormLicence() {
+            txtLicenceNo.value="";
+            txtLicenceNo.style.borderColor=initial;
+            fillCombo(cmbLicence,"Select Document",licences,"name","");
+            fillInnerTable("tblLicence",  LicenceList ,removeLicence);
+        }
+
+        //remove items from inner form licence
+
+        function removeLicence(itemHasLicenceList,index) {
+            LicenceList.splice(index-1, 1);
+            refreshInnerFormLicence();
+        }
+
+        //add items for inner form
+        function btnAddLicenceMC() {
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            itemlicence = new Object();
+            itemlicence.licenceId = JSON.parse(cmbLicence.value);
+            itemlicence.licenceno = txtLicenceNo.value;
+            LicenceList.push(itemlicence);
+            refreshInnerFormLicence();
+        }
+
+
+
+        //validate and calculate item price for shipment
+        function txtQtyKU() {
+
+            txtSprice.disabled = true;
+            var pattern =  new RegExp("^([1-9]||[1-9][0-9]{1,3})$");
+            if( pattern.test(txtSaleQty.value.trim()) &&  parseInt(txtSaleQty.value) <= parseInt(txtAvailableQty.value) && parseInt(txtRequestQty.value) >= parseInt(txtSaleQty.value) ){
+                txtSaleQty.style.background = valid;
+                gltotal = txtSprice.value *  txtSaleQty.value;
+                txtGline.value = gltotal.toFixed(2);
+                txtGline.style.background = valid;
+            }else {
+                txtSaleQty.style.background = invalid;
+                var x= 0;
+                txtGline.value = x.toFixed(2);
+                txtGline.style.background = invalid;
+            }
+            disableinnerformaddbtn()
+
+        }
+
+
+
+        function calculateItemValue() {
+            var pattern =  new RegExp("^([1-9]||[1-9][0-9]{1,6})$");
+            if (pattern.test(txtQuantity.value.trim())){
+                txtQuantity.style.borderColor  = valid;
+                lttotal = parseFloat(txtRatePerUnit.value*txtQuantity.value).toFixed(2);
+                console.log(lttotal);
+                txtItemTotalAmount.value = lttotal;
+                txtItemTotalAmount.style.borderColor  = valid;
+            }
+        }
+
+        //reset inner form
+        function refreshInnerFrom() {
+            LicenceList = new Array();
+            fillInnerTable("tblShipmentitem",  shipment.itemList ,removeItem);
+            refreshInnerFormLicence();
+
+            txtItemTotalAmount.disabled = "disabled";
+            txtDescription.value = "";
+            txtManfactureName.value = "";
+            txtRatePerUnit.value = "";
+            txtQuantity.value = "";
+            txtHSCode.value = "";
+            txtItemTotalAmount.value = "";
+
+
+
+            fillCombo(cmbCountryOfOrigin,"Select Country",countrys,"name","");
+            fillCombo(cmbTradingCountry,"Select Country",countrys,"name","");
+            fillCombo(cmbCurrency,'Select Currency Unit',currency,'name',"");
+            fillCombo(cmbPackageType,'Select Package Type',packagetype,'name',"");
+
+            var total = 0;
+            for (x in shipment.itemList){
+                total = parseFloat(total) + parseFloat(shipment.itemList[x].totalamount)
+            }
+            console.log(total.toFixed(2));
+            txtShipmentTotalValue.value = parseFloat(total).toFixed(2) ;
+            //txtShipmentTotalValue.style.background = valid;
+            shipment.shipmenttotalvalue = txtShipmentTotalValue.value;
+
+        }
+
+        function removeItem(itemList,index){
+            shipment.itemList.splice(index-1, 1);
+            refreshInnerFrom();
+        }
+
+
+        //save data
+        function btnAddItemMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+            var itmerrors = getItemErrors();
+            shipmentitem = new Object();
+            if (itmerrors == ""){
+
+            shipmentitem.countryoforigin = JSON.parse(cmbCountryOfOrigin.value);
+            shipmentitem.tradingcountry = JSON.parse(cmbTradingCountry.value);
+            shipmentitem.description = txtDescription.value;
+            shipmentitem.hscode = txtHSCode.value;
+            shipmentitem.qty = txtQuantity.value;
+            shipmentitem.currencyId = JSON.parse(cmbCurrency.value);
+            shipmentitem.rateperunit = txtRatePerUnit.value;
+            shipmentitem.manufacturer = txtManfactureName.value;
+            shipmentitem.packagetypeId =JSON.parse(cmbPackageType.value);
+            shipmentitem.itemHasLicenceList = LicenceList;
+            shipmentitem.totalamount = txtItemTotalAmount.value;
+            shipment.itemList.push(shipmentitem);
+            refreshInnerFrom();
+
+            }else {
+                window.alert("Item has following Errors\n\n"+itmerrors);
+            }
+
+        }
+
+
+        //set style to form
+        function setStyle(style) {
+
+            txtnumber.style.borderColor = style;
+            cmbMod.style.borderColor = style;
+            cmbCustomer.style.borderColor = style;
+            txtCOORef.style.borderColor = style;
+            txtinvoiceno.style.borderColor = style;
+            //txtLCno.style.borderColor = style;
+            cmbTradAgreements.style.borderColor = style;
+            txtDescription.style.borderColor = style;
+            txtManfactureName.style.borderColor = style;
+            txtExporterName.style.borderColor = style;
+            txtExporterAddress.style.borderColor = style;
+            cmbShippingCompany.style.borderColor = style;
+            cmbDeliveryAgent.style.borderColor = style;
+            cmbCountryofLoading.style.borderColor = style;
+            cmbPlaceOfLoading.style.borderColor = style;
+            cmbCountryofDischarge.style.borderColor = style;
+            cmbPlaceOfDischarge.style.borderColor = style;
+            cmbContainerType.style.borderColor = style;
+            cmbDeliveryTerm.style.borderColor = style;
+            //cmbImportersBank.style.borderColor = style;
+            //cmbImportersBankBranch.style.borderColor = style;
+            //txtExportersBank.style.borderColor = style;
+            //dteLCIssuedDate.style.borderColor = style;
+            //cmbTermsOfPayment.style.borderColor = style;
+            //txtLCApplicantName.style.borderColor = style;
+            //txtLCAmount.style.borderColor = style;
+            //txtLCBeneficiaryName.style.borderColor = style;
+            //cmbLCCurrency.style.borderColor = style;
+            cmbClearingClerk.style.borderColor = style;
+            cmbAddEmployee.style.borderColor = style;
+            dteAddDate.style.borderColor = style;
+            cmbDeliveryMethod.style.borderColor = style;
+            txtDeliveryLocation.style.borderColor = style;
+            txtShipmentTotalValue.style.borderColor = style;
+        }
+
+
+        //filter transport document by shipments mode
+        function cmbModCH() {
+
+            if (document.getElementById("TransportDoc").hasChildNodes()){
+                document.getElementById("TransportDoc").firstChild.remove();
+            }
+            if (JSON.parse(cmbMod.value).name.localeCompare("Air Cargo")) {
+                txtField('TransportDoc', 'txtTrancdoc', 'Bill of Lading Number', 'Enter bill of lading no here', '', "", 'shipment', 'billofloadingno', 'oldshipment', true,"Valid Bill of Lading Number","Bill of Lading is Invalid","Bill of Lading Number is Updated");
+                txtTrancdoc.setAttribute("data-pattern",shipmentregex.billofloadingno.regex);
+            } else {
+                txtField('TransportDoc', 'txtTrancdoc', 'Air waybill Number', 'Enter Air waybill no here', '', "", 'shipment', 'airwaybillbno', 'oldshipment', true,"Valid Air Way Bill Number","Air Way Bill Number is Invalid","Air Way Bill Number is Updated");
+                txtTrancdoc.setAttribute("data-pattern",shipmentregex.airwaybillbno.regex);
+
+            }
+            btnplaceOfDischarge.disabled = "";
+            cmbPlaceOfDischarge.disabled = "";
+            cmbCountryofLoading.disabled = "";
+            btnCountryOfLoading.disabled = "";
+            placeofdischarge = httpRequest("../placeofloading/listbymodnadcountry?modsId="+JSON.parse(cmbMod.value).id+"&countryId=1","GET");
+            fillCombo(cmbPlaceOfDischarge,"Select Place of Discharge",placeofdischarge,'name',"");
+        }
+
+        function cmbDeliveryMethodCH() {
+            if (JSON.parse(cmbDeliveryMethod.value).id==1){
+                txtDeliveryLocation.disabled = "";
+                txtDeliveryLocation.value = "";
+            }else {
+                txtDeliveryLocation.disabled = "disabled";
+                txtDeliveryLocation.value = "";
+                shipment.deliverylocation = null;
+            }
+        }
+
+        function cmbCountryofLoadingCH() {
+            cmbPlaceOfLoading.disabled = "";
+            btnPlaceofLoading.disabled = "";
+            placeofloading = httpRequest("../placeofloading/listbymodnadcountry?modsId="+JSON.parse(cmbMod.value).id+"&countryId="+JSON.parse(cmbCountryofLoading.value).id,"GET");
+            fillCombo(cmbPlaceOfLoading,'Select Place of Loading',placeofloading,'name',"");
+        }
+
+
+        //filter banks by branch
+        function cmbBankCH(){
+            cmbImportersBankBranch.disabled = "";
+            btnModelBankBranch.disabled = "";
+            cmbImportersBank.style.borderColor = valid;
+            branches = httpRequest("../branch/listbybank?bankId="+JSON.parse(cmbImportersBank.value).id,"GET");
+            fillCombo(cmbImportersBankBranch,'Select Branch',branches,'name',"");
+        }
+
+        //validate inner form detail
+        function validateItemDescription() {
+            if (txtDescription.value.match(itemregex.description.regex)){
+                txtDescription.style.borderColor = invalid;
+            }else {
+                txtDescription.style.borderColor = valid;
+            }
+        }
+
+
+        //validate inner form data
+        function getItemErrors() {
+            itemerrors = "";
+
+            if (txtDescription.value=="")
+                itemerrors = itemerrors +"Invalid Description\n";
+
+            if (txtManfactureName.value=="")
+                itemerrors = itemerrors + "Invalid Manfacturer\n";
+
+            if (isNaN(txtRatePerUnit.value) || txtRatePerUnit.value == "")
+                itemerrors = itemerrors + "invalid rate per unit\n";
+
+            if (isNaN(txtQuantity.value) || txtQuantity.value=="")
+                itemerrors = itemerrors + "Invalid Quantity\n";
+
+            if (isNaN(txtHSCode.value) || txtHSCode.value.length<8)
+                itemerrors = itemerrors + "invalid HS Code\n";
+
+            if (cmbCurrency.value == "Select Currency Unit")
+                itemerrors = itemerrors +" Currency is not selected \n";
+
+            if (cmbCountryOfOrigin.value == "Select Country")
+                itemerrors = itemerrors + "Country of Origin is not selected \n";
+
+            if (cmbTradingCountry.value == "Select Country")
+                itemerrors = itemerrors +"Trading Country is not Selected \n";
+
+            if (cmbPackageType.value == "Select Package Type")
+                itemerrors = itemerrors +"Package Type of Item Not Selected \n";
+
+            return itemerrors;
+        }
+
+        //validate main form data
+        function getErrors() {
+
+            var errors = "";
+
+            /*if (letterofcredit.amount == null)
+                errors = "Invalid Amount <br>";*/
+
+            if (shipment.clearingclerk == null)
+                errors = errors+"Clearing Clerk is not selected <br>";
+
+            if (shipment.deliverymethodId == null){
+                errors = errors+"Delivery method is not selected <br>";
+            }else {
+                if (shipment.deliverymethodId.id == 1){
+                    if (shipment.deliverylocation == null){
+                     errors = errors+"Delivery Location of the shipment is not selected <br>";
+                    }
+                }
+            }
+
+
+            if (shipment.modsId == null){
+                errors = errors + "Shipment Mode is not selected<br>";
+            }else {
+                if (shipment.modsId.name == "Air Cargo"){
+                    if (shipment.airwaybillbno == null)
+                        errors = errors + "Invalid Air waybill Number<br>";
+                }else if (shipment.modsId.name == "Sea Cargo"){
+                    if (shipment.billofloadingno == null)
+                        errors = errors + "Invalid Bill of Lading Number";
+                }
+            }
+
+            if (shipment.companyId == null)
+                errors = errors + "Customer is not selected<br>";
+
+           /* if (shipment.coorefno == null)
+                errors = errors + "Invalid Certificate Of Origin Reference No<br>";*/
+
+            if (shipment.cminvoiceno == null)
+                errors = errors + "Invalid Commercial Invoice Number<br>";
+
+            if (shipment.itemList === undefined || shipment.itemList.length == 0)
+                errors = errors + "Shipment dosn't have any Items<br>";
+
+            if (shipment.exportername == null)
+                errors = errors + "\n" + shipmentregex.exportername.message+"<br>";
+
+            if (shipment.exporteraddress == null)
+                errors = errors + "\n" + shipmentregex.exporteraddress.message+"<br>";
+
+            if (shipment.shippingcompanyId == null)
+                errors = errors + "Shipping Company is not selected<br>";
+
+            if (shipment.deliveryagentId == null)
+                errors = errors + "Delivery Agent is not selected<br>";
+
+            if (shipment.containertypeId == null)
+                errors = errors + "Container is not selected<br>";
+
+            if (shipment.deliverytermsId == null)
+                errors = errors + "Delivery term is not selected<br>";
+
+            if (shipment.placeofloading == null)
+                errors = errors + "Place of Loading is not selected<br>";
+
+            if (shipment.placeofdischarge == null)
+                errors = errors + "Place of Discharge is not selected<br>";
+
+            /*if (letterofcredit.branchId == null)
+                errors = errors+"Importer's Bank is not selected <br>";*/
+
+           /* if (letterofcredit.exportersbank == null)
+                errors = errors+lcregex.exportersbank.message+"<br>";
+
+            if (letterofcredit.lcnumber == null)
+                errors = errors+"Invalid LC Number is invalid<br>";
+
+            if (letterofcredit.lcissueddate == null)
+                errors = errors+"LC Issued Date Is Invalid <br>";
+
+            if (letterofcredit.termsofpaymentId == null)
+                errors = errors+"LC Terms of Payment is not selected <br>";
+
+            if (letterofcredit.lcapplicantname == null)
+                errors = errors+lcregex.lcapplicantname.message+"<br>";
+
+            if (letterofcredit.lcbenificiaryname == null)
+                errors = errors+lcregex.lcbenificiaryname.message+"<br>";
+
+            if (letterofcredit.currencyId == null)
+                errors = errors+"LC Currency is not selected <br>";*/
+
+
+
+            return errors;
+        }
+
+
+        //save data to database
+        function btnAddMC() {
+
+            $(document).ready(function () { $('[data-toggle="tooltip"]').tooltip('hide')});
+console.log(shipment)
+            var response = httpRequest("/shipments", "POST", shipment);
+            if (response == "0") {
+                $('#ModalConfirmation').modal('hide');
+                //alertify.notify('shipment Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Shipment Saved Successfully',6);
+                ChangeTabToTable();
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            } else window.alert("Failed to Add as \n\n" + response);
+        }
+
+        //inner form item list confirmation
+        function showItemList(itemlist) {
+            var parent = document.getElementById("itmParent");
+            var itemelement = document.createElement('p');
+            var content = "";
+            content =content+"Trading Country : "+itemlist.tradingcountry.name+"<br>";
+            content =content+"Description : "+itemlist.description+"<br>";
+            content =content+"Country of Origin : "+itemlist.countryoforigin.name+"<br>";
+            content =content+ "HS Code : "+itemlist.hscode+"<br>";
+            content =content+ "Quantity : "+itemlist.qty+"<br>";
+            content =content+ "Rateper unit"+itemlist.rateperunit+" "+itemlist.currencyId.name+"<br>";
+            content =content+ itemlist.manufacturer+"<br>";
+
+            for ( lic = 0; lic < itemlist.itemHasLicenceList.length; lic++ ){
+                var licenece = document.createElement('p');
+                content =content+  itemlist.itemHasLicenceList[lic].licenceId.name+" : "+itemlist.itemHasLicenceList[lic].licenceno+"<br>";
+                parent.appendChild(licenece);
+            }
+
+            var brake = document.createElement('br');
+            itemelement.innerHTML = content;
+            parent.appendChild(itemelement);
+            parent.appendChild(brake);
+        }
+
+
+
+
+        //show shipment detail confiramation
+        function ModelAddContent() {
+
+            console.log(shipment);
+            var errors = getErrors();
+
+            if (errors==""){
+
+                $('#ModalConfirmation').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                })
+
+                prgressBar(100);
+                $('#ModalConfirmation').modal('show');
+
+                /**Document Detail**/
+                spnNumber.innerHTML = shipment.number;
+                spnType.innerHTML = shipment.modsId.name;
+                spnCustomer.innerHTML = shipment.companyId.name;
+                if (shipment.tradeagreementId != null){
+
+                    spnTradeAgreement.innerHTML = shipment.tradeagreementId.description;
+                }
+                spnCOORefNo.innerHTML = shipment.coorefno;
+                spnCInvoiceNo.innerHTML = shipment.cminvoiceno;
+                if (shipment.modsId.name=="Air Cargo"){
+                    var parent = document.getElementById('ptagTransportDoc');
+                    parent.innerHTML = "Air waybill Number : ";
+                    var element = createElement('span','spnTransportDoc');
+                    element.classList.add('content-model-text-value');
+                    element.innerHTML = shipment.airwaybillbno;
+                    parent.appendChild(element);
+                }else {
+                    var parent = document.getElementById('ptagTransportDoc');
+                    parent.innerHTML = "Bill of Lading Number : ";
+                    var element = createElement('span','spnTransportDoc');
+                    element.classList.add('content-model-text-value');
+                    element.innerHTML = shipment.billofloadingno;
+                    parent.appendChild(element);
+                }
+                /**Item Detail**/
+                for (shpitm = 0; shpitm<shipment.itemList.length; shpitm++){
+                    showItemList(shipment.itemList[shpitm]);
+                }
+               
+                /**Shipping Date**/
+
+                spnExporterName.innerHTML = shipment.exportername;
+                spnExporterAddress.innerHTML = shipment.exporteraddress;
+                spnShippingcompany.innerHTML = shipment.shippingcompanyId.name;
+                spnDeliveryAgent.innerHTML = shipment.deliveryagentId.name;
+                spnPlaceofLoading.innerHTML = shipment.placeofloading.name;
+                spnPlaceofDischarge.innerHTML = shipment.placeofdischarge.name;
+                spnContType.innerHTML = shipment.containertypeId.name;
+                spnDeleTerm.innerHTML = shipment.deliverytermsId.description;
+
+                /**Financial Detail**/
+               /* spnLCNo.innerHTML =shipment.letterofcreditList[0].lcnumber;
+                spnImpBank.innerHTML = shipment.letterofcreditList[0].branchId.name;
+                spnExpBank.innerHTML = shipment.letterofcreditList[0].exportersbank;
+                spnDteLCIssued.innerHTML = shipment.letterofcreditList[0].lcissueddate;
+                spnTermOfPay.innerHTML = shipment.letterofcreditList[0].termsofpaymentId.term;
+                spnBeneficiaryName.innerHTML = shipment.letterofcreditList[0].lcbenificiaryname;
+                //spnBeneficiaryAddress.innerHTML = shipment.letterofcreditList[0].lcbenificiaryaddress;
+                //spnCurrency.innerHTML = shipment.letterofcreditList[0].currencyId.name;
+                spnAmount.innerHTML = shipment.letterofcreditList[0].amount+" "+shipment.letterofcreditList[0].currencyId.name;*/
+                /**Assign Employee**/
+                spnClearingClerk.innerHTML =shipment.clearingclerk.callingname;
+                spnAddEmp.innerHTML = shipment.addemployee.callingname;
+                spnDteRegistered.innerHTML = shipment.dateofregisterd;
+                spnDeliveryMethod.innerHTML = shipment.deliverymethodId.name;
+                snpDeliveryLocation.innerHTML = shipment.deliverylocation;
+
+                /**Lunch Model confirm**/
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelForErrors').modal('show');
+            }
+        }
+
+        //show delete confirmation
+        function ModelDeleteContent() {
+
+            $('#DeleteModel').modal('show');
+        }
+
+        //get update from shipment form
+        function getUpdates() {
+
+            var updates = "";
+
+            if(shipment!=null && oldshipment!=null) {
+
+                if (shipment.coorefno != oldshipment.coorefno)
+                    updates = updates + "\nCertificate Of Origin Reference No is Changed : <span style='color: #ffc107'>"+oldshipment.coorefno +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.coorefno+"</span><br>";
+
+                if (shipment.cminvoiceno != oldshipment.cminvoiceno)
+                    updates = updates + "\nCommercial Invoice Number is Changed : <span style='color: #ffc107'>"+oldshipment.cminvoiceno +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.cminvoiceno+"</span><br>";
+
+                if (shipment.modsId.name=="Air Cargo"){
+                    if (shipment.airwaybillbno != oldshipment.airwaybillbno)
+                        updates = updates + "\nAir waybill Number is Changed : <span style='color: #ffc107'>"+oldshipment.airwaybillbno +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.airwaybillbno+"</span><br>";
+                }else {
+                    if (shipment.billofloadingno != oldshipment.billofloadingno)
+                        updates = updates + "\nBill of Lading Number is Changed : <span style='color: #ffc107'>"+oldshipment.billofloadingno +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.billofloadingno+"</span><br>";
+                }
+
+                if (isEqual(shipment.itemList,oldshipment.itemList,"description")){
+                    newitems="";
+                    olditems="";
+                    for (itm = 0;itm<shipment.itemList.length;itm++) {
+                        newitems += shipment.itemList[itm].description+" [ "+shipment.itemList[itm].hscode+" ] <br>"
+                    }
+                    for (olditm = 0;olditm<oldshipment.itemList.length;olditm++) {
+                        olditems += oldshipment.itemList[olditm].description+" [ "+oldshipment.itemList[olditm].hscode+" ] <br>"
+                    }
+                    updates = updates + "\nItems is Changed : <span style='color: #ffc107'>"+olditems+" <i class=\"fas fa-arrow-right\"></i> "+newitems+"</span><br>";
+                }
+
+              /*  if (letterofcredit.lcnumber != oldletterofcredit.lcnumber)
+                    updates = updates + "\nLC Number is Changed : <span style='color: #ffc107'>"+oldletterofcredit.lcnumber +" <i class=\"fas fa-arrow-right\"></i> "+ letterofcredit.lcnumber+"</span><br>";
+
+                if (letterofcredit.lcissueddate != oldletterofcredit.lcissueddate)
+                    updates = updates + "\nLC Issued Date is Changed : <span style='color: #ffc107'>"+oldletterofcredit.lcissueddate+" <i class=\"fas fa-arrow-right\"></i> "+letterofcredit.lcissueddate+"</span><br>";
+
+                if (letterofcredit.lcapplicantname != oldletterofcredit.lcapplicantname)
+                    updates = updates + "\nLC Applicant is Changed : <span style='color: #ffc107'>"+oldletterofcredit.lcapplicantname+" <i class=\"fas fa-arrow-right\"></i> "+letterofcredit.lcapplicantname+"</span><br>";
+
+                if (letterofcredit.lcbenificiaryname != oldletterofcredit.lcbenificiaryname)
+                    updates = updates + "\nLC Beneficiary is Changed : <span style='color: #ffc107'>"+oldletterofcredit.lcbenificiaryname+" <i class=\"fas fa-arrow-right\"></i> "+letterofcredit.lcbenificiaryname+"</span><br>";
+
+                if (letterofcredit.exportersbank != oldletterofcredit.exportersbank)
+                    updates = updates + "\nExporters Bank is Changed : <span style='color: #ffc107'>"+oldletterofcredit.exportersbank +" <i class=\"fas fa-arrow-right\"></i> "+letterofcredit.exportersbank+"</span><br>";
+
+                if (letterofcredit.amount != oldletterofcredit.amount)
+                    updates = updates + "\nLC Amount Changed : <span style='color: #ffc107'>"+oldletterofcredit.amount+" <i class=\"fas fa-arrow-right\"></i> "+letterofcredit.amount+"</span><br>";
+
+                if (letterofcredit.currencyId.name != oldletterofcredit.currencyId.name)
+                    updates = updates + "\nCurrency is Changed : <span style='color: #ffc107'>"+oldletterofcredit.currencyId.name+" <i class=\"fas fa-arrow-right\"></i> "+letterofcredit.currencyId.name+"</span><br>";
+
+                if (letterofcredit.termsofpaymentId.description != oldletterofcredit.termsofpaymentId.description)
+                    updates = updates + "\nTerms of Payment Changed : <span style='color: #ffc107'>"+oldletterofcredit.termsofpaymentId.description+" <i class=\"fas fa-arrow-right\"></i> "+letterofcredit.termsofpaymentId.description+"</span><br>";
+
+                if (letterofcredit.branchId.name != oldletterofcredit.branchId.name)
+                    updates = updates + "\nImporters Bank is Changed : <span style='color: #ffc107'>"+oldletterofcredit.branchId.bankId.name+" - "+oldletterofcredit.branchId.name+" <i class=\"fas fa-arrow-right\"></i> "+letterofcredit.branchId.bankId.name+"-"+letterofcredit.branchId.name+"</span><br>";
+*/
+                if (shipment.shippingcompanyId.name != oldshipment.shippingcompanyId.name)
+                    updates = updates + "\nShipping Company is Changed : <span style='color: #ffc107'>"+oldshipment.shippingcompanyId.name +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.shippingcompanyId.name+"</span><br>";
+
+                if (shipment.deliveryagentId.name != oldshipment.deliveryagentId.name)
+                    updates = updates + "\nDelivery Agent is Changed : <span style='color: #ffc107'>"+oldshipment.deliveryagentId.name +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.deliveryagentId.name+"</span><br>";
+
+                if (shipment.containertypeId.name != oldshipment.containertypeId.name)
+                    updates = updates + "\nContainer Type is Changed : <span style='color: #ffc107'>"+oldshipment.containertypeId.name +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.containertypeId.name+"</span><br>";
+
+                if (shipment.deliverytermsId.description != oldshipment.deliverytermsId.description)
+                    updates = updates + "\nDelivery Term is Changed : <span style='color: #ffc107'>"+oldshipment.deliverytermsId.description +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.deliverytermsId.description+"</span><br>";
+
+                if (shipment.placeofloading.name != oldshipment.placeofloading.name)
+                    updates = updates + "\nPlace of Loading is Changed : <span style='color: #ffc107'>"+oldshipment.placeofloading.name +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.placeofloading.name+"</span><br>";
+
+                if (shipment.placeofdischarge.name != oldshipment.placeofdischarge.name)
+                    updates = updates + "\nPlace of Discharge is Changed : <span style='color: #ffc107'>"+oldshipment.placeofdischarge.name +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.placeofdischarge.name+"</span><br>";
+
+                if (shipment.clearingclerk.callingname != oldshipment.clearingclerk.callingname)
+                    updates = updates + "\nClearing Clerk is Changed : <span style='color: #ffc107'>"+oldshipment.clearingclerk.callingname +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.clearingclerk.callingname+"</span><br>";
+
+                if (shipment.deliverymethodId.name != oldshipment.deliverymethodId.name)
+                    updates = updates + "\nDelivery Method is Changed : <span style='color: #ffc107'>"+oldshipment.deliverymethodId.name +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.deliverymethodId.name+"</span><br>";
+
+                if (shipment.deliverylocation != oldshipment.deliverylocation)
+                    updates = updates + "\nDelivery Method is Changed : <span style='color: #ffc107'>"+oldshipment.deliverylocation +" <i class=\"fas fa-arrow-right\"></i> "+ shipment.deliverylocation+"</span><br>";
+            }
+
+            return updates;
+        }
+
+        //show update confirmation
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            console.log(shipment);
+
+            if (errors == "") {
+                //console.log("hghugug")
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelForErrors').modal('show');
+            }
+
+            delete shipment.letterofcreditList;
+          //  console.log(shipment);
+            shipment.letterofcreditList = new Array();
+            shipment.letterofcreditList.push(letterofcredit);
+            //btnAddItemMC();
+            //console.log(shipment);
+        }
+
+        //save update to database
+        function btnUpdateMC() {
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/shipments", "PUT", shipment);
+            if (response == "0") {
+                $('#ModelUpdate').modal('hide');
+                //alertify.notify('Shipment Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Shipment Updated Successfully',6);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            } else window.alert("Failed to Update as \n\n" + response);
+        }
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnDeleteShipmentNo.innerHTML =  shipment.number;
+        }
+
+        //delete data
+        function btnDeleteMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/shipments", "DELETE", shipment);
+            if (response == "0") {
+                $('#ModelDelete').modal('hide');
+                //alertify.notify('Shipment Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Shipment Deleted Successfully',6);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            } else window.alert("Failed to Delete as \n\n" + response);
+
+        }
+
+        //clear form filed
+        function btnClearMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var clear;
+            if (oldshipment == null) {
+                clear = true;
+            } else {
+                if (getErrors() == '' && getUpdates() == '') {
+                    clear = true;
+                } else {
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if (clear) {
+                loadForm();
+                clearSelection(tblShipment);
+            }
+            //$(document).ready(function () { $('[data-toggle="tooltip"]').tooltip('hide') });
+        }
+
+        //search data from table
+        function loadSearchedTable() {
+
+            var number = txtSearchName.value;
+            var type = cmbSearchType.value;
+            var customer = cmbSearcClient.value;
+            var clearingclerk = cmbSearchClearingClerk.value;
+
+            var modsid="";
+            if(type!="Search by Shipment Type") {
+                modsid = JSON.parse(type).id;
+                cmbSearchType.style.borderColor = active;
+            }
+
+            var customerid="";
+            if(customer!="Search by Client") {
+                customerid = JSON.parse(customer).id;
+                cmbSearcClient.style.borderColor = active;
+            }
+
+            var clearingclerkid="";
+            if(clearingclerk!="Search By Clearing Clerk") {
+                clearingclerkid = JSON.parse(clearingclerk).id;
+                cmbSearchClearingClerk.style.borderColor = active;
+            }
+
+            if(number!=""){  txtSearchName.style.borderColor = active; }
+
+            var query = "&number=&modsid=&customerid=&clearingclerkid=";
+
+            if(number!="" || modsid!="" || customerid!="" || clearingclerkid!="" )
+                query = "&number=" + number + "&modsid=" + modsid + "&customerid=" + customerid + "&clearingclerkid=" + clearingclerkid;
+            //console.log(query);
+            loadTable(activepage, cmbPageSize.value, query);
+        }
+
+        function btnSearchMC(){
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+            loadView();
+        }
+
+        function prgressBar(width) {
+            var progressbar = document.getElementById("prgBarShipment");
+            progressbar.style.width = width+"%";
+        }
+
+
+    </script>
+
+
+</head>
+<body>
+
+<!-- Modal confirmation for Add Shipment Start------------------------------------------------------------------------------------------------------------------------------------------>
+<div class="modal fade" id="ModalConfirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabeladdcon">Add New Shipment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span onclick="prgressBar(90)" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 0px 0px 0px 0px">
+                <ul class="nav nav-tabs" id="myTabadd" role="tablist" style="margin-top: 0px;border-color: black;background-color: #f9f9f9;">
+                    <li class="nav-item" style="border-color: black;margin-left: 15px;margin-top: 15px">
+                        <a class="nav-link active" id="document-tab" data-toggle="tab" href="#document" role="tab" aria-controls="document" aria-selected="true">Document Detail</a>
+                    </li>
+                    <li class="nav-item" style="border-color: black;margin-top: 15px">
+                        <a class="nav-link" id="item-tab" data-toggle="tab" href="#item" role="tab" aria-controls="item" aria-selected="false">Item Detail</a>
+                    </li>
+                    <li class="nav-item" style="border-color: black;margin-top: 15px">
+                        <a class="nav-link" id="shipping-tab" data-toggle="tab" href="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Shipping Detail</a>
+                    </li>
+                   <!-- <li class="nav-item" style="border-color: black;margin-top: 15px">
+                        <a class="nav-link" id="financial-tab" data-toggle="tab" href="#financial" role="tab" aria-controls="financial" aria-selected="false">Financial Detail</a>
+                    </li>-->
+                    <li class="nav-item" style="border-color: black;margin-top: 15px">
+                        <a class="nav-link" id="employee-tab" data-toggle="tab" href="#employee" role="tab" aria-controls="employee" aria-selected="false">Employee Detail</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContentadd" style="padding: 15px 15px 15px 15px">
+                    <div class="tab-pane fade show active" id="document" role="tabpanel" aria-labelledby="document-tab">
+                        <h5>Document Detail</h5>
+                        <p class="content-model-text-title">Shipment Number : <span class="content-model-text-value" id="spnNumber"></span></p>
+                        <p class="content-model-text-title">Shipment Type   : <span class="content-model-text-value" id="spnType"></span></p>
+                        <p class="content-model-text-title">Customer Name   : <span class="content-model-text-value" id="spnCustomer"></span></p>
+                        <p class="content-model-text-title">Trade Agreement : <span class="content-model-text-value" id="spnTradeAgreement"></span></p>
+                        <p class="content-model-text-title">Certificate Of Origin Reference No : <span class="content-model-text-value" id="spnCOORefNo"></span></p>
+                        <p class="content-model-text-title">Commercial Invoice Number  : <span class="content-model-text-value" id="spnCInvoiceNo"></span></p>
+                        <p class="content-model-text-title" id="ptagTransportDoc"></p>
+                    </div>
+                    <div class="tab-pane fade" id="item" role="tabpanel" aria-labelledby="item-tab">
+                        <h5>Item Detail</h5>
+                        <div id="itmParent"></div>
+                    </div>
+                    <div class="tab-pane fade" id="shipping" role="tabpanel" aria-labelledby="shipping-tab" style="height: 288px;overflow-y: scroll">
+                        <h5>Shipping Detail</h5>
+                        <p class="content-model-text-title">Exporter's Name           : <span class="content-model-text-value" id="spnExporterName"></span></p>
+                        <p class="content-model-text-title">Exporter's Address        : <span class="content-model-text-value" id="spnExporterAddress"></span></p>
+                        <p class="content-model-text-title">Shipping Company Name     : <span class="content-model-text-value" id="spnShippingcompany"></span></p>
+                        <p class="content-model-text-title">Delivery Agent Name       : <span class="content-model-text-value" id="spnDeliveryAgent"></span></p>
+                        <p class="content-model-text-title">Place of Loading          : <span class="content-model-text-value" id="spnPlaceofLoading"></span></p>
+                        <p class="content-model-text-title">Place of Discharge        : <span class="content-model-text-value" id="spnPlaceofDischarge"></span></p>
+                        <p class="content-model-text-title">Container Type            : <span class="content-model-text-value" id="spnContType"></span></p>
+                        <p class="content-model-text-title">Delivery Term             : <span class="content-model-text-value" id="spnDeleTerm"></span></p>
+                    </div>
+               <!--     <div class="tab-pane fade" id="financial" role="tabpanel" aria-labelledby="financial-tab">
+                        <h5>Financial Detail</h5>
+                        <p class="content-model-text-title">LC Number              : <span class="content-model-text-value" id="spnLCNo"></span></p>
+                        <p class="content-model-text-title">Importers Bank         : <span class="content-model-text-value" id="spnImpBank"></span></p>
+                        <p class="content-model-text-title">Exporters Bank         : <span class="content-model-text-value" id="spnExpBank"></span></p>
+                        <p class="content-model-text-title">Date of LC Issued      : <span class="content-model-text-value" id="spnDteLCIssued"></span></p>
+                        <p class="content-model-text-title">Terms of Payment       : <span class="content-model-text-value" id="spnTermOfPay"></span></p>
+                        <p class="content-model-text-title">LC Beneficiary Name    : <span class="content-model-text-value" id="spnBeneficiaryName"></span></p>
+                        <p class="content-model-text-title">Amount                 : <span class="content-model-text-value" id="spnAmount"></span></p>
+                    </div>-->
+                    <div class="tab-pane fade" id="employee" role="tabpanel" aria-labelledby="employee-tab">
+                        <h5>Employee Detail</h5>
+                        <p class="content-model-text-title">Clearing Clerk  : <span class="content-model-text-value" id="spnClearingClerk"></span></p>
+                        <p class="content-model-text-title">Add Employee    : <span class="content-model-text-value" id="spnAddEmp"></span></p>
+                        <p class="content-model-text-title">Registered Date : <span class="content-model-text-value" id="spnDteRegistered"></span></p>
+                        <p class="content-model-text-title">Delivery Method : <span class="content-model-text-value" id="spnDeliveryMethod"></span></p>
+                        <p class="content-model-text-title">Delivery Location : <span class="content-model-text-value" id="snpDeliveryLocation"></span></p>
+                </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="prgressBar(90)" type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal confirmation for Add Shipment End------------------------------------------------------------------------------------------------------------------------------------------>
+
+<!-- Model For Errors Start--------------------------------------------------------------------------------------------------->
+<div class="modal fade" id="ModelForErrors" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabelErrors">You have following Errors</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="height: 288px;overflow-y: scroll">
+                <p id="spnErrors" style="color: #dc3545"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Model For Errors End----------------------------------------------------------------------------------------------------->
+
+<!--Model Delete Start------------------------------------------------------------------------------------------------------->
+<div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabeldelete">Delete Shipment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 30px">Are you sure you want to delete Shipment <span id="spnDeleteShipmentNo"></span> </p>
+                <button style="margin-left: 30%" data-dismiss="modal" type="button" class="btn btn-secondary" >Cancel <i class="fal fa-times"></i></button>
+                <button type="button" class="btn btn-primary-action"  id="btnDelete">Delete <i class="fal fa-trash-alt"></i></button>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+<!--Model Delete End------------------------------------------------------------------------------------------------------->
+
+<!--Model Update Start-------------------------------------------->
+<div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabelupdete">Shipment Management</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5>Are your sure to update followings</h5>
+                <p id="spnUpdate"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Model Update End---------------------------------------------->
+
+<!------------------------------------------------------------------------------------------------------------------------>
+<ul class="nav nav-tabs" id="myTab" role="tablist" style="margin-top: 5px ;border-color: black;background-color: #f9f9f9;">
+    <li class="nav-item" style="border-color: black;margin-left: 15px">
+        <a  class="nav-link active" id="Form-tab" data-toggle="tab" href="#Form" role="tab" aria-controls="Form" aria-selected="true">Add New Shipment</a>
+    </li>
+    <li class="nav-item" style="border-color: black">
+        <a class="nav-link" id="Table-tab" data-toggle="tab" href="#Table" role="tab" aria-controls="Table" aria-selected="false">View All Shipments</a>
+    </li>
+</ul>
+<!--Form content start-->
+<div class="tab-content" id="myTabContent" >
+    <!--Shipment Form-->
+    <div class="tab-pane fade show active" id="Form" role="tabpanel" aria-labelledby="Form-tab" >
+        <div class="container-fluid" id="shipmentForm"  >
+            <div class="row">
+                <div class="col-md-12">
+
+                    <!--Progress Bar-->
+                    <div class="row" style="margin-top: 0px">
+                        <div class="col-md-12">
+                            <div class="progress" style="border: 1px solid transparent;border-radius: 5px;height: 5px;margin-top: 5px;margin-bottom: 5px;">
+                                <div id="prgBarShipment" class="progress-bar" role="progressbar" style="width: 0%;background-color: tomato;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="card" style="border: 1px solid #282c2f;">
+                        <div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">-->
+                            <div class="accordion" id="addNewShipment">
+
+                                <form id="addNewShipmentForm" onsubmit="return false" style="height: 460px;overflow-y: scroll">
+                                    <!--document form start-->
+                                    <div class="card" style="border: 1px solid #282c2f;border-radius: 5px 5px 0px 0px">
+                                        <div class="card-header" id="headingOne" style="background-color: #282c2f;padding-top: 0px;padding-bottom: 0px;padding-left: 0px ">
+                                            <h3 style="margin-top: 0px;margin-bottom: 0px">
+                                                <button onclick="prgressBar(0)" class="btn btn-link btn-form-type" type="button" data-toggle="collapse" data-target="#documentDetail" aria-expanded="true" aria-controls="documentDetail" >
+                                                    Document Detail
+                                                </button>
+                                            </h3>
+                                        </div>
+                                        <div id="documentDetail" class="collapse show" aria-labelledby="headingOne" data-parent="#addNewShipment">
+                                            <!--Document content start-->
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div id="numbercol" class="col-md-3"></div>
+                                                    <div id="modcol" class="col-md-3"></div>
+                                                    <div id="customercol" class="col-md-6"></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div id="col1r1" class="col-md-4"></div>
+                                                    <div id="col2r1" class="col-md-4"></div>
+                                                    <div id="col3r1" class="col-md-4"></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div id="TransportDoc" class="col-md-4"></div>
+                                                    <div id="col1r2" class="col-md-4"></div>
+                                                    <div id="col2r2" class="col-md-4"></div>
+                                                </div>
+                                                <div class="row" id="Licensecol"></div>
+
+                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <button onclick="prgressBar(25)" class="btn btn-model" type="button" data-toggle="collapse" data-target="#itemDetail" aria-expanded="true" aria-controls="itemDetail" style="margin-left: 94.5%">Next <i class="fas fa-chevron-right"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Document content end-->
+                                        </div>
+                                    </div>
+                                    <!--document form end-->
+
+                                    <!--item form start-->
+                                    <div class="card" style="border: 1px solid #282c2f;border-radius: 0px 0px 0px 0px">
+                                        <div class="card-header" id="headingTwo" style="background-color: #282c2f;padding-top: 0px;padding-bottom: 0px;padding-left: 0px;border-radius: 0px ">
+                                            <h3 class="mb-0" style="margin-top: 0px;margin-bottom: 0px">
+                                                <button onclick="prgressBar(25)" class="btn btn-link collapsed btn-form-type" type="button" data-toggle="collapse" data-target="#itemDetail" aria-expanded="true" aria-controls="itemDetail" >
+                                                    Item Detail
+                                                </button>
+                                            </h3>
+                                        </div>
+                                        <div id="itemDetail" class="collapse" aria-labelledby="headingTwo" data-parent="#addNewShipment">
+                                            <!--item content start-->
+                                            <div class="card-body">
+                                                <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+                                                <!--Item Inner Form-->
+                                                <div class="row">
+                                                    <div id="itemr1c1" class="col-md-2"></div>
+                                                    <div id="itemr1c2" class="col-md-2"></div>
+                                                    <div id="itemr1c3" class="col-md-4"></div>
+                                                    <div id="itemr1c4" class="col-md-4"></div>
+                                                </div>
+
+                                                <div id="innerFormForLicence" style="border: 1px solid #ced4da;border-radius: 5px;background-color: rgba(243,249,255,0.48)">
+                                                    <div class="row">
+                                                        <div class="col-md-5" id="innerFormLicence" style="padding: 5px 15px 5px 45px;border-right: 1px solid #ced4da">
+                                                            <script>
+                                                                cmbBox('innerFormLicence','cmbLicence','Licence','','','');
+                                                                txtField('innerFormLicence','txtLicenceNo','Licence Number','Enter Number Here','',"",'','','')
+                                                            </script>
+                                                            <div class="text-right" style="margin-bottom: 10px">
+                                                                <button data-toggle="tooltip" data-placement="top" title="Add Licence to Item" class="btn btn-secondary btn-sm" type="button" id="btnAddLicence"  style="">Add <i class="fal fa-plus-circle"></i></button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-7 table-responsive" id="innerFormTableLicence" style="padding-top: 10px">
+                                                            <script>
+                                                                var metadatainnertablelicence = [
+                                                                    {name:'Licence Name',search:false,datatype:'text',property:'licenceId.name'},
+                                                                    {name:'Licence Number',search:false,datatype:'text',property:'licenceno'}
+                                                                ];
+                                                                tableForInnerForm("innerFormTableLicence","tblLicence",metadatainnertablelicence,true);
+                                                            </script>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="row">
+                                                        <div id="itemr2c1" class="col-md-2"></div>
+                                                        <div id="itemr2c2" class="col-md-2"></div>
+                                                        <div id="itemr2c3" class="col-md-2"></div>
+                                                        <div id="itemr2c4" class="col-md-2"></div>
+                                                        <div id="itemr2c5" class="col-md-2"></div>
+                                                        <div id="itemr2c6" class="col-md-2"></div>
+                                                    </div>
+                                                    <!--<div id="itemr2c1" class="col-md-3"></div>
+                                                    <div class="col-md-9">
+                                                        <div class="row">
+                                                            <div class="col-md-5">
+                                                                <div class="row">
+                                                                    <div id="itemr2c2" class="col-md-6"></div>
+                                                                    <div id="itemr2c3" class="col-md-6"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div id="itemr2c4" class="col-md-4"></div>
+                                                            <div id="itemr2c5" class="col-md-3"></div>
+                                                        </div>
+                                                    </div>-->
+                                                </div>
+
+                                                <script>
+                                                    /***Item Inner Form ********************************************/
+                                                    cmbBoxWithAdd('itemr1c1','cmbCountryOfOrigin','Country of Orign','','','',true,'btnModelCOO','Add New Country','#ModelCOO');
+                                                    cmbBoxWithAdd('itemr1c2','cmbTradingCountry','Trading Country','','','',true,'btnModelTC','Add New Country','#ModelTC');
+                                                    txtArea('itemr1c3','txtManfactureName','Manufacturer Name','Enter Manufacturer Name Here','',"",'','','',true);
+                                                    txtArea('itemr1c4','txtDescription','Item Description','Enter Item Description Here','',"",'','','',true);
+
+                                                    cmbBoxWithAdd('itemr2c1','cmbPackageType','Package Type','','','',true,'btnPackage','Add New Package type','#ModelPackageType');
+                                                    cmbBoxWithAdd('itemr2c2','cmbCurrency','Currency','','','',true,'btnModelCurrency','Add New Currency','#ModelCurrency');
+                                                    txtField('itemr2c3','txtRatePerUnit','Rate Per Unit','Enter Rate Per unit','',"",'','','',true);
+                                                    txtField('itemr2c4','txtQuantity','Quantity','Enter Quantity','',"",'','','',true);
+                                                    txtField('itemr2c5','txtItemTotalAmount','Total Amount',"Total Amount","","","","","");
+                                                    txtField('itemr2c6','txtHSCode','Harmonized Code','Enter Code','',"",'','','',true);
+                                                </script>
+
+
+                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                                <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+                                                <!--Item Inner Table-->
+
+                                                <div class="text-right" style="margin-bottom: 10px">
+                                                    <button data-toggle="tooltip" data-placement="top" title="Add Item to Shipment" class="btn btn-secondary btn-sm" type="button" id="btnAddShipmentItem" value="Add Item" style="">Add Item <i class="fal fa-plus-circle"></i></button>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12"  style="border: 1px solid #ced4da;border-radius: 5px;padding-top: 10px;background-color: rgba(243,249,255,0.48)">
+                                                        <div class="table-responsive " id="tableShipmentItemInnerParent">
+                                                            <script>
+                                                                var metadatainnertableitem = [
+                                                                    {name:'Item',search:false,datatype:'text',property:'description'},
+                                                                    {name:'HS Code',search:false,datatype:'text',property:'hscode'},
+                                                                    {name:'Quantity',search:false,datatype:'text',property:'qty'},
+                                                                    {name:'Package Type',search:false,datatype:'text',property:'packagetypeId.name'},
+                                                                   // {name:'Line Total',search:false,datatype:'text',property:'linetotal'}
+                                                                ];
+                                                                tableForInnerForm("tableShipmentItemInnerParent","tblShipmentitem",metadatainnertableitem,true);
+                                                            </script>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-2" id="shpTotalValue"></div>
+                                                    <div class="col-md-10"></div>
+                                                </div>
+
+
+
+                                                <div class="row" style="margin-top: 15px">
+                                                    <div class="col-md-6">
+                                                        <button onclick="prgressBar(0)" class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#documentDetail" aria-expanded="true" aria-controls="documentDetail" ><i class="fas fa-chevron-left"></i> Back</button>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <button onclick="prgressBar(50)" class="btn btn-model" type="button" data-toggle="collapse" data-target="#shippingDetail" aria-expanded="true" aria-controls="shippingDetail" style="margin-left: 89%">Next <i class="fas fa-chevron-right"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--item content end-->
+                                        </div>
+                                    </div>
+                                    <!--item form end-->
+
+                                    <!--shipping detail form start-->
+                                    <div class="card" style="border: 1px solid #282c2f;border-radius: 0px 0px 0px 0px">
+                                        <div class="card-header" id="headingThree" style="background-color: #282c2f;padding-top: 0px;padding-bottom: 0px;padding-left: 0px;border-radius: 0px ">
+                                            <h3 class="mb-0" style="margin-top: 0px;margin-bottom: 0px">
+                                                <button onclick="prgressBar(50)" class="btn btn-link collapsed btn-form-type" type="button" data-toggle="collapse" data-target="#shippingDetail" aria-expanded="false" aria-controls="shippingDetail" >
+                                                    Shipping Detail
+                                                </button>
+                                            </h3>
+                                        </div>
+                                        <div id="shippingDetail"  class="collapse" aria-labelledby="headingThree" data-parent="#addNewShipment">
+                                            <!--shipping content start-->
+                                            <div class="card-body">
+
+                                                <div class="row">
+                                                    <div class="col-md-4" id="shippingr1c1"></div>
+                                                    <div class="col-md-4" id="shippingr1c2"></div>
+                                                    <div class="col-md-4" id="shippingr1c3"></div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-4" style="padding: 10px 10px 10px 10px">
+                                                        <label class="txtinput-label">Select Place Of Loading <i class="fas fa-asterisk" style="color: #ff6666;font-size: 10px"></i></label>
+                                                        <div id="shippingr2c1" style="border: 1px solid #d1d1d1;padding: 0px 10px 0px 10px"></div>
+                                                    </div>
+                                                    <div class="col-md-4" style="padding: 10px 10px 10px 10px">
+                                                        <label class="txtinput-label">Select Place Of Discharge <i class="fas fa-asterisk" style="color: #ff6666;font-size: 10px"></i></label>
+                                                        <div id="shippingr2c2" style="border: 1px solid #d1d1d1;padding: 0px 10px 0px 10px"></div>
+                                                    </div>
+                                                    <div class="col-md-4" id="shippingr2c3"></div>
+                                                </div>
+
+
+                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <button onclick="prgressBar(25)" class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#itemDetail" aria-expanded="true" aria-controls="itemDetail" ><i class="fas fa-chevron-left"></i> Back</button>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <button onclick="prgressBar(90)" class="btn btn-model" type="button" data-toggle="collapse" data-target="#assignEmployee" aria-expanded="true" aria-controls="assignEmployee" style="margin-left: 89%">Next <i class="fas fa-chevron-right"></i></button>                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <!--shipping content end-->
+
+                                        </div>
+                                    </div>
+                                    <!--shipping detail form end-->
+
+                                    <!--Financial Detail form start-->
+                                    <!--<div class="card" style="border: 1px solid #282c2f;border-radius: 0px 0px 0px 0px">
+                                        <div class="card-header" id="headingFour" style="background-color: #282c2f;padding-top: 0px;padding-bottom: 0px;padding-left: 0px;border-radius: 0px ">
+                                            <h3 class="mb-0" style="margin-top: 0px;margin-bottom: 0px">
+                                                <button onclick="prgressBar(75)" class="btn btn-link collapsed btn-form-type" type="button" data-toggle="collapse" data-target="#financialDetail" aria-expanded="false" aria-controls="financialDetail" >
+                                                    Financial Detail
+                                                </button>
+                                            </h3>
+                                        </div>
+                                        <div id="financialDetail"  class="collapse" aria-labelledby="headingFour" data-parent="#addNewShipment">
+                                            &lt;!&ndash;financial detail start&ndash;&gt;
+                                            <div class="card-body">
+
+                                                <div class="row">
+                                                    <div class="col-md-4" id="financer2c1"></div>
+                                                    <div class="col-md-4" id="financer2c2"></div>
+                                                    <div class="col-md-4" id="financer2c3"></div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-4" style="padding: 10px 10px 10px 10px">
+                                                        <label class="txtinput-label">Select Importers Bank <i class="fas fa-asterisk" style="color: #ff6666;font-size: 10px"></i></label>
+                                                        <div id="financer1c1" style="border: 1px solid #d1d1d1;padding: 0px 0px 0px 30px"></div>
+                                                    </div>
+                                                    <div class="col-md-4" id="financer1c2"></div>
+                                                    <div class="col-md-4" id="financer1c3"></div>
+                                                </div>
+
+
+                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <button onclick="prgressBar(50)" class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#shippingDetail" aria-expanded="true" aria-controls="shippingDetail" ><i class="fas fa-chevron-left"></i> Back</button>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <button onclick="prgressBar(90)" class="btn btn-model" type="button" data-toggle="collapse" data-target="#assignEmployee" aria-expanded="true" aria-controls="assignEmployee" style="margin-left: 89%">Next <i class="fas fa-chevron-right"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            &lt;!&ndash;financial detail end&ndash;&gt;
+                                        </div>
+                                    </div>-->
+                                    <!--Financial Detail form end-->
+
+                                    <!--Assign employee form start-->
+                                    <div class="card" style="border: 1px solid #282c2f;border-radius: 0px 0px 5px 5px">
+                                        <div class="card-header" id="headingFive" style="background-color: #282c2f;padding-top: 0px;padding-bottom: 0px;padding-left: 0px;border-top-right-radius: 0px;border-top-left-radius:0px  ">
+                                            <h3 class="mb-0" style="margin-top: 0px;margin-bottom: 0px">
+                                                <button onclick="prgressBar(90)" class="btn btn-link collapsed btn-form-type" type="button" data-toggle="collapse" data-target="#assignEmployee" aria-expanded="false" aria-controls="assignEmployee" >
+                                                    Assign Clearing Clerk and Delivery Method
+                                                </button>
+                                            </h3>
+                                        </div>
+                                        <div id="assignEmployee"  class="collapse" aria-labelledby="headingFive" data-parent="#addNewShipment">
+                                            <!--financial detail start-->
+                                            <div class="card-body">
+
+                                                <div class="row">
+                                                    <div class="col-md-4" id="empcol1"></div>
+                                                    <div class="col-md-4" id="empcol2"></div>
+                                                    <div class="col-md-4" id="empcol3"></div>
+                                                </div>
+
+                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <button onclick="prgressBar(80)" class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#shippingDetail" aria-expanded="true" aria-controls="shippingDetail" ><i class="fas fa-chevron-left"></i> Back</button>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <!--Form-Button [ADD,UPDATE,DELETE,CLEAR] Start-->
+                                                        <div class="row">
+                                                            <div class="col-md-3"></div>
+                                                            <div class="col-md-9">
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <div style="margin-left: 1px" class="col-md-5"><button data-toggle="tooltip" data-placement="top"  title="Delete Shipment" type="button" class="btn btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button></div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div style="margin-right: 1px" class="col-md-5"><button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button></div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <button data-toggle="tooltip" data-placement="top" title="Update Selected Shipment" type="button" class="btn btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <button  data-toggle="tooltip" data-placement="top" title="Add New Shipment" type="button" class="btn btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <!--Form button End-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--financial detail end-->
+                                        </div>
+                                    </div>
+                                    <!--Assign employee form end-->
+                                </form>
+
+                                <script>
+                                    txtField('numbercol', 'txtnumber', 'Shipment Number', 'Shipment Number', '', "", 'shipment', 'number', 'oldshipment');
+                                    txtField('shpTotalValue', 'txtShipmentTotalValue', 'Shipment Total Value', 'Shipment Total Value', '', "", 'shipment', 'shipmenttotalvalue', 'oldshipment');
+                                    cmbBox('modcol', 'cmbMod', 'Select Mode', 'shipment', 'modsId', 'oldshipment',true);
+                                    cmbBox('customercol', 'cmbCustomer', 'Customer', 'shipment', 'companyId', 'oldshipment', true);
+                                    txtField('col1r1','txtCOORef','Certificate Of Origin Reference No','Enter Reference no here','',"",'shipment','coorefno','oldshipment',false,"Valid CO Reference Number","CO Reference Number Invalid","CO Reference Number Updated");
+                                    txtField('col2r1', 'txtinvoiceno', 'Commercial Invoice Number', 'Enter commercial invoice no here', '', "", 'shipment', 'cminvoiceno', 'oldshipment', true,"Valid Commercial Invoice Number is","Commercial Invoice Number is Invalid","Commercial Invoice Number is Updated")
+                                    cmbBox('col3r1','cmbTradAgreements','Trade Agreement','shipment','tradeagreementId','oldshipment');
+                                    txtField('shippingr1c1','txtExporterName','Exporter Name','Enter Exporter Name Here','',"",'shipment','exportername','oldshipment',true,"Valid Exporter's Name is","Exporter's Name is Invalid","Exporter's Name is Updated");
+                                    txtArea('shippingr1c1','txtExporterAddress','Exporter Address','Enter Exporter Address Here','',"",'shipment','exporteraddress','oldshipment',false,"Valid Address","Address is invalid","Exporter's Address is updated");
+                                    cmbBoxWithAdd('shippingr1c2','cmbShippingCompany','Shipping Company','shipment','shippingcompanyId','oldshipment',true,'btnModelShippingCo','Add New Shipping Company','#ModelShippingCo');
+                                    cmbBoxWithAdd('shippingr1c2','cmbDeliveryAgent','Deliver Agent','shipment','deliveryagentId','oldshipment',true,'btnModelDeliveryAgent','Add New Delivery Agent','#ModelDeliveryAgent');
+                                    cmbBox('shippingr1c3','cmbContainerType','Select Container Type','shipment','containertypeId','oldshipment',true);
+                                    cmbBox('shippingr1c3','cmbDeliveryTerm','Delivery Term','shipment','deliverytermsId','oldshipment',true);
+                                    cmbBoxWithAdd('shippingr2c1','cmbCountryofLoading',false,'shipment','CountryOfLoading','oldshipment',true,'btnCountryOfLoading','Add New Country','#ModelCountryOfLoading');
+                                    cmbBoxWithAdd('shippingr2c1','cmbPlaceOfLoading',false,'shipment','placeofloading','oldshipment',true,'btnPlaceofLoading','Add New place of loading','#ModelPlaceOfLoading');
+                                    cmbBoxWithAdd('shippingr2c2','cmbCountryofDischarge',false,'','','',true,'btnCountryOfDischarge','Add New Country','#ModelCountryOfDischarge');
+                                    cmbBoxWithAdd('shippingr2c2','cmbPlaceOfDischarge',false,'shipment','placeofdischarge','oldshipment',true,'btnplaceOfDischarge','Add New Place of Discharge','#ModelPlaceOfDischarge');
+                                    /***************************************************************************************************************************************************************************************/
+                                   /* cmbBoxWithAdd('financer1c1','cmbImportersBank',false,'','','',true,'btnModelBank',"Add New Bank","#ModelBank");
+                                    cmbBoxWithAdd('financer1c1','cmbImportersBankBranch',false,'letterofcredit','branchId','oldletterofcredit',true, 'btnModelBankBranch',"Add New Bank Branch","#ModelBankBranch");
+                                    txtArea('financer1c2','txtExportersBank','Exporters Bank','Enter Exporters Bank Here','',"",'letterofcredit','exportersbank','oldletterofcredit');
+                                    txtField('financer2c1', 'txtLCno', 'Letter Of Credit Number', 'Enter Letter of credit no here', '', "", 'letterofcredit', 'lcnumber', 'oldletterofcredit', true)
+                                    dteField('financer2c1','dteLCIssuedDate','LC Issued Date','',"",'letterofcredit','lcissueddate','oldletterofcredit',true);
+                                    cmbBox('financer1c3','cmbTermsOfPayment','Terms of Payment','letterofcredit','termsofpaymentId','oldletterofcredit',true);
+                                    txtArea('financer2c2','txtLCApplicantName','LC Applicant Name','Enter LC Applicant Name','',"",'letterofcredit','lcapplicantname','oldletterofcredit',true);
+                                    txtArea('financer2c3','txtLCBeneficiaryName','LC Beneficiary Name','Enter LC Beneficiary Name','',"",'letterofcredit','lcbenificiaryname','oldletterofcredit',true);
+                                    cmbBox('financer1c2','cmbLCCurrency','Currency','letterofcredit','currencyId','oldletterofcredit',true);
+                                    txtField('financer1c3','txtLCAmount','Amount','Enter Amount of LC','',"",'letterofcredit','amount','oldletterofcredit',true);*/
+                                    /***************************************************************************************************************************************************************************************/
+                                    cmbBox('empcol1','cmbAddEmployee','Add Employee','shipment','addemployee','oldshipment',true);
+                                    dteField('empcol2','dteAddDate','Registered Date','',"",'shipment','dateofregisterd','oldshipment',true);
+                                    cmbBox('empcol1','cmbClearingClerk','Clearing Clerk','shipment','clearingclerk','oldshipment',true);
+                                    cmbBox('empcol2','cmbDeliveryMethod','Delivery Method','shipment','deliverymethodId','oldshipment',true);
+                                    txtArea('empcol3','txtDeliveryLocation','Delivery Location','Delivery Location of the shipment','',"",'shipment','deliverylocation','oldshipment');
+
+                                </script>
+
+                                <!--Model Country of Origin start---------------------------------------------------------------------------------------------------------------------------------------------------->
+                                <script>
+                                    function loadCountryForm() {
+
+                                        country = new Object();
+                                        oldcountry = null;
+
+                                        txtCountryName.value = "";
+                                        txtCountryName.style.borderColor = initial;
+                                        txtNumericCode.value = "";
+                                        txtNumericCode.style.borderColor = initial;
+                                        txtTwoDigitCode.value = "";
+                                        txtTwoDigitCode.style.borderColor = initial;
+                                        responsetextcountry.innerHTML = "";
+                                    }
+
+                                    function btnAddCountryCOO() {
+                                        if (country.name != null && country.numericcode != null && country.twodigitcode != null) {
+                                            var def = txtCountryName.value;
+                                            var response = httpRequest("/countries", "POST", country);
+                                            if (response == "0") {
+                                                responsetextcountry.style.color = '#009933';
+                                                responsetextcountry.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                responsetextcountry.style.marginRight = '180px';
+                                                countrys = httpRequest("../country/list", "GET");
+                                                fillCombo(cmbCountryOfOrigin, "Select Country", countrys, "name", def);
+                                                fillCombo(cmbTradingCountry, "Select Country", countrys, "name","");
+                                                fillCombo(cmbCountryofLoading, "Select Country", countrys, "name", "");
+
+                                            } else {
+                                                responsetextcountry.style.color = '#ff4000';
+                                                responsetextcountry.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                responsetextcountry.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            responsetextcountry.style.color = '#ff4000';
+                                            responsetextcountry.innerHTML = "Invalid Country <i class=\"fal fa-exclamation-circle\"></i>";
+                                            responsetextcountry.style.marginRight = '215px';
+                                        }
+                                    }
+                                </script>
+
+                                <div class="modal fade" id="ModelCOO" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Add New Country</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="CountryOOForm">
+                                                    <script>
+                                                        txtField('CountryOOForm','txtCountryName','Country Name','Enter Country Name Here','',"",'country','name','oldcountry',true);
+                                                        txtField('CountryOOForm','txtNumericCode','Numeric Code','Enter Numeric Code Here','',"",'country','numericcode','oldcountry',true);
+                                                        txtField('CountryOOForm','txtTwoDigitCode','Two Digit Code','Enter Two Digit Code Here','',"",'country','twodigitcode','oldcountry',true);
+                                                    </script>
+                                                    <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="responsetextcountry" style="margin-right: 180px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddCountryCOO()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Model Country of Origin end------------------------------------------------------------------------------------------------------------------------------------------------------>
+
+                                <!--Model Trading Country Start------------------------------------------------------------------------------------------------------------------------------------------------------>
+                                <script>
+                                    function loadCountryFormTC() {
+
+                                        country = new Object();
+                                        oldcountry = null;
+
+                                        txtCountryNameTC.value = "";
+                                        txtCountryNameTC.style.borderColor = initial;
+                                        txtNumericCodeTC.value = "";
+                                        txtNumericCodeTC.style.borderColor = initial;
+                                        txtTwoDigitCodeTC.value = "";
+                                        txtTwoDigitCodeTC.style.borderColor = initial;
+                                        responsetextcountrytc.innerHTML = "";
+                                        //console.log("TC")
+                                    }
+                                    function btnAddCountryTC() {
+                                        if (country.name != null && country.numericcode != null && country.twodigitcode != null) {
+                                            var def = txtCountryNameTC.value;
+                                            var response = httpRequest("/countries", "POST", country);
+                                            if (response == "0") {
+                                                responsetextcountrytc.style.color = '#009933';
+                                                responsetextcountrytc.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                responsetextcountrytc.style.marginRight = '180px';
+                                                countrys = httpRequest("../country/list", "GET");
+                                                fillCombo(cmbCountryOfOrigin, "Select Country", countrys, "name", "");
+                                                fillCombo(cmbCountryofLoading, "Select Country", countrys, "name", "");
+                                                fillCombo(cmbTradingCountry, "Select Country", countrys, "name",def);
+                                            } else {
+                                                responsetextcountrytc.style.color = '#ff4000';
+                                                responsetextcountrytc.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                responsetextcountrytc.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            responsetextcountrytc.style.color = '#ff4000';
+                                            responsetextcountrytc.innerHTML = "Invalid Country <i class=\"fal fa-exclamation-circle\"></i>";
+                                            responsetextcountrytc.style.marginRight = '215px';
+                                        }
+                                    }
+                                </script>
+                                <div class="modal fade" id="ModelTC" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel1">Add New Country</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="CountryTCForm">
+                                                    <script>
+                                                        txtField('CountryTCForm','txtCountryNameTC','Country Name','Enter Country Name Here','',"",'country','name','oldcountry',true);
+                                                        txtField('CountryTCForm','txtNumericCodeTC','Numeric Code','Enter Numeric Code Here','',"",'country','numericcode','oldcountry',true);
+                                                        txtField('CountryTCForm','txtTwoDigitCodeTC','Two Digit Code','Enter Two Digit Code Here','',"",'country','twodigitcode','oldcountry',true);
+                                                    </script>
+                                                    <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="responsetextcountrytc" style="margin-right: 180px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddCountryTC()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Model Trading Country End-------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+
+                                <!--Model Place Of Loading Country Model Start---------------------------------------------------------------------------------------->
+
+                                <script>
+                                    function loadCountryFormPL() {
+
+                                        country = new Object();
+                                        oldcountry = null;
+
+                                        txtCountryNamePL.value = "";
+                                        txtCountryNamePL.style.borderColor = initial;
+                                        txtNumericCodePL.value = "";
+                                        txtNumericCodePL.style.borderColor = initial;
+                                        txtTwoDigitCodePL.value = "";
+                                        txtTwoDigitCodePL.style.borderColor = initial;
+                                        responsetextcountrypl.innerHTML = "";
+                                    }
+                                    function btnAddCountryPL() {
+                                        if (country.name != null && country.numericcode != null && country.twodigitcode != null) {
+                                            var def = txtCountryNamePL.value;
+                                            var response = httpRequest("/countries", "POST", country);
+                                            if (response == "0") {
+                                                responsetextcountrypl.style.color = '#009933';
+                                                responsetextcountrypl.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                responsetextcountrypl.style.marginRight = '180px';
+                                                countrys = httpRequest("../country/list", "GET");
+                                                fillCombo(cmbCountryofLoading, "Select Country", countrys, "name", def);
+                                                cmbCountryofLoadingCH()
+                                                //fillCombo(cmbTradingCountry, "Select Country", countrys, "name",def);
+                                            } else {
+                                                responsetextcountrypl.style.color = '#ff4000';
+                                                responsetextcountrypl.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                responsetextcountrypl.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            responsetextcountrypl.style.color = '#ff4000';
+                                            responsetextcountrypl.innerHTML = "Invalid Country <i class=\"fal fa-exclamation-circle\"></i>";
+                                            responsetextcountrypl.style.marginRight = '205px';
+                                        }
+                                    }
+                                </script>
+
+                                <div class="modal fade" id="ModelCountryOfLoading" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabelpol">Add New Country</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="CountryPLForm">
+                                                    <script>
+                                                        txtField('CountryPLForm','txtCountryNamePL','Country Name','Enter Country Name Here','',"",'country','name','oldcountry',true);
+                                                        txtField('CountryPLForm','txtNumericCodePL','Numeric Code','Enter Numeric Code Here','',"",'country','numericcode','oldcountry',true);
+                                                        txtField('CountryPLForm','txtTwoDigitCodePL','Two Digit Code','Enter Two Digit Code Here','',"",'country','twodigitcode','oldcountry',true);
+                                                    </script>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="responsetextcountrypl" style="margin-right: 170px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddCountryPL()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Model Place Of Loading Country Model End------------------------------------------------------------------------------------------>
+
+                                <!--Model place Of Loading start----------------------------------------------------------------------------------------------------->
+                                <script>
+
+                                    function PlaceOfLoadingForm() {
+                                        //cmbModforPL.value = ;
+
+                                        placeofloadingordischarge = new Object();
+                                        oldplaceofloadingordischarge = null;
+
+                                        fillCombo(cmbModforPL,"Select Mod",mods,"name",JSON.parse(cmbMod.value).name);
+                                        cmbModforPL.style.borderColor = valid;
+                                        cmbModforPL.disabled = "disabled";
+
+                                        fillCombo(cmbCountryofLoadingforPL,'Select Country',countrys,'name',JSON.parse(cmbCountryofLoading.value).name);
+                                        cmbCountryofLoadingforPL.style.borderColor = valid;
+                                        cmbCountryofLoadingforPL.disabled = "disabled";
+
+                                        txtPlaceOfLoading.value = "";
+                                        txtPlaceOfLoading.style.borderColor = initial;
+                                        responsetextplaceofloading.innerHTML = "";
+                                    }
+
+                                    function btnAddPlaceOfLoading() {
+                                        if (placeofloadingordischarge.name != null) {
+
+                                            placeofloadingordischarge.modsId = JSON.parse(cmbModforPL.value);
+                                            placeofloadingordischarge.countryId = JSON.parse(cmbCountryofLoadingforPL.value);
+
+                                            var def = txtPlaceOfLoading.value;
+                                            var response = httpRequest("/placeofloadingordischarge", "POST", placeofloadingordischarge);
+                                            if (response == "0") {
+                                                responsetextplaceofloading.style.color = '#009933';
+                                                responsetextplaceofloading.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                responsetextplaceofloading.style.marginRight = '180px';
+                                                placeofloading = httpRequest("../placeofloading/listbymodnadcountry?modsId="+JSON.parse(cmbMod.value).id+"&countryId="+JSON.parse(cmbCountryofLoading.value).id,"GET");
+                                                fillCombo(cmbPlaceOfLoading,'Select Place of Loading',placeofloading,'name',def);
+
+                                            } else {
+                                                responsetextplaceofloading.style.color = '#ff4000';
+                                                responsetextplaceofloading.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                responsetextplaceofloading.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            responsetextplaceofloading.style.color = '#ff4000';
+                                            responsetextplaceofloading.innerHTML = "Invalid Place <i class=\"fal fa-exclamation-circle\"></i>";
+                                            responsetextplaceofloading.style.marginRight = '220px';
+                                        }
+                                    }
+                                </script>
+
+                                <div class="modal fade" id="ModelPlaceOfLoading" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabelpl">Add New Place of Loading</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="PlaceOfLoading">
+                                                    <script>
+                                                        cmbBox('PlaceOfLoading','cmbModforPL','Mod','placeofloadingordischarge','modsId','oldplaceofloadingordischarge',true);
+                                                        cmbBox('PlaceOfLoading','cmbCountryofLoadingforPL','Country','placeofloadingordischarge','countryId','oldplaceofloadingordischarge',true);
+                                                        txtField('PlaceOfLoading','txtPlaceOfLoading','Name','Enter Place of the Loading Here','',"",'placeofloadingordischarge','name','oldplaceofloadingordischarge',true);
+                                                    </script>
+                                                    <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="responsetextplaceofloading" style="margin-right: 180px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddPlaceOfLoading()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Model place Of Loading end------------------------------------------------------------------------------------------------------->
+
+                                <!--Model Place of Discharge Start--------------------------------------------------------------------------------------------------->
+                                <script>
+                                    function PlaceOfDischargeForm() {
+                                        //cmbModforPL.value = ;
+
+                                        placeofloadingordischarge = new Object();
+                                        oldplaceofloadingordischarge = null;
+
+                                        fillCombo(cmbModforPD,"Select Mod",mods,"name",JSON.parse(cmbMod.value).name);
+                                        cmbModforPD.style.borderColor = valid;
+                                        cmbModforPD.disabled = "disabled";
+
+                                        fillCombo(cmbCountryofDischargePD,'Select Country',countrys,'name',JSON.parse(cmbCountryofDischarge.value).name);
+                                        cmbCountryofDischargePD.style.borderColor = valid;
+                                        cmbCountryofDischargePD.disabled = "disabled";
+
+                                        txtPlaceOfDischarge.value = "";
+                                        txtPlaceOfDischarge.style.borderColor = initial;
+                                        responsetextplaceofdischarge.innerHTML = "";
+                                    }
+
+                                    function btnAddPlaceOfDischarge() {
+                                        if (placeofloadingordischarge.name != null) {
+
+                                            placeofloadingordischarge.modsId = JSON.parse(cmbModforPD.value);
+                                            placeofloadingordischarge.countryId = JSON.parse(cmbCountryofDischargePD.value);
+
+                                            var def = txtPlaceOfDischarge.value;
+                                            var response = httpRequest("/placeofloadingordischarge", "POST", placeofloadingordischarge);
+                                            if (response == "0") {
+                                                responsetextplaceofdischarge.style.color = '#009933';
+                                                responsetextplaceofdischarge.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                responsetextplaceofdischarge.style.marginRight = '180px';
+                                                placeofdischarge = httpRequest("../placeofloading/listbymodnadcountry?modsId="+JSON.parse(cmbMod.value).id+"&countryId=1","GET");
+                                                fillCombo(cmbPlaceOfDischarge,"Select Place of Discharge",placeofdischarge,'name',def);
+                                            } else {
+                                                responsetextplaceofdischarge.style.color = '#ff4000';
+                                                responsetextplaceofdischarge.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                responsetextplaceofdischarge.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            responsetextplaceofdischarge.style.color = '#ff4000';
+                                            responsetextplaceofdischarge.innerHTML = "Invalid Place <i class=\"fal fa-exclamation-circle\"></i>";
+                                            responsetextplaceofdischarge.style.marginRight = '220px';
+                                        }
+                                    }
+                                </script>
+
+                                <div class="modal fade" id="ModelPlaceOfDischarge" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabelpd">Add New Place of Discharge</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="PlaceOfDischarge">
+                                                    <script>
+                                                        cmbBox('PlaceOfDischarge','cmbModforPD','Mod','placeofloadingordischarge','modsId','oldplaceofloadingordischarge',true);
+                                                        cmbBox('PlaceOfDischarge','cmbCountryofDischargePD','Country','placeofloadingordischarge','countryId','oldplaceofloadingordischarge',true);
+                                                        txtField('PlaceOfDischarge','txtPlaceOfDischarge','Name','Enter Place of the Discharge Here','',"",'placeofloadingordischarge','name','oldplaceofloadingordischarge',true);
+                                                    </script>
+                                                    <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="responsetextplaceofdischarge" style="margin-right: 180px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddPlaceOfDischarge()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Model Place of Discharge End----------------------------------------------------------------------------------------------------->
+
+                                <!--Model Currency Start------------------------------------------------------------------------------------------------------------->
+                                <script>
+                                    function loadCurrencyForm() {
+
+                                        currency = new Object();
+                                        oldcurrency = null;
+
+                                        txtCurrencyName.value = "";
+                                        txtCurrencyName.style.borderColor = initial;
+                                        txtCurrencyCode.value = "";
+                                        txtCurrencyCode.style.borderColor = initial;
+                                        txtCurrencyNumber.value = "";
+                                        txtCurrencyNumber.style.borderColor = initial;
+                                        currencyrespondtext.innerHTML = "";
+                                    }
+                                    function btnAddCurrency() {
+                                        if (currency.name != null && currency.code != null && currency.number != null) {
+                                            var def = txtCurrencyName.value;
+                                            var response = httpRequest("/currency", "POST", currency);
+                                            if (response == "0") {
+                                                currencyrespondtext.style.color = '#009933';
+                                                currencyrespondtext.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                currencyrespondtext.style.marginRight = '180px';
+                                                currency = httpRequest("../currency/list","GET");
+                                                fillCombo(cmbCurrency,'Select Currency Unit',currency,'name',def);
+                                            } else {
+                                                currencyrespondtext.style.color = '#ff4000';
+                                                currencyrespondtext.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                currencyrespondtext.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            currencyrespondtext.style.color = '#ff4000';
+                                            currencyrespondtext.innerHTML = "Invalid Currency <i class=\"fal fa-exclamation-circle\"></i>";
+                                            currencyrespondtext.style.marginRight = '195x';
+                                        }
+                                    }
+                                </script>
+
+                                <div class="modal fade" id="ModelCurrency" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabelcur">Add New Currency</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="Currency">
+                                                    <script>
+                                                        txtField('Currency','txtCurrencyName','Name','Enter Currency Name Here','',"",'currency','name','oldcurrency',true);
+                                                        txtField('Currency','txtCurrencyCode','Code','Enter Currency Code Here','',"",'currency','code','oldcurrency',true);
+                                                        txtField('Currency','txtCurrencyNumber','Number','Enter Currency Number Here','',"",'currency','number','oldcurrency',true);
+                                                    </script>
+                                                    <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="currencyrespondtext" style="margin-right: 180px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddCurrency()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Model Currency End--------------------------------------------------------------------------------------------------------------->
+
+                                <!--Model Add Bank Start------------------------------------------------------------------------------------------------------------->
+
+                                <script>
+                                    function loadBankForm() {
+
+                                        bank = new Object();
+                                        oldbank = null;
+
+                                        txtBankName.value = "";
+                                        txtBankName.style.borderColor = initial;
+                                        txtBankCode.value = "";
+                                        txtBankCode.style.borderColor = initial;
+                                        bankaddrespondtext.innerHTML = "";
+                                    }
+                                    function btnAddBank() {
+                                        if (bank.name != null && bank.code != null) {
+                                            var def = txtBankName.value;
+                                            var response = httpRequest("/bank", "POST", bank);
+                                            if (response == "0") {
+                                                bankaddrespondtext.style.color = '#009933';
+                                                bankaddrespondtext.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                bankaddrespondtext.style.marginRight = '180px';
+                                                banks = httpRequest("../banks/list","GET");
+                                                fillCombo(cmbImportersBank,'Select Importers Bank',banks,'name',def);
+                                                //console.log(cmbImportersBank.value);
+                                                cmbBankCH();
+                                            } else {
+                                                bankaddrespondtext.style.color = '#ff4000';
+                                                bankaddrespondtext.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                bankaddrespondtext.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            bankaddrespondtext.style.color = '#ff4000';
+                                            bankaddrespondtext.innerHTML = "Invalid Bank <i class=\"fal fa-exclamation-circle\"></i>";
+                                            bankaddrespondtext.style.marginRight = '340x';
+                                        }
+                                    }
+                                </script>
+
+                                <div class="modal fade" id="ModelBank" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabelbnk">Add New Bank</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="BankForm">
+                                                    <script>
+                                                        txtField('BankForm','txtBankName','Bank Name','Enter Bank Name Here','',"",'bank','name','oldbank',true);
+                                                        txtField('BankForm','txtBankCode','Bank Code','Enter Bank Code Here','',"",'bank','code','oldbank',true);
+                                                    </script>
+                                                    <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="bankaddrespondtext" style="margin-right: 180px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddBank()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Model Add Bank End--------------------------------------------------------------------------------------------------------------->
+
+                                <!--Model Add New Bank Branch Start-------------------------------------------------------------------------------------------------->
+
+                                <script>
+                                    function loadBranchForm() {
+                                        //cmbModforPL.value = ;
+
+                                        branch = new Object();
+                                        oldbranch = null;
+
+                                        fillCombo(cmbBankforBranch,"Select Bank",banks,"name",JSON.parse(cmbImportersBank.value).name);
+                                        cmbBankforBranch.style.borderColor = valid;
+                                        cmbBankforBranch.disabled = "disabled";
+
+                                        txtBranchName.value = "";
+                                        txtBranchName.style.borderColor = initial;
+                                        txtBranchCode.value = "";
+                                        txtBranchCode.style.borderColor = initial;
+                                        bankbranchrespondtext.innerHTML = "";
+                                    }
+
+                                    function btnAddBranch() {
+                                        if (branch.name != null && branch.code != null) {
+
+                                            branch.bankId = JSON.parse(cmbBankforBranch.value);
+
+                                            var def = txtBranchName.value;
+                                            var response = httpRequest("/branch", "POST", branch);
+                                            if (response == "0") {
+                                                bankbranchrespondtext.style.color = '#009933';
+                                                bankbranchrespondtext.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                bankbranchrespondtext.style.marginRight = '180px';
+                                                branches = httpRequest("../branch/listbybank?bankId="+JSON.parse(cmbImportersBank.value).id,"GET");
+                                                fillCombo(cmbImportersBankBranch,'Select Branch',branches,'name',def);
+                                            } else {
+                                                bankbranchrespondtext.style.color = '#ff4000';
+                                                bankbranchrespondtext.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                bankbranchrespondtext.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            bankbranchrespondtext.style.color = '#ff4000';
+                                            bankbranchrespondtext.innerHTML = "Invalid Branch <i class=\"fal fa-exclamation-circle\"></i>";
+                                            bankbranchrespondtext.style.marginRight = '220px';
+                                        }
+                                    }
+                                </script>
+
+                                <div class="modal fade" id="ModelBankBranch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabelbnkbrnch">Add New Bank Branch</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="BankBranchForm">
+                                                    <script>
+                                                        cmbBox('BankBranchForm','cmbBankforBranch','Bank','branch','bankId','oldbranch',true);
+                                                        txtField('BankBranchForm','txtBranchName','Branch Name','Enter Branch Name Here','',"",'branch','name','oldbranch',true);
+                                                        txtField('BankBranchForm','txtBranchCode','Branch Code','Enter Branch Code Here','',"",'branch','code','oldbranch',true);
+                                                    </script>
+                                                    <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="bankbranchrespondtext" style="margin-right: 180px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddBranch()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Model Add New Bank Branch End---------------------------------------------------------------------------------------------------->
+
+                                <!--Model Add New Shipping Comapny Start--------------------------------------------------------------------------------------------->
+                                <script>
+                                    function loadShippingCompanyForm() {
+
+                                        shippingcompany = new Object();
+                                        oldshippingcompany = null;
+
+                                        txtNameShpCom.value = "";
+                                        txtNameShpCom.style.borderColor = initial;
+                                        txtAddressShpCom.value = "";
+                                        txtAddressShpCom.style.borderColor = initial;
+                                        txtContactNoShpCom.value = "";
+                                        txtContactNoShpCom.style.borderColor = initial;
+                                        txtEmailShpCom.value = "";
+                                        txtEmailShpCom.style.borderColor = initial;
+                                        shippingcompanyreponsetext.innerHTML = "";
+                                    }
+                                    function btnAddShippingCompany() {
+                                        if (shippingcompany.name != null && shippingcompany.address != null && shippingcompany.contactno != null && shippingcompany.email != null) {
+                                            var def = txtNameShpCom.value;
+                                            var response = httpRequest("/shippingcompany", "POST", shippingcompany);
+                                            if (response == "0") {
+                                                shippingcompanyreponsetext.style.color = '#009933';
+                                                shippingcompanyreponsetext.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                shippingcompanyreponsetext.style.marginRight = '180px';
+                                                shippingcompany = httpRequest("../shippingcompany/list","GET");
+                                                fillCombo(cmbShippingCompany,'Select Shipping Company',shippingcompany,'name',def);
+                                                //console.log(cmbImportersBank.value);
+                                            } else {
+                                                shippingcompanyreponsetext.style.color = '#ff4000';
+                                                shippingcompanyreponsetext.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                shippingcompanyreponsetext.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            shippingcompanyreponsetext.style.color = '#ff4000';
+                                            shippingcompanyreponsetext.innerHTML = "Invalid Shipping Company <i class=\"fal fa-exclamation-circle\"></i>";
+                                            shippingcompanyreponsetext.style.marginRight = '0x';
+                                        }
+                                    }
+                                </script>
+
+                                <div class="modal fade" id="ModelShippingCo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabelshipcom">Add New Shipping Company</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="shippingcompanyform">
+                                                    <script>
+                                                        txtField('shippingcompanyform', 'txtNameShpCom', 'Name', 'Enter Name Here', '', "", 'shippingcompany', 'name', 'oldshippingcompany', true);
+                                                        txtArea('shippingcompanyform', 'txtAddressShpCom', 'Address', 'Enter Address Number', '', "", 'shippingcompany', 'address', 'oldshippingcompany', true);
+                                                        txtField('shippingcompanyform', 'txtContactNoShpCom', 'Contact No', 'Enter CotactNo Number', '', "", 'shippingcompany', 'contactno', 'oldshippingcompany', true);
+                                                        txtField('shippingcompanyform', 'txtEmailShpCom', 'Email', 'Enter Email Number', '', "", 'shippingcompany', 'email', 'oldshippingcompany', true);
+                                                    </script>
+                                                    <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="shippingcompanyreponsetext" style="margin-right: 120px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddShippingCompany()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Model Add New Shipping Comapny End----------------------------------------------------------------------------------------------->
+
+                                <!--Model Add New Delivery Agent Start----------------------------------------------------------------------------------------------->
+                                <script>
+
+                                    function loadDeliveryAgentForm() {
+
+                                        deliveryagent = new Object();
+                                        olddeliveryagent = null;
+
+                                        txtNameDelAge.value = "";
+                                        txtNameDelAge.style.borderColor = initial;
+                                        txtAddressDelAge.value = "";
+                                        txtAddressDelAge.style.borderColor = initial;
+                                        txtContactNoDelAge.value = "";
+                                        txtContactNoDelAge.style.borderColor = initial;
+                                        txtEmailDelAge.value = "";
+                                        txtEmailDelAge.style.borderColor = initial;
+                                        txtFaxDelAge.value = "";
+                                        txtFaxDelAge.style.borderColor = initial;
+                                        deliveryagentresponsetext.innerHTML = "";
+                                    }
+                                    function btnAddDeliveryAgent() {
+                                        if (deliveryagent.name != null && deliveryagent.address != null && deliveryagent.contactno != null && deliveryagent.email != null && deliveryagent.fax != null) {
+                                            var def = txtNameDelAge.value;
+                                            var response = httpRequest("/deliveryagent","POST",deliveryagent);
+                                            if (response == "0") {
+                                                deliveryagentresponsetext.style.color = '#009933';
+                                                deliveryagentresponsetext.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                deliveryagentresponsetext.style.marginRight = '180px';
+                                                deliveryagent =httpRequest("../deliveryagents/list","GET");
+                                                fillCombo(cmbDeliveryAgent,'Select Delivery Agent',deliveryagent,'name',def);
+                                                //console.log(cmbImportersBank.value);
+                                            } else {
+                                                deliveryagentresponsetext.style.color = '#ff4000';
+                                                deliveryagentresponsetext.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                deliveryagentresponsetext.style.marginRight = '210px';
+                                                window.alert(response);
+                                            }
+                                        } else {
+                                            deliveryagentresponsetext.style.color = '#ff4000';
+                                            deliveryagentresponsetext.innerHTML = "Invalid Delivery Agent <i class=\"fal fa-exclamation-circle\"></i>";
+                                            deliveryagentresponsetext.style.marginRight = '0x';
+                                        }
+                                    }
+
+                                </script>
+
+                                <div class="modal fade" id="ModelDeliveryAgent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabeldeliage">Add New Delivery Agent</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form onsubmit="return false">
+                                                <div class="modal-body" id="deliveryagentform">
+                                                    <script>
+                                                        txtField('deliveryagentform','txtNameDelAge','Company Name','Enter Company Name Here','',"",'deliveryagent','name','olddeliveryagent',true);
+                                                        txtArea('deliveryagentform','txtAddressDelAge','Company Address','Enter Address Here','',"",'deliveryagent','address','olddeliveryagent',true);
+                                                        txtField('deliveryagentform','txtContactNoDelAge','Contact Number','Enter Contact Number Here','',"",'deliveryagent','contactno','olddeliveryagent',true);
+                                                        txtField('deliveryagentform','txtEmailDelAge','E-Mail Address','Enter E-Mail Here','',"",'deliveryagent','email','olddeliveryagent',true);
+                                                        txtField('deliveryagentform','txtFaxDelAge','Fax Number','Enter Fax Number Here','',"",'deliveryagent','fax','olddeliveryagent');
+                                                    </script>
+                                                    <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <p id="deliveryagentresponsetext" style="margin-right: 120px"></p>
+                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                    <button onclick="btnAddDeliveryAgent()" type="submit" class="btn btn-model">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--Model Add New Delivery Agent End------------------------------------------------------------------------------------------------->
+
+
+                            </div>
+                        <!--</div>-->
+                   <!-- </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Shipment Table-->
+    <div class="tab-pane fade" id="Table" role="tabpanel" aria-labelledby="Table-tab">
+
+        <!--<h4 style="margin-top: 15px;margin-left: 15px">View All Shipments</h4>-->
+
+        <div class="card" style=";border: 1px solid #282c2f;border-radius: 5px;margin-left: 15px;margin-right: 15px;margin-top: 15px">
+            <!--<div class="card" style="border: 1px solid #a6a6a6;border-radius: 1px;margin-top: 15px">-->
+            <div class="card-header" style="height: 60px">
+                <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <input placeholder="Search By Number" class="form-control form-control-sm txtinput" type="text" id="txtSearchName"/>
+                    </div>
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <select class="form-control form-control-sm txtinput" id="cmbSearchType"></select>
+                    </div>
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <select class="form-control form-control-sm txtinput" id="cmbSearcClient"></select>
+                    </div>
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <select class="form-control form-control-sm txtinput" id="cmbSearchClearingClerk"></select>
+                    </div>
+                    <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                    <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="card-body table-box-overflow"  id="shipmentview">
+                <div class="table-responsive" id="tableParent" >
+
+                    <script>
+
+                        function getNameColumn(ob) { return ob.clearingclerk.callingname+"("+ob.clearingclerk.number+")"; }
+                        function getCustomerColumn(ob) { return ob.companyId.name+" ("+ob.companyId.number+")"; }
+                        function getItemColumn(ob) {
+                            var itemList="";
+                            for(x in ob.itemList)
+                                itemList = itemList + (itemList==""?"":"")+ob.itemList[x].description+"<br>";
+                            return itemList;
+                        }
+
+                        var metadata = [
+                            {name:'Number',search:false,datatype:'text',property:'number'},
+                            /*{name:'Item',search:false,datatype:'text',property:getItemColumn},*/
+                            {name:'Customer',search:false,datatype:'text',property:getCustomerColumn},
+                            {name:'Type',search:false,datatype:'text',property:'modsId.name'},
+                            {name:'Clearing Clerk',search:false,datatype:'text',property:getNameColumn},
+                            {name:'Registered Date',search:false,datatype:'text',property:'dateofregisterd'}
+                        ];
+                        table("tableParent","tblShipment",metadata,[6,15,20,30,500,1000],btnSearchMC,true);
+
+                    </script>
+                </div>
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Form content end-->
+
+</body>
+</html>

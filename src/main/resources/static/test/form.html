@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title>Add New Shipment</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <link rel="stylesheet" href="../style/shipment-form.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+
+</head>
+<body>
+
+
+<form id="form">
+    <script>
+        Test = new Object();
+        fileChooser('form','fleTest','File',3,['.pdf'],5,true,'Test','File','oldFile');
+
+        function test() {
+            //console.log(Test.File);
+            //pdf();
+            openPDF(Test.File, "test.pdf")
+          //  $http.post('/postUrlHere',{myParams}, {responseType:'arraybuffer'})
+
+        }
+
+        function pdf() {
+
+            var file = new Blob([atob(Test.File)],{type: 'application/pdf'});
+            var fileURL = window.URL.createObjectURL(file);
+            console.log(fileURL);
+            window.open(fileURL,"test.pdf");
+
+            //for Download pdf
+           /* var link = document.createElement('a');
+            link.href = fileURL;
+            link.download="file.pdf";
+            link.click();
+            var ele = document.getElementById('testdiv')
+            ele.appendChild(link);
+            setTimeout(function(){
+                // For Firefox it is necessary to delay revoking the ObjectURL
+                window.URL.revokeObjectURL(fileURL);
+            }, 100);*/
+
+
+
+        }
+
+
+        function openPDF(resData, fileName) {
+            var ieEDGE = navigator.userAgent.match(/Edge/g);
+            var ie = navigator.userAgent.match(/.NET/g); // IE 11+
+            var oldIE = navigator.userAgent.match(/MSIE/g);
+            var bytes = new Uint8Array(resData); //use this if data is raw bytes else directly pass resData
+            var blob = new window.Blob([bytes], { type: 'application/pdf' });
+
+            if (ie || oldIE || ieEDGE) {
+                window.navigator.msSaveBlob(blob, fileName);
+            }
+            else {
+                var fileURL = URL.createObjectURL(blob);
+                var win = window.open();
+                win.document.write('<iframe src="' + fileURL + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>')
+
+            }
+        }
+
+
+
+
+
+
+
+    </script>
+</form>
+<div id="testdiv"></div>
+<!--<embed id ng-src="{{content}}" style="width:200px;height:200px;"></embed>-->
+
+<button onclick="test()">Test</button>
+
+</body>
+</html>

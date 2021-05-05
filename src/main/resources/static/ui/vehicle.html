@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vehicle Management</title>
+
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js" rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+    <script>
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click", btnClearMC);
+            btnUpdate.addEventListener("click", btnUpdateMC);
+            btnDelete.addEventListener("click", btnDeleteMC);
+
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+
+            //dteDOBirth.onchange = dteDOBirthCH;
+            btnSearch.addEventListener("click", btnSearchMC);
+            btnSearchClear.addEventListener("click", btnSearchClearMC);
+            //btnAddModel.addEventListener("click",btnAddModelMC);
+            btnModelModel.addEventListener("click", loadModelForm);
+            //btnAddBrand.addEventListener("click",btnAddBrandMC);   ///
+            btnModelBrand.addEventListener("click", loadBrandForm);  ////
+            btnModelType.addEventListener("click", loadTypeForm);  ////
+            cmbBrand.addEventListener("change", cmbBrandCH);
+            cmbSearchBrand.addEventListener("change", cmbSearchBrandCH);
+
+            privilages = httpRequest("../privilages?module=VEHICLE","GET");
+            regexes = httpRequest("../regexes/vehicle", "GET");
+            // console.log(regexes);
+            txtRegno.setAttribute("data-pattern", regexes.rgno.regex);
+            txtEngno.setAttribute("data-pattern", regexes.engno.regex);
+            txtChaseno.setAttribute("data-pattern", regexes.chaseno.regex);
+
+            brands = httpRequest("../brands/list", "GET");
+            statuses = httpRequest("../vehiclestatus/list", "GET");
+            types = httpRequest("../vehicletype/list", "GET");
+            employes = httpRequest("../employees/list", "GET");
+
+            //alldrivers = httpRequest("../employees/alldrivers/list", "GET");
+           // alldriverassistents = httpRequest("../employees/alldriverassistant/list", "GET");
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+
+        }
+
+        function loadView() {
+
+            var models = "";
+
+            fillCombo(cmbSearchStatus, "Status", statuses, "name", "");
+            fillCombo(cmbSearchType, "Type", types, "name", "");
+            //fillCombo(cmbSearchDriver, "Driver", alldrivers, "callingname", "");
+            //fillCombo(cmbSearchAssitant, "Assitant", alldriverassistents, "callingname", "");
+            fillCombo(cmbSearchBrand, "Brand", brands, "name", "");
+            fillCombo(cmbSearchModel, "Model", models, "name", "");
+            cmbSearchModel.disabled = "disabled";
+
+            cmbSearchStatus.style.borderColor = "";
+            cmbSearchType.style.borderColor = "";
+            //cmbSearchDriver.style.borderColor = "";
+           // cmbSearchAssitant.style.borderColor = "";
+            cmbSearchBrand.style.borderColor = "";
+            cmbSearchModel.style.borderColor = "";
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+            var query = "&statusid=&typeid=&driverid=&assitantid=&brandid=&modelid=";
+            loadTable(1, cmbPageSize.value, query);
+        }
+
+
+        function cmbBrandCH() {
+            cmbBrand.style.borderColor = valid;
+            cmbModel.disabled = "";
+            btnModelModel.disabled = "";
+
+            var models = httpRequest("../models/listbybrand?brandId=" + JSON.parse(cmbBrand.value).id, "GET");
+            fillCombo(cmbModel, "Select Model", models, "name", "");
+        }
+
+        function cmbSearchBrandCH() {
+            cmbSearchBrand.style.borderColor = valid;
+            cmbSearchModel.disabled = "";
+            var models = httpRequest("../models/listbybrand?brandId=" + JSON.parse(cmbSearchBrand.value).id, "GET")
+            fillCombo(cmbSearchModel, "Model", models, "name", "");
+
+        }
+
+        function loadTable(page, size, query) {
+            page = page - 1;
+            vehicles = new Array();
+            var data = httpRequest("/vehicles?page=" + page + "&size=" + size + query, "GET");
+            //console.log(data);
+            if (data.content != undefined) vehicles = data.content;
+            createPagination('pagination', data.totalPages, data.number + 1, paginate);
+            fillTable('tblVehicle', vehicles, fillForm);
+            clearSelection(tblVehicle);
+            if (activerowno != "") selectRow(tblVehicle, activerowno, active);
+            window.location.href = "#ui";
+        }
+
+        function paginate(page) {
+            var paginate;
+            if (oldvehicle == null) {
+                paginate = true;
+            } else {
+                if (getErrors() == '' && getUpdates() == '') {
+                    paginate = true;
+                } else {
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if (paginate) {
+                activepage = page;
+                activerowno = ""
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+        function getYears() {
+
+            var end = new Date().getFullYear();
+            var start = end - 20;
+            var options = new Array();
+            for (var year = start; year <= end; year++) {
+                options.push(year);
+            }
+            return options;
+        }
+
+        function loadForm() {
+
+            //drivers = httpRequest("../employees/drivers/list", "GET");
+            //driverassistents = httpRequest("../employees/driverassistant/list", "GET");
+            nextnumber = httpRequestwithoutlist("../vehicle/nextnumber", "GET");
+
+            vehicle = new Object();
+            oldvehicle = null;
+
+            //For The Add New Brand [Model-Brand]
+            brandadd = new Object();
+            oldbrand = null;
+
+            //Foe The Add New Model [Model-Model]
+            modeladd = new Object();
+            oldmodel = null;
+
+            //For The Add New Type [Model-Type]
+            typeadd = new Object();
+            oldtype = null;
+
+            years = getYears();
+
+            txtRegno.disabled = "";
+            txtEngno.disabled = "";
+            txtChaseno.disabled = "";
+            cmbVehicletype.disabled = "";
+            cmbBrand.disabled = "";
+            cmbYear.disabled = "";
+
+            cmbModel.disabled = "disabled";
+            cmbModel.innerHTML = "";
+            btnModelModel.disabled = "disabled";
+            fillCombo(cmbVehicletype, "Select Type", types, "name", "");
+            //fillCombo(cmbDriver, "Select Driver", drivers, "callingname", "");
+            //fillCombo(cmbDriverAssistent, "Select Driver Assistant", driverassistents, "callingname", "");
+            fillCombo(cmbBrand, "Select Brand", brands, "name", "");
+            fillCmb(cmbYear, "Select Year", years, "");
+
+            fillCombo(cmbAddEmployee, "Select Employee", employes, "callingname", session.getObject("user").employeeId.callingname);
+            vehicle.addemployee = JSON.parse(cmbAddEmployee.value);
+            cmbAddEmployee.disabled = "disabled";
+
+            fillCombo(cmbStatus, "", statuses, "name", "Available");
+            vehicle.statusId = JSON.parse(cmbStatus.value);
+
+            var today = new Date();
+            var month = today.getMonth() + 1;
+            if (month < 10) month = "0" + month;
+            var date = today.getDate();
+            if (date < 10) date = "0" + date;
+
+            dteAdd.value = today.getFullYear() + "-" + month + "-" + date;
+            vehicle.adddate = dteAdd.value;
+            dteAdd.disabled = "disabled";
+
+            txtNumber.value = nextnumber;
+            vehicle.number = txtNumber.value;
+            txtNumber.disabled = "disabled";
+
+
+            txtRegno.value = "";
+            txtEngno.value = "";
+            txtChaseno.value = "";
+
+            setStyle(initial);
+            txtNumber.style.borderColor = valid;
+            cmbStatus.style.borderColor = valid;
+            dteAdd.style.borderColor = valid;
+            cmbAddEmployee.style.borderColor = valid;
+
+            disableButtons(false, true, true);
+        }
+
+        function setStyle(style) {
+
+            txtNumber.style.borderColor = style;
+            cmbVehicletype.style.borderColor = style;
+            cmbBrand.style.borderColor = style;
+            cmbModel.style.borderColor = style;
+            txtRegno.style.borderColor = style;
+            txtEngno.style.borderColor = style;
+            txtChaseno.style.borderColor = style;
+            cmbYear.style.borderColor = style;
+            dteAdd.style.borderColor = style;
+           // dteAdd.style.borderWidth = "1px";
+            cmbAddEmployee.style.borderColor = style;
+           // cmbAddEmployee.style.borderWidth = "1px";
+           // cmbDriver.style.borderColor = style;
+          //  cmbDriver.style.borderWidth = "1px";
+           // cmbDriverAssistent.style.borderColor = style;
+         //   cmbDriverAssistent.style.borderWidth = "1px";
+            cmbStatus.style.borderColor = style;
+
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+
+        }
+
+
+        function getErrors() {
+
+            var errors = "";
+
+            if (vehicle.rgno == null)
+                errors = errors + "\n" + regexes.rgno.message+"<br>";
+
+            if (vehicle.engno == null)
+                errors = errors + "\n" + regexes.engno.message+"<br>";
+
+            if (vehicle.chaseno == null)
+                errors = errors + "\n" + regexes.chaseno.message+"<br>";
+
+            if (vehicle.vehicletypeId == null)
+                errors = errors + "\n" + "Vehicle Type Not Selected"+"<br>";
+
+            if (vehicle.modelId == null)
+                errors = errors + "\n" + "Model Not Selected"+"<br>";
+
+            if (vehicle.manfactureyear == null)
+                errors = errors + "\n" + "Manufacturer Year Date Invalid"+"<br>";
+
+            return errors;
+        }
+
+        function ModelAddContent() {
+            //console.log(vehicle)
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show');
+
+                spnNumber.innerHTML = vehicle.number;
+                spnBrandName.innerHTML = JSON.parse(cmbBrand.value).name;
+                spnModel.innerHTML = vehicle.modelId.name;
+                spnRegNo.innerHTML = vehicle.rgno;
+                spnEngNo.innerHTML = vehicle.engno;
+                spnChaseNo.innerHTML = vehicle.chaseno;
+                spnMnfYear.innerHTML = vehicle.manfactureyear;
+                spnAddDate.innerHTML = vehicle.adddate;
+                spnAddEmployee.innerHTML = vehicle.addemployee.callingname;
+                //spnDriver.innerHTML = vehicle.driveremployee.callingname;
+                //spnDriverAssistant.innerHTML = vehicle.drivingassistantemployee.callingname;
+                spnStatus.innerHTML = vehicle.statusId.name;
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnAddMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/vehicles", "POST", vehicle);
+            if (response == "0") {
+                $('#ModelAddContent').modal('hide');
+                //alertify.notify('Vehicle Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Vehicle Saved Successfully',6);
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            } else window.alert("Failed to Add as \n\n" + response);
+        }
+
+        function btnClearMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var clear;
+            if (oldvehicle == null) {
+                clear = true;
+            } else {
+                if (getErrors() == '' && getUpdates() == '') {
+                    clear = true;
+                } else {
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if (clear) {
+                loadForm();
+                clearSelection(tblVehicle);
+            }
+
+            $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+        }
+
+        function fillForm(veh, rowno) {
+            activerowno = rowno;
+            var filling;
+            if (oldvehicle == null) {
+                filling = true;
+            } else {
+
+                if (getErrors() == '' && getUpdates() == '') {
+                    filling = true;
+                } else {
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+
+            if (filling) {
+
+                clearSelection(tblVehicle);
+                selectRow(tblVehicle, activerowno, active);
+
+                vehicle = JSON.parse(JSON.stringify(veh));
+                oldvehicle = JSON.parse(JSON.stringify(veh));
+
+                txtNumber.value = vehicle.number;
+                txtRegno.value = vehicle.rgno;
+                txtEngno.value = vehicle.engno;
+                txtChaseno.value = vehicle.chaseno;
+                dteAdd.value = vehicle.adddate;
+                //fillCombo(cmbDriverAssistent, "Select Driver Assistant", driverassistents, "callingname", vehicle.drivingassistantemployee.callingname);
+                //fillCombo(cmbDriver, "Select Driver", drivers, "callingname", vehicle.driveremployee.callingname);
+                ///////
+
+              /*  if (vehicle.driveremployee == null) {
+                    fillCombo(cmbSearchDriver, "Driver", alldrivers, "callingname", "");
+                } else {
+
+                }
+
+                if (vehicle.drivingassistantemployee == null) {
+                    fillCombo(cmbSearchAssitant, "Assitant", alldriverassistents, "callingname", "");
+                } else {
+
+            }*/
+
+                //////
+
+                fillCombo(cmbVehicletype, "Select Type", types, "name", vehicle.vehicletypeId.name);
+
+                fillCombo(cmbBrand, "Select Brand", brands, "name", vehicle.modelId.brandId.name);
+
+                models = httpRequest("../models/listbybrand?brandId=" + JSON.parse(cmbBrand.value).id, "GET");
+                fillCombo(cmbModel, "Select SubCategory", models, "name", vehicle.modelId.name);
+                fillCombo(cmbAddEmployee, "Select Employee", employes, "callingname", vehicle.addemployee.callingname);
+                fillCmb(cmbYear, "Select Year", years, vehicle.manfactureyear);
+                fillCombo(cmbStatus, "Select Status", statuses, "name", vehicle.statusId.name);
+
+                txtNumber.disabled = "disabled";
+                txtRegno.disabled = "disabled";
+                txtEngno.disabled = "disabled";
+                txtChaseno.disabled = "disabled";
+                dteAdd.disabled = "disabled";
+                cmbVehicletype.disabled = "disabled";
+                cmbModel.disabled = "disabled";
+                cmbBrand.disabled = "disabled";
+                cmbYear.disabled = "disabled";
+                cmbAddEmployee.disabled = "disabled";
+                //cmbDriverAssistent.disabled="disabled";
+
+                disableButtons(true, false, false);
+                setStyle(valid);
+            }
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+
+            if (vehicle != null && oldvehicle != null) {
+
+               /* if (vehicle.driveremployee.callingname != oldvehicle.driveremployee.callingname)
+                    updates = updates + "\nDriver is Changed : <span style='color: #ffc107'>"+oldvehicle.driveremployee.callingname +" <i class=\"fas fa-arrow-right\"></i> "+ vehicle.driveremployee.callingname+"</span><br>";
+
+                if (vehicle.drivingassistantemployee.callingname != oldvehicle.drivingassistantemployee.callingname)
+                    updates = updates + "\nDriver Assistant Changed : <span style='color: #ffc107'>"+oldvehicle.drivingassistantemployee.callingname+" <i class=\"fas fa-arrow-right\"></i> "+vehicle.drivingassistantemployee.callingname+"</span><br>";
+*/
+                if (vehicle.statusId.name != oldvehicle.statusId.name)
+                    updates = updates + "\nVehicle Status is Changed : <span style='color: #ffc107'>"+oldvehicle.statusId.name+" <i class=\"fas fa-arrow-right\"></i> "+vehicle.statusId.name+"</span><br>";
+            }
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+        function btnUpdateMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/vehicles", "PUT", vehicle);
+            if (response == "0") {
+                $('#ModelUpdate').modal('hide');
+                //alertify.notify('Vehicle Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Vehicle Updated Successfully',6);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            } else window.alert("Failed to Update as \n\n" + response);
+        }
+
+
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnvehicleanme.innerHTML =  vehicle.modelId.brandId.name + " - " + vehicle.modelId.name +" ("+vehicle.number+") "+vehicle.rgno;
+        }
+
+        function btnDeleteMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/vehicles", "DELETE", vehicle);
+            if (response == "0") {
+                $('#ModelDelete').modal('hide');
+                //alertify.notify('Vehicle Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                showResult('success','Vehicle Deleted Successfully',6);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            } else window.alert("Failed to Delete as \n\n" + response);
+
+        }
+
+        //Search Functions
+
+        function loadSearchedTable() {
+
+            var status = cmbSearchStatus.value;
+            var type = cmbSearchType.value;
+           // var driver = cmbSearchDriver.value;
+            //var assitant = cmbSearchAssitant.value;
+            var brand = cmbSearchBrand.value;
+            var model = cmbSearchModel.value;
+
+            var statusid = "";
+            if (status != "Status") {
+                statusid = JSON.parse(status).id;
+                cmbSearchStatus.style.borderColor = active;
+            }
+
+            var typeid = "";
+            if (type != "Type") {
+                typeid = JSON.parse(type).id;
+                cmbSearchType.style.borderColor = active;
+            }
+
+        /*    var driverid = "";
+            if (driver != "Driver") {
+                driverid = JSON.parse(driver).id;
+                cmbSearchDriver.style.borderColor = active;
+            }
+*/
+       /*     var assitantid = "";
+            if (assitant != "Assitant") {
+                assitantid = JSON.parse(assitant).id;
+                cmbSearchAssitant.style.borderColor = active;
+            }*/
+
+            var brandid = "";
+            if (brand != "Brand") {
+                brandid = JSON.parse(brand).id;
+                cmbSearchStatus.style.borderColor = active;
+            }
+
+            var modelid = "";
+            if (model != "Model") {
+                modelid = JSON.parse(model).id;
+                cmbSearchModel.style.borderColor = active;
+            }
+
+            var query = "&statusid=&typeid=&brandid=&modelid=";
+
+            if (statusid != "" || typeid != "" || brandid != "" || modelid != "")
+                query = "&statusid=" + statusid + "&typeid=" + typeid + "&brandid=" + brandid + "&modelid=" + modelid;
+            //console.log(query);
+            loadTable(activepage, cmbPageSize.value, query);
+            //console.log("search");
+        }
+
+        function btnSearchMC() {
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC() {
+            loadView();
+        }
+    </script>
+
+</head>
+<body>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div class="container-fluid">
+    <div class="row" id="ui">
+        <div class="col-md-12">
+            <!--card-start-->
+            <h4 style="margin-top: 10px"><!--<i class="fal fa-building"></i>--> Vehicle Management</h4>
+
+            <!--<div class="card" style="border: 1px solid #282c2f;">-->
+                <!--card-header-->
+                <!--<div class="card-header" style="background-color: #282c2f;color: tomato;border-radius: 1px">
+                    <h3> Vehicle Management</h3>
+                </div>-->
+                <!--card-body-start-->
+                <!--<div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">-->
+                    <div class="row">
+                        <!--Form-Start-->
+                        <div class="col-md-4">
+                            <div class="card" style="border: 1px solid #161616;border-radius: 5px">
+                                <div class="card-body form-box-overflow" style="border: 1px solid transparent;border-radius: 5px"><!--height:480px;overflow-y:scroll;-->
+                                    <form class="form-horizontal" onsubmit="return false" id="vehicleform">
+                                        <script>
+
+                                            txtField('vehicleform', 'txtNumber', 'Number', 'Enter Number Here', '', "", 'vehicle', 'number', 'oldvehicle', true);
+                                            cmbBoxWithAdd('vehicleform', 'cmbVehicletype', 'Vehicle Type', 'vehicle', 'vehicletypeId', 'oldvehicle', true, 'btnModelType', 'Add New Vehicle Type', '#ModelType');
+                                            //cmbBox('vehicleform','cmbVehicletype','Vehicle Type','vehicle','vehicletypeId','oldvehicle');
+                                            cmbBoxWithAdd('vehicleform', 'cmbBrand', 'Brand', 'vehicle', 'brandId', 'oldvehicle', true, 'btnModelBrand', "Add New Brand", "#ModelBrand");
+                                            //cmbBox('vehicleform','cmbBrand','Brand','vehicle','brandId','oldvehicle',true);  ModelModel
+                                            cmbBoxWithAdd('vehicleform', 'cmbModel', 'Model', 'vehicle', 'modelId', 'oldvehicle', true, 'btnModelModel', "Add New Model", "#ModelModel");
+                                            //cmbBox('vehicleform','cmbModel','Model','vehicle','modelId','oldvehicle',true);
+                                            txtField('vehicleform', 'txtRegno', 'Vehicle Registration Number', 'Enter Registration Number', '', "", 'vehicle', 'rgno', 'oldvehicle', true);
+                                            txtField('vehicleform', 'txtEngno', 'Vehicle Engine Number', 'Enter Engine Number', '', "", 'vehicle', 'engno', 'oldvehicle', true);
+                                            txtField('vehicleform', 'txtChaseno', 'Vehicle Chase Number', 'Enter Chase Number', '', "", 'vehicle', 'chaseno', 'oldvehicle', true);
+                                            cmbBox('vehicleform', 'cmbYear', 'Manufacture Year ', 'vehicle', 'manfactureyear', 'oldvehicle');
+                                            dteField('vehicleform', 'dteAdd', 'Date', 'Select Date', "", 'vehicle', 'adddate', 'oldvehicle');
+                                            cmbBox('vehicleform', 'cmbAddEmployee', 'Employee', 'vehicle', 'addemployee', 'oldvehicle');
+                                           //cmbBox('vehicleform', 'cmbDriver', 'Driver', 'vehicle', 'driveremployee', 'oldvehicle', true);
+                                            //cmbBox('vehicleform', 'cmbDriverAssistent', 'Driver Assistant', 'vehicle', 'drivingassistantemployee', 'oldvehicle', true);
+                                            cmbBox('vehicleform', 'cmbStatus', 'Vehicle Status', 'vehicle', 'statusId', 'oldvehicle');
+                                        </script>
+                                        <!--Form-Button Start-->
+                                        <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                        <div class="row" >
+                                            <div class="col-md-3" style="margin-right: 5px;margin-left: -10px">
+                                                <button  data-toggle="tooltip" data-placement="top"  title="Delete Vehicle" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 0px; margin-left: 0px">
+                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                            </div>
+                                            <div class="col-md-3" style="margin-right: 10px;margin-left: -5px">
+                                                <button  data-toggle="tooltip" data-placement="top" title="Update Selected Vehicle" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button  data-toggle="tooltip" data-placement="top" title="Add New Vehicle" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                            </div>
+                                        </div>
+                                        <!--Form button End-->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Form-End-->
+
+                        <!--Model AddContent Start---------------------------------------------------------------------->
+                        <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeladd">Vehicle Management</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are you sure to add following Vehicle</h5>
+                                        <p class="content-model-text-title">Vehicle Number          : <span class="content-model-text-value" id="spnNumber"></span></p>
+                                        <p class="content-model-text-title">Vehicle Brand Name      : <span class="content-model-text-value" id="spnBrandName"></span></p>
+                                        <p class="content-model-text-title">Vehicle Model Code      : <span class="content-model-text-value" id="spnModel"></span></p>
+                                        <p class="content-model-text-title">Vehicle Registration No : <span class="content-model-text-value" id="spnRegNo"></span></p>
+                                        <p class="content-model-text-title">Vehicle Engine No       : <span class="content-model-text-value" id="spnEngNo"></span></p>
+                                        <p class="content-model-text-title">Vehicle Chase No        : <span class="content-model-text-value" id="spnChaseNo"></span></p>
+                                        <p class="content-model-text-title">Manufacturer Year       : <span class="content-model-text-value" id="spnMnfYear"></span></p>
+                                        <p class="content-model-text-title">Add Date                : <span class="content-model-text-value" id="spnAddDate"></span></p>
+                                        <p class="content-model-text-title">Add Employee            : <span class="content-model-text-value" id="spnAddEmployee"></span></p>
+                                        <!--<p class="content-model-text-title">Driver                  : <span class="content-model-text-value" id="spnDriver"></span></p>
+                                        <p class="content-model-text-title">Driver Assistant        : <span class="content-model-text-value" id="spnDriverAssistant"></span></p>-->
+                                        <p class="content-model-text-title">Status                  : <span class="content-model-text-value" id="spnStatus"></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model AddContent End------------------------------------------------------------------------>
+
+                        <!--Model Error Content Start------------------------------------->
+                        <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Vehicle Management</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>You Have Following Errors</h5>
+                                        <p id="spnErrors" style="color: #dc3545"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Error Content End--------------------------------------->
+
+                        <!--Model Delete Start-------------------------------------------->
+                        <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabeldelete">Vehicle Management</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to delete following </h5>
+                                        <p  id="spnvehicleanme"></p>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Delete End---------------------------------------------->
+
+                        <!--Model Update Start-------------------------------------------->
+                        <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabelupdete">Vehicle Management</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Are your sure to update followings</h5>
+                                        <p id="spnUpdate"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                        <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Model Update End---------------------------------------------->
+
+                        <!--table-start-->
+                        <div class="col-md-8">
+                            <div class="card form-box-overflow" style="border: 1px solid #161616;border-radius: 5px;">
+                                <div class="card-header" style="height: 60px">
+                                    <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+
+                                        <div class="form-group form-group-sm" style="margin-right: 2px">
+                                            <select class="form-control form-control-sm txtinput"
+                                                    id="cmbSearchStatus"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm" style="margin-right: 2px">
+                                            <select class="form-control form-control-sm txtinput"
+                                                    id="cmbSearchType"></select>
+                                        </div>
+                                    <!--    <div class="form-group form-group-sm" style="margin-right: 2px">
+                                            <select class="form-control form-control-sm txtinput"
+                                                    id="cmbSearchDriver"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm" style="margin-right: 2px">
+                                            <select class="form-control form-control-sm txtinput"
+                                                    id="cmbSearchAssitant"></select>
+                                        </div>-->
+                                        <div class="form-group form-group-sm" style="margin-right: 2px">
+                                            <select class="form-control form-control-sm txtinput"
+                                                    id="cmbSearchBrand"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm" style="margin-right: 2px">
+                                            <select class="form-control form-control-sm txtinput"
+                                                    id="cmbSearchModel"></select>
+                                        </div>
+                                        <button data-toggle="tooltip" data-placement="top" title="Clear Search"
+                                                style="margin-right: 5px" class="btn btn-sm btn-search-clear"
+                                                id="btnSearchClear"><i class="fas fa-times"></i></button>
+                                        <button data-toggle="tooltip" data-placement="top" title="Search"
+                                                class="btn btn-search btn-sm" id="btnSearch"><i
+                                                class="fas fa-search"></i></button>
+                                    </form>
+                                </div>
+                                <div class="card-body table-box-overflow" id="employeeview">
+
+                                    </hr>
+                                    <div class="table-responsive" id="tableParent">
+
+                                        <script>
+
+                                            function getNameColumn(ob) {
+                                                return ob.modelId.brandId.name + " - " + ob.modelId.name;
+                                            }
+
+                                            var metadata = [
+                                                {name: 'Number', search: true, datatype: 'text', property: 'number'},
+                                                {
+                                                    name: 'Model',
+                                                    search: false,
+                                                    datatype: 'text',
+                                                    property: getNameColumn
+                                                },
+                                                {
+                                                    name: 'Type',
+                                                    search: false,
+                                                    datatype: 'text',
+                                                    property: 'vehicletypeId.name'
+                                                },
+                                                {name: 'RegNO', search: true, datatype: 'text', property: 'rgno'},
+                                                {
+                                                    name: 'Status',
+                                                    search: false,
+                                                    datatype: 'text',
+                                                    property: 'statusId.name'
+                                                }
+                                                //{name:'Driver',search:false,datatype:'text',property:'driveremployee.callingname'},
+                                                //{name:'Assistant',search:false,datatype:'text',property:'drivingassistantemployee.callingname'}
+                                            ];
+                                            table("tableParent", "tblVehicle", metadata, [5, 10, 15, 30, 500, 1000], btnSearchMC, true);
+
+                                        </script>
+
+
+                                    </div>
+                                    <ul id="pagination" class="pagination"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!--table-end-->
+
+                    </div>
+
+                <!--</div>-->
+                <!--card-body-end-->
+
+                <!--<div class="card-footer"></div>-->
+                <!--card-end-->
+            <!--</div>-->
+        </div>
+    </div>
+
+
+    <!-- Modal-Add-Brand -->
+    <script>
+        function loadBrandForm() {
+            txtBrand.value = "";
+            txtBrand.style.borderColor = initial;
+            responsetextbrand.innerHTML = "";
+        }
+
+        function btnAddBrandMC() {
+            if (brandadd.name != null) {
+                brandadd.name = txtBrand.value;
+                var def = txtBrand.value;
+
+                var response = httpRequest("/brands", "POST", brandadd);
+                if (response == "0") {
+                    responsetextbrand.style.color = '#009933';
+                    responsetextbrand.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                    responsetextbrand.style.marginRight = '180px';
+                    brands = httpRequest("../brands/list", "GET");
+                    fillCombo(cmbBrand, "Select Brand", brands, "name", def);
+                    cmbBrandCH();
+                } else {
+                    responsetextbrand.style.color = '#ff4000';
+                    responsetextbrand.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                    responsetextbrand.style.marginRight = '210px';
+                    window.alert(response);
+                }
+            } else {
+                responsetextbrand.style.color = '#ff4000';
+                responsetextbrand.innerHTML = "Invalid Brand <i class=\"fal fa-exclamation-circle\"></i>";
+                responsetextbrand.style.marginRight = '215px';
+            }
+        }
+    </script>
+
+    <div class="modal fade" id="ModelBrand" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content" style="border: 1px solid #161616">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="BrandAddTitle">Add New Brand</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form onsubmit="return false">
+                    <div class="modal-body" id="BrandForm">
+                        <script>
+                            txtField('BrandForm', 'txtBrand', 'Brand Name', 'Enter Brand Name Here', '', "^([A-Za-z-\\s]+)", 'brandadd', 'name', 'oldbrand', true);
+                        </script>
+                    </div>
+                    <div class="modal-footer">
+                        <p id="responsetextbrand" style="margin-right: 180px"></p>
+                        <button type="reset" class="btn btn-secondary">Clear</button>
+                        <button onclick="btnAddBrandMC()" type="submit" class="btn btn-model">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal-Add-Brand-End-->
+
+
+    <!-- Modal -->
+    <script>
+        function loadModelForm() {
+            //JSON.parse(cmbBrand.value).name
+            fillCombo(cmbBrandforModel, "Select Brand", brands, "name", JSON.parse(cmbBrand.value).name);
+            cmbBrandforModel.disabled = "disabled";
+            txtModel.value = "";
+            txtModel.style.borderColor = initial;
+            responsetextmodel.innerHTML = "";
+        }
+
+        function btnAddModelMC() {
+            if (modeladd.name != null) {
+                modeladd.name = txtModel.value;
+                modeladd.brandId = JSON.parse(cmbBrandforModel.value);
+
+                var response = httpRequest("/models", "POST", modeladd);
+                if (response == "0") {
+                    responsetextmodel.style.color = '#009933';
+                    responsetextmodel.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                    responsetextmodel.style.marginRight = '180px';
+
+                    cmbBrandCH();
+                } else {
+                    responsetextmodel.style.color = '#ff4000';
+                    responsetextmodel.innerHTML = "Failed to Add";
+                    responsetextmodel.style.marginRight = '210px';
+                    window.alert(response);
+                }
+            } else {
+                responsetextmodel.style.color = '#ff4000';
+                responsetextmodel.innerHTML = "Invalid Model <i class=\"fal fa-exclamation-circle\"></i>";
+                responsetextmodel.style.marginRight = '210px';
+            }
+        }
+    </script>
+
+
+    <div class="modal fade" id="ModelModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content" style="border: 1px solid #161616">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Add New Model</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form onsubmit="return false">
+                    <div class="modal-body" id="ModelForm">
+                        <script>
+                            cmbBox('ModelForm', 'cmbBrandforModel', 'Brand Name', 'modeladd', 'brandId', 'oldmodel', true);
+                            txtField('ModelForm', 'txtModel', 'Model Name', 'Enter Model Name Here', '', "^([A-Za-z-\\s]+)", 'modeladd', 'name', 'oldmodel', true);
+                        </script>
+                    </div>
+                    <div class="modal-footer">
+                        <p id="responsetextmodel" style="margin-right: 180px"></p>
+                        <button type="reset" class="btn btn-secondary">Clear</button>
+                        <button onclick="btnAddModelMC()" type="submit" class="btn btn-model">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!--Model-Type-->
+
+    <script>
+        function loadTypeForm() {
+            txtType.value = "";
+            txtType.style.borderColor = initial;
+            responsetexttype.innerHTML = "";
+
+        }
+
+        function btnAddTypeMC() {
+            if (typeadd.name != null) {
+                typeadd.name = txtType.value;
+                console.log(typeadd);
+                var def = txtType.value;
+
+                var response = httpRequest("/vehicletype", "POST", typeadd);
+                if (response == "0") {
+                    responsetexttype.style.color = '#009933';
+                    responsetexttype.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                    responsetexttype.style.marginRight = '180px';
+                    types = httpRequest("../vehicletype/list", "GET");
+                    fillCombo(cmbVehicletype, "Select Type", types, "name", def);
+                    //cmbBrandCH();
+                } else {
+                    responsetexttype.style.color = '#ff4000';
+                    responsetexttype.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                    responsetexttype.style.marginRight = '210px';
+
+                    window.alert(response);
+                }
+            } else {
+                responsetexttype.style.color = '#ff4000';
+                responsetexttype.innerHTML = "Invalid Type <i class=\"fal fa-exclamation-circle\"></i>";
+                responsetexttype.style.marginRight = '225px';
+            }
+        }
+    </script>
+
+    <div class="modal fade" id="ModelType" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content" style="border: 1px solid #161616">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="TypeTitle">Add New Type</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form onsubmit="return false">
+                    <div class="modal-body" id="TypeForm">
+                        <script>
+                            txtField('TypeForm', 'txtType', 'Type Name', 'Enter Type Name Here', '', "^([A-Za-z-\\s]+)", 'typeadd', 'name', 'oldtype', true);
+                        </script>
+                    </div>
+                    <div class="modal-footer">
+                        <p id="responsetexttype" style="margin-right: 180px"></p>
+                        <button type="reset" class="btn btn-secondary">Clear</button>
+                        <button onclick="btnAddTypeMC()" type="submit" class="btn btn-model">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--Model-Type-->
+
+
+</div>
+
+
+<!--</div>-->
+</body>
+</html>

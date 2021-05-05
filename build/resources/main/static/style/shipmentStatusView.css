@@ -1,0 +1,56 @@
+
+.shp-card{
+
+    margin: 15px 15px 15px 15px;
+    border: 1px solid rgb(170,170,170);
+    border-radius: 5px;
+}
+
+.shp-cardbody{
+    padding-top: 10px;
+    padding-bottom: 10px
+}
+
+.shp-id-title{
+    font-size: 14px;
+    margin-bottom: -1px;
+    font-family: "Arial";
+}
+
+.shp-id-value{
+    font-weight: bold
+}
+
+.btn-view-detail{
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #161616;
+    background-color: transparent;
+    font-weight: bold;
+    margin-top: 10px;
+
+}
+
+.btn-view-detail:hover{
+    border: 1px solid tomato;
+    color: black;
+    /*font-weight: bold;*/
+    background-color: white;
+}
+
+.btn-view-detail:focus{
+    color: tomato;
+}
+
+.shp-progressbar{
+    height: 10px;
+    border: 1px solid #5a5a5a;
+    border-radius: 8px
+}
+
+.shp-icon{
+    font-size: 25px;
+    color: #6d6d6d;
+    margin-left: -15px;
+    /*margin-top: 80%;*/
+}

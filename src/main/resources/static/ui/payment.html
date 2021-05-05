@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../plugin/pace/themes/tomato/pace-theme-flat-top.css">
+    <script src="../plugin/pace/pace.min.js"></script>
+
+    <title>Payment</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/fontawesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/all.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/regular.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/solid.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/light.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/v4-shims.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/svg-with-js.min.css" rel="stylesheet">
+    <link href="../fonts/fontawesome-pro-5.8.2-web/css/brands.min.css" rel="stylesheet">
+
+    <script src="../plugin/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="../plugin/jquery-3.2.1.slim.min/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="../plugin/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <script src="../plugin/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    <script src="../plugin/popper/popper.min.js"  rel="script"></script>
+
+    <link rel="stylesheet" href="../plugin/alertifyjs/css/alertify.css">
+    <script src="../plugin/alertifyjs/alertify.js"></script>
+
+    <link rel="stylesheet" href="../style/common.css"/>
+    <link rel="stylesheet" href="../style/shipment-form.css"/>
+    <script src="../script/my.ui.javascript.js"></script>
+
+    <script src="../script/common.bitproject.earth.lk.v1.js"></script>
+    <script src="../script/ui.bitproject.earth.lk.v1.js"></script>
+    <script type="text/javascript" src="../plugin/html2canvas.js/html2canvas.js"></script>
+    <script  type="text/javascript" src="../plugin/jsPDF-master/dist/jspdf.min.js"></script>
+
+    <!--
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+    -->
+    <style>
+        body {
+            height:100vh;
+            margin:0;
+            background-image:
+                    radial-gradient( 115% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 125% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 145% 111% ellipse at  top left,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 100% 99.5% ellipse at  top center,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 138% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    radial-gradient( 198% 110% ellipse at  top right,transparent 90%, rgba(249, 97, 69, 0.35) 90.2%),
+                    linear-gradient(135deg, #fff 0%, #fff 100%);
+        }
+    </style>
+
+
+    <script type="text/javascript">
+
+        window.addEventListener("load", initialize);
+
+        //Initializing Functions
+
+        function initialize() {
+
+            btnAdd.addEventListener("click",btnAddMC);
+            btnClear.addEventListener("click",btnClearMC);
+            btnUpdate.addEventListener("click",btnUpdateMC);
+            btnDelete.addEventListener("click",btnDeleteMC);
+            btnPrint.addEventListener("click",saveAndPrint);
+            btnAltPrint.addEventListener("click",ModelAddContent);
+            btnMdlPrint.addEventListener("click",genPDF);
+
+            btnModelDelete.addEventListener("click", ModelDelete);
+            btnModelUpdate.addEventListener("click", ModelUpdate);
+            btnModelAdd.addEventListener("click", ModelAddContent);
+
+            btnBank.addEventListener("click", loadBankForm);
+            btnBranch.addEventListener("click", loadBranchForm);
+
+            //txtShipmentNo.addEventListener("keyup", txtShipmentMC);
+
+            btnAddCheque.addEventListener("click", btnAddChequeMC);
+            cmbPaymentType.addEventListener("change", cmbPaymentTypeCH);
+            cmbBank.addEventListener("change", cmbBankCH);
+            txtCustomer.addEventListener("keyup", txtCustomerMC);
+
+
+
+            //dteDOBirth.onchange = dteDOBirthCH;
+            btnSearch.addEventListener("click",btnSearchMC);
+            btnSearchClear.addEventListener("click",btnSearchClearMC);
+
+            privilages = httpRequest("../privilages?module=PAYMENT","GET");
+            employes = httpRequest("../employees/list", "GET");
+            packagetype= httpRequest("../packagetypes/list", "GET");
+            services = httpRequest("../servises/list","GET");
+            companys = httpRequest("../companys/list", "GET");
+            paymenttype = httpRequest("../paymenttype/list", "GET");
+            banks = httpRequest("../banks/list","GET");
+
+
+            valid = "#28a745";
+            invalid = "#dc3545";
+            initial = "#ced4da";
+            updated = "#ffc107";
+            active = "rgba(165,165,165,0.53)";
+
+            loadView();
+            loadForm();
+
+        }
+
+        function loadView() {
+
+            //Search Area
+
+            txtpaymentno.value = "";
+
+            fillCombo(cmbSearcClient,"Search by Client",companys,"name","");
+            fillCombo(cmbSearchType,'Search Payment Type',paymenttype,'name',"");
+            fillCombo(cmbSearchEmployee, "Search by Employee", employes, "callingname", "");
+
+
+
+            //Table Area
+            activerowno = "";
+            activepage = 1;
+            var query ="&payment=&shipment=&customerid=";
+            loadTable(1, cmbPageSize.value, query);
+        }
+
+        function loadTable(page,size,query) {
+            page = page - 1;
+            payments = new Array();
+            var data = httpRequest("/payment?page="+page+"&size="+size+query,"GET");
+            console.log(data);
+            if(data.content!= undefined) payments = data.content;
+            createPagination('pagination',data.totalPages, data.number+1,paginate);
+            fillTable('tblpayment',payments,fillForm);
+            clearSelection(tblpayment);
+            if(activerowno!="")selectRow(tblpayment,activerowno,active);
+            window.location.href="#ui";
+        }
+
+        function paginate(page) {
+            var paginate;
+            if(oldpayment==null){
+                paginate=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    paginate=true;
+                }else{
+                    paginate = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(paginate) {
+                activepage=page;
+                activerowno=""
+                loadSearchedTable();
+                loadForm();
+            }
+
+        }
+
+
+        function loadForm() {
+            nextnumber = httpRequestwithoutlist("../payment/nextnumber","GET");
+            setStyle(initial);
+
+            payment = new Object();
+            oldpayment = null;
+
+            payment.chequeList = new Array();
+            refreshInnerFrom();
+
+
+            fillCombo(cmbEmployee, "Select Employee", employes, "callingname", session.getObject("user").employeeId.callingname);
+            payment.employeeId=JSON.parse(cmbEmployee.value);
+            cmbEmployee.disabled = "disabled";
+
+            fillCombo(cmbPaymentType,'Select Payment Type',paymenttype,'name',"");
+            optionDisable("cmbPaymentType",2);
+
+            var today = new Date();
+            var month = today.getMonth()+1;
+            if(month<10) month = "0"+month;
+            var date = today.getDate()+1;
+            if(date<10) date = "0"+date;
+
+            dteDate.value=today.getFullYear()+"-"+month+"-"+date;
+            payment.date=dteDate.value;
+            dteDate.style.borderColor=valid;
+            dteDate.disabled = "disabled";
+
+            txtChequeNo.disabled = "disabled";
+            dteIssuedDate.disabled = "disabled";
+            cmbBank.disabled = "disabled";
+            cmbBranch.disabled = "disabled";
+            btnBank.disabled = "disabled";
+            btnBranch.disabled = "disabled";
+            txtChequeValue.disabled = "disabled";
+            txtChequeDescription.disabled = "disabled";
+            btnAddCheque.disabled = "disabled";
+
+            btnAltPrint.disabled = "disabled";
+            btnPrint.disabled = "";
+            btnAdd.disabled = "";
+            btnMdlPrint.disabled = "disabled";
+
+            txtNumber.value = nextnumber;
+            payment.number = txtNumber.value;
+            txtNumber.disabled = "disabled";
+            txtNumber.style.borderColor=valid;
+
+            txtCustomer.value = "";
+
+            txtCustomer.disabled="";
+            txtTotalAmount.disabled="";
+            cmbPaymentType.disabled="";
+
+            var parent1 = document.getElementById("formrow2");
+            if (parent1.hasChildNodes()){
+                parent1.firstChild.remove();
+            }
+            disableButtons(false, true, true);
+        }
+
+        function cmbPaymentTypeCH() {
+
+            if (JSON.parse(cmbPaymentType.value).id==3){
+                fillCombo(cmbBank,'Select Bank',banks,'name',"");
+                txtChequeNo.disabled = "";
+                dteIssuedDate.disabled = "";
+                cmbBank.disabled = "";
+                cmbBranch.disabled = "";
+                btnBank.disabled = "";
+                btnBranch.disabled = "disabled";
+                txtChequeValue.disabled = "";
+                txtChequeDescription.disabled = "";
+                btnAddCheque.disabled = "";
+                txtTotalAmount.disabled = "disabled";
+            }else if (JSON.parse(cmbPaymentType.value).id==1 || JSON.parse(cmbPaymentType.value).id==2){
+
+                payment.chequeList = [];
+
+
+                refreshInnerFrom();
+
+                txtChequeNo.disabled = "disabled";
+                dteIssuedDate.disabled = "disabled";
+                cmbBank.disabled = "disabled";
+                cmbBranch.disabled = "disabled";
+                btnBank.disabled = "disabled";
+                btnBranch.disabled = "disabled";
+                txtChequeValue.disabled = "disabled";
+                txtChequeDescription.disabled = "disabled";
+                btnAddCheque.disabled = "disabled";
+                txtTotalAmount.disabled = "";
+            }
+
+
+        }
+
+        //DeliveryRequestController
+        function txtCustomerMC() {
+            var string = txtCustomer.value;
+            var patern = new RegExp(/^CUS-\d{5}$/);
+            var  result = patern.test(string);
+
+            var parent = document.getElementById("formrow2");
+            if (parent.hasChildNodes()){
+                parent.firstChild.remove();
+            }
+
+            var element = createElement('p','ptagshpres');
+            element.style.marginBottom = "-10px";
+            element.style.marginTop = "-10px";
+            element.style.fontSize = "13px";
+
+            if (result){
+                customer = httpRequest("../getcustomer?number="+string,"GET");
+                element.innerHTML = "Valid Customer";
+                element.style.color = valid;
+                txtCustomer.style.borderColor = valid;
+                payment.companyId = customer;
+                parent.appendChild(element);
+            }else {
+                element.innerHTML = "Invalid Customer";
+                element.style.color = invalid;
+                txtCustomer.style.borderColor =  invalid;
+                payment.companyId = null;
+                parent.appendChild(element);
+            }
+
+        }
+
+        function cmbBankCH(){
+            cmbBranch.disabled = "";
+            btnBranch.disabled = "";
+            cmbBank.style.borderColor = valid;
+            branches = httpRequest("../branch/listbybank?bankId="+JSON.parse(cmbBank.value).id,"GET");
+            fillCombo(cmbBranch,'Select Branch',branches,'name',"");
+        }
+
+
+
+        function refreshInnerFrom() {
+
+            fillInnerTable("tblpaymentItem",  payment.chequeList ,removeItem);
+            fillCombo(cmbBank,'Select Bank',banks,'name',"");
+            txtChequeNo.value = "";
+            dteIssuedDate.value = "";
+            cmbBranch.value = "";
+            txtChequeValue.value = "";
+            txtChequeDescription.value = "";
+            cmbBank.style.borderColor=initial;
+
+            window.amount = 0;
+
+            for (index in payment.chequeList ) {
+                window.amount = parseInt(window.amount) +  parseInt(payment.chequeList[index].value);
+            }
+
+            txtTotalAmount.value=window.amount+".00";
+            payment.amount = txtTotalAmount.value;
+
+
+        }
+
+        function removeItem(chequeList,index){
+            payment.chequeList.splice(index-1, 1);
+            refreshInnerFrom();
+        }
+
+        function btnAddChequeMC() {
+
+            $(document).ready(function () {$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            cheques = new Object();
+
+            var checkerrors = getChequeErrors();
+            if (checkerrors == ""){
+                cheques.branchId = JSON.parse(cmbBranch.value);
+                cheques.chequenumber = txtChequeNo.value;
+                cheques.issueddate = dteIssuedDate.value;
+                cheques.description = txtChequeDescription.value;
+                cheques.value = txtChequeValue.value;
+                payment.chequeList.push(cheques);
+                refreshInnerFrom();
+                //items = httpRequest("../inventoryitem/listByShipmentNumber?number="+string,"GET");
+
+            }else {
+                window.alert("payment Item has following Errors\n\n"+checkerrors);
+            }
+        }
+
+
+        function getChequeErrors() {
+            checkerrors = "";
+
+            if (isNaN(txtChequeValue.value) || txtChequeValue.value == "")
+                checkerrors = checkerrors + "Invalid Value\n";
+
+            if (dteIssuedDate.value == "")
+                checkerrors = checkerrors + "invalid Issued Date\n";
+
+            if (txtChequeNo.value == "")
+                checkerrors = checkerrors + "invalid Cheque Number Date\n";
+
+            if (cmbBranch.value == "" || cmbBranch.value == "Select Branch")
+                checkerrors = checkerrors + "Bank Branch Invalid\n";
+
+            return checkerrors;
+        }
+
+
+        function setStyle(style) {
+
+            txtNumber.style.borderColor = style;
+            dteDate.style.borderColor = style;
+            cmbEmployee.style.borderColor = style;
+            txtCustomer.style.borderColor = style;
+            cmbPaymentType.style.borderColor = style;
+            txtTotalAmount.style.borderColor = style;
+
+        }
+
+        function disableButtons(add, upd, del) {
+
+            if (add || !privilages.add) btnModelAdd.setAttribute("disabled", "disabled");
+            else btnModelAdd.removeAttribute("disabled");
+
+            if (upd || !privilages.update) btnModelUpdate.setAttribute("disabled", "disabled");
+            else btnModelUpdate.removeAttribute("disabled");
+
+            if (del || !privilages.delete) btnModelDelete.setAttribute("disabled", "disabled");
+            else btnModelDelete.removeAttribute("disabled");
+
+        }
+
+
+
+
+
+        //Form Operation Functions
+
+        function getErrors() {
+
+            var errors = "";
+
+            if (payment.paymenttypeId == null){
+                errors = errors + "Invalid Payment Type Number<br>";
+            }else if (payment.paymenttypeId.id === 3){
+
+                if (payment.chequeList === undefined || payment.chequeList.length == 0)
+                    errors = errors + "Payment dosn't have any Cheques<br>";
+
+            }
+
+
+            if (payment.companyId == null)
+                errors = errors + "Invalid Customer Number Number<br>";
+
+            if (payment.amount === "0.00" || payment.amount==null || isNaN(payment.amount))
+                errors = errors + "Amount is Invalid or 0.00<br>";
+
+
+            return errors;
+        }
+
+        function genPDF() {
+            console.log("pdf");
+
+            html2canvas($('#paymentDoc').get(0)).then(
+
+                function (canvas) {
+                    //console.log(canvas);
+
+                    var img = canvas.toDataURL();
+                    var doc = new jsPDF();
+                    doc.addImage(img,'JPEG',1,20);
+                    doc.save(payment.number+'.pdf');
+
+                });
+
+            /*            html2canvas($("#paymentDoc"),{
+                            onrendered: function (canvas) {
+                                var img = canvas.toDataURL();
+                                var doc = new jsPDF();
+                                doc.addImage(img,'JPEG',20,20);
+                                doc.save('payment.pdf');
+                            }
+                        })
+                        console.log("pdf2");*/
+        }
+
+
+
+        function ModelAddContent() {
+
+            console.log(payment);
+
+
+            var errors = getErrors();
+
+            if (errors==""){
+                /**Lunch Model confirm**/
+                $('#ModelAddContent').modal('show')
+                allNumbers ="";
+                allBanks="";
+                allPrices="";
+
+                PaymentNumber.innerHTML = payment.number;
+                PaymentDate.innerHTML = payment.date;
+                PaymentCustomer.innerHTML = payment.companyId.number;
+                PaymentEmployee.innerHTML = payment.employeeId.number;
+                PaymentCustomerName.innerHTML =  payment.companyId.name+"<br style=\"margin-bottom: 0px\">"+payment.companyId.address;
+                PaymentValueInWord.innerHTML  = toWords(parseInt(payment.amount));
+                PaymentValueNumber.innerHTML = "Rs."+payment.amount;
+                PaymentType.innerHTML = payment.paymenttypeId.name;
+
+                for (ser = 0; ser<payment.chequeList.length; ser++){
+
+                    allNumbers = allNumbers+payment.chequeList[ser].chequenumber+"<br>";
+                    allBanks = allBanks+payment.chequeList[ser].branchId.bankId.name+"-"+payment.chequeList[ser].branchId.name+"<br>";
+                    allPrices = allPrices+payment.chequeList[ser].value+".00<br>";
+
+                }
+                PaymentCheques.innerHTML = allNumbers;
+                PaymentBanks.innerHTML = allBanks;
+                PaymentChequqVqlue.innerHTML = allPrices;
+
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+        }
+
+
+        function showItemList(paymentitm) {
+            var parent = document.getElementById("itmParent");
+            var itemelement = document.createElement('p');
+            var content = "";
+            content =content+paymentitm.inventryId.grnhasitemId.itemId.description+"<br>";
+            content =content+paymentitm.qty+" "+paymentitm.packagetypeId.name+"<br>";
+            content =content+paymentitm.note+"<br>";
+
+            var brake = document.createElement('br');
+            itemelement.innerHTML = content;
+            parent.appendChild(itemelement);
+            parent.appendChild(brake);
+        }
+
+        function ChangeTabToForm(){ $('[href="#Form"]').tab('show'); }
+
+        function ChangeTabToTable(){ $('[href="#Table"]').tab('show'); }
+
+        function saveAndPrint() {
+            genPDF();
+            btnAddMC();
+        }
+
+
+
+        function btnAddMC() {
+
+            $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/payment","POST",payment);
+            if(response=="0"){
+                $('#ModelAddContent').modal('hide');
+                alertify.notify('payment Saved Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                ChangeTabToTable();
+                loadView();
+                loadForm();
+                activerowno = 1;
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Add as \n\n"+response);
+        }
+
+
+
+        function btnClearMC() {
+            //Get Cofirmation from the User window.confirm();
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+
+
+            var clear;
+            if(oldpayment==null){
+                clear=true;
+            }else{
+                if(getErrors()==''&&getUpdates()==''){
+                    clear=true;
+                }else{
+                    clear = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+            if(clear) {
+                loadForm();
+                clearSelection(tblpayment);
+            }
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip('hide')
+            });
+        }
+
+        function fillForm(gn,rowno){
+            ChangeTabToForm();
+
+            activerowno = rowno;
+            var filling;
+            if(oldpayment==null){
+                filling=true;
+            }else{
+
+                if(getErrors()==''&&getUpdates()==''){
+                    filling=true;
+                }else{
+                    filling = window.confirm("Form has Some Errors or Update Values. " +
+                        "Are you sure to discard that changes ?");
+                }
+            }
+
+            if(filling) {
+
+
+                clearSelection(tblpayment);
+                selectRow(tblpayment,activerowno,active);
+
+                btnAltPrint.disabled = "";
+
+                btnPrint.disabled = "disabled";
+                btnAdd.disabled = "disabled";
+                btnMdlPrint.disabled = "";
+
+                payment = JSON.parse(JSON.stringify(gn));
+                oldpayment = JSON.parse(JSON.stringify(gn));
+
+                fillCombo(cmbEmployee, "Select Employee", employes, "callingname",payment.employeeId.callingname );
+                fillCombo(cmbPaymentType,'Select Payment Type',paymenttype,'name',payment.paymenttypeId.name);
+
+                if (payment.paymenttypeId.id==3){
+                    refreshInnerFrom();
+                }else {
+                    txtTotalAmount.value = payment.amount;
+                }
+
+
+                txtNumber.value = payment.number;    ///////////////////
+                dteDate.value = payment.date;
+                txtCustomer.value = payment.companyId.number;
+
+
+
+                //txtDeliveryNo.value = payment.deliveryId.number;
+
+                txtCustomer.disabled="disabled";
+                txtTotalAmount.disabled="disabled";
+                cmbPaymentType.disabled="disabled";
+                //txtDeliveryNo.disabled="disabled";
+
+                txtChequeNo.disabled = "disabled";
+                dteIssuedDate.disabled = "disabled";
+                cmbBank.disabled = "disabled";
+                cmbBranch.disabled = "disabled";
+                btnBank.disabled = "disabled";
+                btnBranch.disabled = "disabled";
+                txtChequeValue.disabled = "disabled";
+                txtChequeDescription.disabled = "disabled";
+                btnAddCheque.disabled = "disabled";
+
+
+
+
+
+                disableButtons(true, true, true);
+                setStyle(valid);
+            }
+
+        }
+
+        function getUpdates() {
+
+            var updates = "";
+            return updates;
+        }
+
+        function ModelUpdate() {
+
+            var errors = getErrors();
+
+            if (errors == "") {
+                $('#ModelUpdate').modal('show');
+                var updates = getUpdates();
+                if (updates == ""){
+                    spnUpdate.innerHTML = "Nothing Updated!";
+                    btnUpdate.disabled = "disabled"
+                }else {
+                    spnUpdate.innerHTML = updates;
+                    btnUpdate.disabled = ""
+                }
+            }else {
+                spnErrors.innerHTML = errors;
+                $('#ModelError').modal('show');
+            }
+
+        }
+
+        function btnUpdateMC() {
+  /*          $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/payment","PUT",payment);
+            if(response=="0"){
+                $('#ModelUpdate').modal('hide');
+                alertify.notify('payment Updated Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Update as \n\n"+response);*/
+        }
+
+        function ModelDelete() {
+            $('#ModelDelete').modal('show');
+            spnEmployeeNnme.innerHTML =   "payment Number : "+payment.number;
+        }
+
+        function btnDeleteMC() {
+
+ /*           $(document).ready(function(){$('[data-toggle="tooltip"]').tooltip('hide')});
+
+            var response = httpRequest("/payment","DELETE",payment);
+            if(response=="0"){
+                $('#ModelDelete').modal('hide');
+                alertify.notify('payment Deleted Successfully <i style="color: #00B75C" class="fas fa-check-circle"></i>', 'success', 5);
+                loadForm();
+                loadView();
+                loadSearchedTable();
+            }
+            else window.alert("Failed to Delete as \n\n"+response);*/
+        }
+
+
+        //Search Functions
+
+        function loadSearchedTable() {
+
+            var payment = txtpaymentno.value;
+            var type = cmbSearchType.value;
+            var customer = cmbSearcClient.value;
+             var employee = cmbSearchEmployee.value;
+
+            var customerid="";
+            if(customer!="Search by Client") {
+                customerid = JSON.parse(customer).id;
+                cmbSearcClient.style.borderColor = active;
+            }
+
+            var typeid="";
+            if(type!="Search Payment Type") {
+                typeid = JSON.parse(type).id;
+                cmbSearchType.style.borderColor = active;
+            }
+
+
+            var employeeid="";
+            if(employee!="Search by Employee") {
+                employeeid = JSON.parse(employee).id;
+                cmbSearchEmployee.style.borderColor = active;
+            }
+
+
+            if(payment!=""){  txtpaymentno.style.borderColor = active; }
+
+            //if(item!=""){  txtItem.style.borderColor = active; }
+
+            var query ="&payment=&typeid=&customerid=&employeeid=";
+
+            if(payment!="" || typeid!="" || customerid!="" || employeeid!="")
+                query = "&payment=" + payment  + "&typeid=" + typeid+ "&customerid=" + customerid+ "&employeeid=" + employeeid ;
+           //console.log(query)
+            loadTable(activepage, cmbPageSize.value, query);
+
+        }
+
+        function btnSearchMC(){
+            activepage=1;
+            loadSearchedTable();
+        }
+
+        function btnSearchClearMC(){
+            loadView();
+        }
+
+    </script>
+
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+
+
+
+
+
+</head>
+<body>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist" style="margin-top: 5px ;border-color: black;background-color: #f9f9f9;">
+    <li class="nav-item" style="border-color: black;margin-left: 15px">
+        <a class="nav-link active" id="Form-tab" data-toggle="tab" href="#Form" role="tab" aria-controls="Form" aria-selected="true">Add Payment</a>
+    </li>
+    <li class="nav-item" style="border-color: black">
+        <a class="nav-link" id="Table-tab" data-toggle="tab" href="#Table" role="tab" aria-controls="Table" aria-selected="false">View Payments</a>
+    </li>
+
+</ul>
+<div class="tab-content" id="myTabContent">
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!--Form Area Start-->
+    <div class="tab-pane fade show active" id="Form" role="tabpanel" aria-labelledby="Form-tab">
+        <div class="container-fluid">
+            <div class="row" id="ui">
+                <div class="col-md-12">
+                    <!--card-start-->
+
+                    <!--<div class="card" style="border: 1px solid #282c2f;margin-top: 15px">-->
+                        <!--card-header-->
+                        <!--<div class="card-header"  style="background-color: #282c2f;color: tomato;border-radius: 15px">
+
+                        </div>-->
+
+                        <!--card-body-start-->
+                      <!--  <div class="card-body" style="background-color: #f9f9f9;border-radius: 15px">-->
+                            <div class="row">
+                                <!--Form-Start-->
+                                <!-- <div class="col-md-2"></div>-->
+                                <div class="col-md-12">
+                                    <div class="card" style="border: 1px solid #161616;border-radius: 5px;margin-top: 10px;height: 475px">
+                                        <div class="card-body form-box-overflow" style="border: 1px solid transparent;border-radius: 5px"><!--height:480px;overflow-y:scroll;-->
+                                            <form class="form-horizontal" onsubmit="return false"  >
+                                                <div class="row">
+                                                    <!--form start-->
+                                                    <div class="col-md-6" >
+                                                        <div class="row">
+                                                            <div class="col-md-6" id="formcol1"></div>
+                                                            <div class="col-md-6">
+                                                                <div id="formrow1"></div>
+                                                                <div id="formrow2"></div>
+                                                                <div id="formrow3"></div>
+                                                            </div>
+                                                        </div>
+
+
+                                                        <script>
+                                                            txtField('formcol1','txtNumber','Payment Number','Payment number','',"",'payment','number','oldpayment');
+                                                            dteField('formcol1','dteDate','Date','',"",'payment','date','oldpayment');
+                                                            cmbBox('formcol1','cmbEmployee','Employee','payment','employeeId','oldpayment');
+                                                            txtField('formrow1','txtCustomer','Customer Number','e.g.: CUS-00000','',"",'','','',true);
+                                                            cmbBox('formrow3','cmbPaymentType','Payment Type','payment','paymenttypeId','oldpayment',true);
+                                                            txtField('formrow3','txtTotalAmount','Total Amount','','',"",'payment','amount','oldpayment',true)
+                                                        </script>
+
+                                                    </div>
+                                                    <!--form end-->
+                                                    <!--cheque start-->
+                                                    <div class="col-md-6">
+                                                        <p style="font-size: 15px;font-weight: bold;margin-bottom: 0px">Cheque Detail</p>
+                                                        <div class="row" style="border: 1px solid #9d9d9d;border-radius: 5px;background-color: rgba(237,243,249,0.42);height: 320px;overflow-y: scroll;margin-top: 0px">
+
+                                                            <div class="col-md-6" id="innerformcol1"></div>
+                                                            <div class="col-md-6" id="innerformcol2"></div>
+
+                                                            <script>
+                                                                txtField('innerformcol1','txtChequeNo','Cheque Number','Enter Cheque Number Here','',"",'','','',true);
+                                                                dteField('innerformcol2','dteIssuedDate','Issued Date','',"",'','','',true);
+                                                                cmbBoxWithAdd('innerformcol1','cmbBank','Bank','','','',true,'btnBank','Add New Bank','#ModelBank');
+                                                                cmbBoxWithAdd('innerformcol1','cmbBranch','Branch','',"",'',true,'btnBranch','Add New Branch','#ModelBranch');
+                                                                txtField('innerformcol2','txtChequeValue','Value','Enter the value of check','',"",'','','',true);
+                                                                txtArea('innerformcol2','txtChequeDescription','Description','','',"",'','','');
+                                                            </script>
+                                                            <div>
+                                                                <div style="margin-bottom: 10px;margin-left: 555px">
+                                                                    <button data-toggle="tooltip" data-placement="top" title="Add Cheque" class="btn btn-secondary btn-sm" type="button" id="btnAddCheque"  style="">Add <i class="fal fa-plus-circle"></i></button>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-12" id="innerTableCheque">
+                                                                        <script>
+                                                                            var metadatainnertabletax = [
+                                                                                {name:'Cheque Number',search:false,datatype:'text',property:"chequenumber"},
+                                                                                //{name:'Status',search:false,datatype:'text',property:'paymentitemstatusId.name'},
+                                                                                {name:'Value',search:false,datatype:'text',property:"value"},
+                                                                                {name:'Bank',search:false,datatype:'text',property:"branchId.bankId.name"},
+                                                                                {name:'Branch',search:false,datatype:'text',property:"branchId.name"},
+                                                                            ];
+                                                                            tableForInnerForm("innerTableCheque","tblpaymentItem",metadatainnertabletax,true);
+                                                                        </script>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <!--cheque end-->
+                                                </div>
+
+
+
+
+
+
+
+                                                <!--Form-Button Start-->
+                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk" ></i> Required Fields</p>
+                                                <div class="row" >
+                                                    <div class="col-md-6"></div>
+                                                    <div class="col-6">
+                                                        <div class="row">
+                                                            <div class="col-md-2"></div>
+
+                                                            <div class="col-md-2">
+                                                                <button  data-toggle="tooltip" data-placement="top"  title="Delete" type="button" class="btn btn-sm btn-outline-danger btn-delete" id="btnModelDelete" >&nbsp;Delete <i class="fal fa-trash-alt"></i>&nbsp;</button>
+                                                            </div>
+                                                            <div class="col-md-2" style="margin-right: -15px">
+                                                                <button data-toggle="tooltip" data-placement="top" title="Clear Form" type="button" class="btn btn-sm btn-outline-warning btn-clear" id="btnClear">&nbsp;Clear <i class="fal fa-eraser">&nbsp;</i></button>
+                                                            </div>
+                                                            <div class="col-md-2" >
+                                                                <button data-toggle="tooltip" data-placement="top" title="Update" type="button" class="btn btn-sm btn-outline-primary btn-edit" id="btnModelUpdate" >&nbsp;Update <i class="fal fa-sync"></i>&nbsp;</button>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <button  data-toggle="tooltip" data-placement="top" title="Save" type="button" class="btn btn-sm btn-primary-action" id="btnModelAdd">&nbsp;&nbsp;Save <i class="fal fa-save">&nbsp;&nbsp;&nbsp;</i></button>
+                                                            </div>
+
+                                                            <div class="col-md-2">
+                                                                <button  data-toggle="tooltip" data-placement="top"  title="Print Payment Slip" type="button" class="btn btn-sm btn-primary-action" id="btnAltPrint" >&nbsp;Print <i class="fal fa-print"></i>&nbsp;</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--Form button End-->
+                                            </form>
+
+
+                                            <!--Model Add Bank Start------------------------------------------------------------------------------------------------------------->
+
+                                            <script>
+                                                function loadBankForm() {
+
+                                                    bank = new Object();
+                                                    oldbank = null;
+
+                                                    txtBankName.value = "";
+                                                    txtBankName.style.borderColor = initial;
+                                                    txtBankCode.value = "";
+                                                    txtBankCode.style.borderColor = initial;
+                                                    bankaddrespondtext.innerHTML = "";
+                                                }
+                                                function btnAddBank() {
+                                                    if (bank.name != null && bank.code != null) {
+                                                        var def = txtBankName.value;
+                                                        var response = httpRequest("/bank", "POST", bank);
+                                                        if (response == "0") {
+                                                            bankaddrespondtext.style.color = '#009933';
+                                                            bankaddrespondtext.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                            bankaddrespondtext.style.marginRight = '180px';
+                                                            banks = httpRequest("../banks/list","GET");
+                                                            fillCombo(cmbBank,'Select Importers Bank',banks,'name',def);
+                                                            //console.log(cmbImportersBank.value);
+                                                            cmbBankCH();
+                                                        } else {
+                                                            bankaddrespondtext.style.color = '#ff4000';
+                                                            bankaddrespondtext.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                            bankaddrespondtext.style.marginRight = '210px';
+                                                            window.alert(response);
+                                                        }
+                                                    } else {
+                                                        bankaddrespondtext.style.color = '#ff4000';
+                                                        bankaddrespondtext.innerHTML = "Invalid Bank <i class=\"fal fa-exclamation-circle\"></i>";
+                                                        bankaddrespondtext.style.marginRight = '340x';
+                                                    }
+                                                }
+                                            </script>
+
+                                            <div class="modal fade" id="ModelBank" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabelbnk">Add New Bank</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <form onsubmit="return false">
+                                                            <div class="modal-body" id="BankForm">
+                                                                <script>
+                                                                    txtField('BankForm','txtBankName','Bank Name','Enter Bank Name Here','',"",'bank','name','oldbank',true);
+                                                                    txtField('BankForm','txtBankCode','Bank Code','Enter Bank Code Here','',"",'bank','code','oldbank',true);
+                                                                </script>
+                                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <p id="bankaddrespondtext" style="margin-right: 180px"></p>
+                                                                <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                                <button onclick="btnAddBank()" type="submit" class="btn btn-model">Save</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Add Bank End--------------------------------------------------------------------------------------------------------------->
+
+                                            <!--Model Add New Bank Branch Start-------------------------------------------------------------------------------------------------->
+
+                                            <script>
+                                                function loadBranchForm() {
+                                                    //cmbModforPL.value = ;
+
+                                                    branch = new Object();
+                                                    oldbranch = null;
+
+                                                    fillCombo(cmbBankforBranch,"Select Bank",banks,"name",JSON.parse(cmbBank.value).name);
+                                                    cmbBankforBranch.style.borderColor = valid;
+                                                    cmbBankforBranch.disabled = "disabled";
+
+                                                    txtBranchName.value = "";
+                                                    txtBranchName.style.borderColor = initial;
+                                                    txtBranchCode.value = "";
+                                                    txtBranchCode.style.borderColor = initial;
+                                                    bankbranchrespondtext.innerHTML = "";
+                                                }
+
+                                                function btnAddBranch() {
+                                                    if (branch.name != null && branch.code != null) {
+
+                                                        branch.bankId = JSON.parse(cmbBankforBranch.value);
+
+                                                        var def = txtBranchName.value;
+                                                        var response = httpRequest("/branch", "POST", branch);
+                                                        if (response == "0") {
+                                                            bankbranchrespondtext.style.color = '#009933';
+                                                            bankbranchrespondtext.innerHTML = "Saved Successfully <i class=\"far fa-check-circle\"></i>";
+                                                            bankbranchrespondtext.style.marginRight = '180px';
+                                                            branches = httpRequest("../branch/listbybank?bankId="+JSON.parse(cmbBank.value).id,"GET");
+                                                            fillCombo(cmbBranch,'Select Branch',branches,'name',def);
+                                                        } else {
+                                                            bankbranchrespondtext.style.color = '#ff4000';
+                                                            bankbranchrespondtext.innerHTML = "Failed to Add <i class=\"fal fa-exclamation-circle\"></i>";
+                                                            bankbranchrespondtext.style.marginRight = '210px';
+                                                            window.alert(response);
+                                                        }
+                                                    } else {
+                                                        bankbranchrespondtext.style.color = '#ff4000';
+                                                        bankbranchrespondtext.innerHTML = "Invalid Branch <i class=\"fal fa-exclamation-circle\"></i>";
+                                                        bankbranchrespondtext.style.marginRight = '220px';
+                                                    }
+                                                }
+                                            </script>
+
+                                            <div class="modal fade" id="ModelBranch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabelbnkbrnch">Add New Bank Branch</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <form onsubmit="return false">
+                                                            <div class="modal-body" id="BankBranchForm">
+                                                                <script>
+                                                                    cmbBox('BankBranchForm','cmbBankforBranch','Bank','branch','bankId','oldbranch',true);
+                                                                    txtField('BankBranchForm','txtBranchName','Branch Name','Enter Branch Name Here','',"",'branch','name','oldbranch',true);
+                                                                    txtField('BankBranchForm','txtBranchCode','Branch Code','Enter Branch Code Here','',"",'branch','code','oldbranch',true);
+                                                                </script>
+                                                                <p style='color: #ff6666;font-size: 11px'><i class="fas fa-asterisk"></i> Required Fields</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <p id="bankbranchrespondtext" style="margin-right: 180px"></p>
+                                                                <button type="reset" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                                                                <button onclick="btnAddBranch()" type="submit" class="btn btn-model">Save</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Add New Bank Branch End---------------------------------------------------------------------------------------------------->
+
+
+                                            <!--Add Content Model Start------------------------------------------------------------------------------------>
+                                            <div class="modal fade" id="ModelAddContent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+                                                <div class="modal-dialog modal-lg" role="document" >
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabeladd">Are you sure to add following payment?</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <!--payment PDF Document Start-->
+                                                        <div class="modal-body" id="paymentDoc" style="background-color: rgba(245,98,70,0.14);">
+
+                                                           <div class="row">
+                                                               <div class="col-md-12" >
+                                                                   <div class="row">
+                                                                       <div class="col-md-1"></div>
+                                                                       <div class="col-md-10" style="border: 1px solid black;height: 65px;background-color: white;border-radius: 5px;margin-top: 0px">
+                                                                           <div class="row">
+                                                                               <div class="col-md-4">
+                                                                                   <img src="../image/logo-small.png" style="width: 181px;height: 58px;margin-top: 0px">
+                                                                               </div>
+                                                                               <div class="col-md-8 text-center">
+                                                                                   <h6 style="margin-bottom: 0px">Wajira Enterprises (Pvt) Ltd</h6> <!--  style="font-size: 21px"  -->
+                                                                                   <p style="font-size: 13px;margin-bottom: 0px">No 107/G Ihalayagoda Gampaha</p>
+                                                                                   <p style="font-size: 13px;margin-bottom: 0px">Tel   : 0112 543 185, 0777 395 195 Email : wajiraenteprises@gmail.com</p>
+                                                                               </div>
+                                                                           </div>
+
+                                                                       </div>
+                                                                       <div class="col-md-1"></div>
+                                                                   </div>
+                                                                   <div class="row" style="margin-top: 0px;padding: 15px 15px 5px 15px;margin-bottom: 0px">
+                                                                       <div class="col-md-7"></div>
+                                                                       <div class="col-md-5">
+                                                                           <div class="row" style="background-color: white">
+                                                                               <div class="col-md-5" style="border: 1px solid black;border-top-left-radius: 5px;font-size: 14px">Number</div>
+                                                                               <div id="PaymentNumber" class="col-md-7" style="border: 1px solid black;border-top-right-radius: 5px;border-left: none;font-size: 14px"></div>
+                                                                           </div>
+                                                                           <div class="row" style="background-color: white">
+                                                                               <div class="col-md-5" style="border: 1px solid black;border-top: none;font-size: 14px">Date</div>
+                                                                               <div id="PaymentDate" class="col-md-7" style="border: 1px solid black;border-left: none;border-top: none;font-size: 14px"></div>
+                                                                           </div>
+                                                                           <div class="row" style="background-color: white">
+                                                                               <div class="col-md-5" style="border: 1px solid black;border-top: none;font-size: 14px">Customer</div>
+                                                                               <div id="PaymentCustomer" class="col-md-7" style="border: 1px solid black;border-left: none;border-top: none;font-size: 14px"></div>
+                                                                           </div>
+                                                                           <div class="row" style="background-color: white">
+                                                                               <div class="col-md-5" style="border: 1px solid black;border-top: none;border-bottom-left-radius: 5px;font-size: 14px">Employee</div>
+                                                                               <div id="PaymentEmployee" class="col-md-7" style="border: 1px solid black;border-left: none;border-top: none;border-bottom-right-radius: 5px;font-size: 14px"></div>
+                                                                           </div>
+                                                                       </div>
+                                                                   </div>
+
+                                                                   <div class="row" style="padding: 0px 15px 0px 15px">
+                                                                       <div class="col-md-12" style="border: 1px solid black;border-radius: 5px;background-color: white">
+                                                                           <div class="row">
+                                                                               <div class="col-md-5">
+                                                                                   <p style="font-size: 15px; margin-top: 10px;font-family: 'Lucida Calligraphy';margin-bottom: 0px" >Received with thank from :</p>
+                                                                                   <p id="PaymentCustomerName" style="margin-top: 0px;font-size: 14px"></p>
+
+                                                                                   <p style="font-size: 15px; margin-top: 4px;font-family: 'Lucida Calligraphy';margin-bottom: 0px" >Payment Type : <span id="PaymentType" style="font-size: 14px;font-family: 'Arial'"></span></p>
+
+                                                                                   <p style="font-size: 15px; margin-top: 10px;font-family: 'Lucida Calligraphy';margin-bottom: 0px" >Paid amount :</p>
+                                                                                   <p id="PaymentValueInWord" style="margin-top: 0px;font-size: 14px"></p>
+
+                                                                               </div>
+                                                                               <!--Cheque Detail-->
+                                                                               <div class="col-md-7">
+                                                                                   <div class="row">
+                                                                                       <div class="col-md-3 " style="font-family: 'Lucida Calligraphy';font-size: 15px; margin-top: 8px; ">Cheque</div>
+                                                                                       <div  class="col-md-6 " style="font-family: 'Lucida Calligraphy';font-size: 15px; margin-top: 8px;padding: 0px 0px 0px 0px">Bank</div>
+                                                                                       <div class="col-md-3 " style="font-family: 'Lucida Calligraphy';font-size: 15px; margin-top: 8px;padding-left: 15px">Value</div>
+                                                                                   </div>
+                                                                                   <div class="row">
+                                                                                       <div id="PaymentCheques"  class="col-md-3" style="font-size: 13px"></div>
+                                                                                       <div id="PaymentBanks" class="col-md-6" style="font-size: 13px;padding: 0px 0px 0px 0px"></div>
+                                                                                       <div  id="PaymentChequqVqlue" class="col-md-3 text-right" style="font-size: 13px;padding-left: 15px"></div>
+                                                                                   </div>
+<!--
+                                                                                   <p>Cheque Number&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bank</p>
+-->
+                                                                               </div>
+                                                                           </div>
+                                                                       </div>
+                                                                   </div>
+                                                                   <div class="row" style="padding: 5px 15px 0px 15px;">
+                                                                       <div id="PaymentValueNumber" class="col-md-4" style="border: 1px solid black;border-radius: 5px;font-family: 'Lucida Calligraphy';background-color: white ;padding: 5px 5px 5px 5px"></div>
+                                                                       <div class="col-md-8"></div>
+                                                                   </div>
+
+                                                               </div>
+                                                           </div>
+
+                                                        </div>
+                                                        <!--payment PDF Document Start-->
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                                            <button  type="button" class="btn btn-primary-action" id="btnMdlPrint">Print <i class="fal fa-print"></i></button>
+                                                            <button  type="button" class="btn btn-primary-action" id="btnPrint">Save & Print <i class="fal fa-print"></i></button>
+                                                            <button  type="button" class="btn btn-primary-action" id="btnAdd">Save <i class="fal fa-save"></i></button>
+                                                            <!--<a href="javascript:genPDF()">pdf</a>-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Add Content Model End-------------------------------------------------------------------------------------->
+                                            <!--Model Error Start------------------------------------------------------------------------------------------>
+                                            <div class="modal fade" id="ModelError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">payment Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>You Have Following Errors</h5>
+                                                            <p id="spnErrors" style="color: #dc3545"></p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="fal fa-times"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Error End------------------------------------------------------------------------------------------>
+                                            <!--Model Delete Start--------------------------------------------------------------------------------------->
+                                            <div class="modal fade" id="ModelDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabeldelete">payment Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>Are your sure to delete following </h5>
+                                                            <p  id="spnEmployeeNnme"></p>
+                                                        </div>
+                                                        <div class="modal-footer ">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                                            <button id="btnDelete" type="button" class="btn btn-primary-action" style="margin-right: 30%">Delete <i class="fal fa-trash-alt"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Delete End----------------------------------------------------------------------------------------->
+                                            <!--Model Update Start--------------------------------------------------------------------------------------->
+                                            <div class="modal fade" id="ModelUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabelupdete">payment Management</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h5>Are your sure to update followings</h5>
+                                                            <p id="spnUpdate"></p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel <i class="fal fa-times"></i></button>
+                                                            <button type="button" class="btn btn-primary-action" id="btnUpdate">Update <i class="fal fa-sync"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Model Update End----------------------------------------------------------------------------------------->
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--  <div class="col-md-2"></div>-->
+
+                                <!--Form-End-->
+
+                            </div>
+                        <!--</div>-->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Form Area End-->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!--Table Area Start-->
+    <div class="tab-pane fade" id="Table" role="tabpanel" aria-labelledby="Table-tab">
+
+        <div class="card" style=";border: 1px solid #282c2f;border-radius: 5px;margin-left: 15px;margin-right: 15px;margin-top: 10px;height:475px">
+            <!--<div class="card" style="border: 1px solid #a6a6a6;border-radius: 1px;margin-top: 15px">-->
+            <div class="card-header" style="height: 60px">
+                <form class="form-inline" onsubmit="return false" style="margin-bottom: 20px">
+
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <input placeholder="Search By payment Number" class="form-control form-control-sm txtinput" type="text" id="txtpaymentno"/>
+                    </div>
+
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <select class="form-control form-control-sm txtinput" id="cmbSearcClient"></select>
+                    </div>
+
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <select class="form-control form-control-sm txtinput" id="cmbSearchType"></select>
+                    </div>
+
+                    <div class="form-group form-group-sm" style="margin-right: 5px">
+                        <select class="form-control form-control-sm txtinput" id="cmbSearchEmployee"></select>
+                    </div>
+
+
+                    <button data-toggle="tooltip" data-placement="top" title="Clear Search" style="margin-right: 5px" class="btn btn-sm btn-search-clear"  id="btnSearchClear"><i class="fas fa-times"></i></button>
+                    <button data-toggle="tooltip" data-placement="top" title="Search"  class="btn btn-search btn-sm"  id="btnSearch"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="card-body table-box-overflow"  id="shipmentview">
+                <div class="table-responsive" id="tableParent" >
+
+                    <script>
+
+
+
+
+                        function getAmount(ob) {
+                            var stGrandTotal = "Rs. "+ob.amount+".00";
+                            return  stGrandTotal;
+                        }
+
+                        function getCustomer(ob) {
+                            var customername = ob.companyId.name+" [ "+ob.companyId.number+" ]";
+                            return  customername;
+                        }
+
+                        function getEmployee(ob) {
+                            var customername = ob.employeeId.callingname+" [ "+ob.employeeId.number+" ]";
+                            return  customername;
+                        }
+
+                        var metadata = [
+                            {name:'Payment Number',search:false,datatype:'text',property:'number'},
+                            {name:'Customer',search:false,datatype:'text',property:getCustomer},
+                            {name:'Type',search:false,datatype:'text',property:'paymenttypeId.name'},
+                            {name:'Amount',search:false,datatype:'text',property:getAmount},
+                            {name:'Employee',search:false,datatype:'text',property:getEmployee},
+                            {name:'Date',search:false,datatype:'text',property:'date'},
+                        ];
+                        table("tableParent","tblpayment",metadata,[7,10,15,30,500,1000],btnSearchMC,true);
+
+                    </script>
+                </div>
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+    </div>
+    <!--Table Area End-->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+</div>
+
+</body>
+</html>
